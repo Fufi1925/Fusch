@@ -236,26 +236,57 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .factrow{display:flex;gap:9px;margin-top:4px;width:100%}
 .factrow .sbtn.danger{font-size:12.5px;padding:9px 12px;white-space:nowrap}
 
-/* ---------- route bar & history ---------- */
+/* ---------- route panel & history ---------- */
 #routebar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  z-index:1200;background:rgba(17,22,33,.94);backdrop-filter:blur(18px);
-  border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:13px 14px;
+  z-index:1200;background:rgba(17,22,33,.95);backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:14px;
   box-shadow:0 18px 44px rgba(0,0,0,.5)}
 #routebar .rrow{display:flex;align-items:center;gap:9px}
-#routebar .rt{flex:1;font-size:14.5px;font-weight:800;min-width:0;
+#routebar .rt{flex:1;font-size:15px;font-weight:800;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#routebar .rchip{font-size:11px;font-weight:700;color:#7cc4ff;background:rgba(10,132,255,.16);
+.rchip{font-size:11px;font-weight:700;color:#7cc4ff;background:rgba(10,132,255,.16);
   border-radius:100px;padding:3px 10px;flex:none}
-#routebar .rrow2{display:flex;align-items:center;gap:8px;margin-top:10px}
-#routebar .seg{flex:1}
-#routebar .seg button{padding:7px 10px;font-size:12px;flex:1;justify-content:center;min-width:0}
-.rloop{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#8fa0bd;
-  flex:none;padding:0 4px}
-.rloop input{width:16px;height:16px;accent-color:#0a84ff}
-#rstart{background:linear-gradient(180deg,#4cc2ff,#0a84ff);color:#fff;font-weight:800;font-size:13.5px;
-  padding:9px 16px;border-radius:11px;flex:none;box-shadow:0 5px 14px rgba(10,132,255,.35)}
-#rstop{background:linear-gradient(180deg,#ff6159,#e0362c);color:#fff;font-weight:800;font-size:13.5px;
-  padding:9px 16px;border-radius:11px;flex:none;box-shadow:0 5px 14px rgba(224,54,44,.35)}
+.rsteps{display:flex;flex-direction:column;gap:7px;margin:11px 0 2px}
+.rstep{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 12px;cursor:pointer}
+.rstep .rn2{width:24px;height:24px;border-radius:8px;background:#1e2941;color:#7cc4ff;
+  font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
+.rstep.done .rn2{background:rgba(48,209,88,.18);color:#30d158}
+.rstep.active{border-color:rgba(76,194,255,.55);box-shadow:0 0 0 3px rgba(76,194,255,.12)}
+.rstep .rxt{flex:1;font-size:13.5px;font-weight:600;min-width:0}
+.rstep .rxt .sub2{font-size:10.5px;color:#8fa0bd;font-weight:400;margin-top:1px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rstep .rv2{font-size:10.5px;color:#8fa0bd;font-family:ui-monospace,Menlo,monospace;flex:none;max-width:42%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#rmode{display:flex;background:#1a2133;border-radius:11px;padding:3px;gap:3px;margin-top:10px}
+#rmode button{flex:1;padding:9px 4px;border-radius:9px;font-size:12px;font-weight:700;color:#93a0b8;
+  display:flex;align-items:center;justify-content:center;gap:5px}
+#rmode button.on{background:#0a84ff;color:#fff}
+#rcalc{margin-top:11px;width:100%;height:46px;border-radius:12px;font-size:14.5px;font-weight:800;
+  color:#fff;background:linear-gradient(180deg,#4cc2ff,#0a84ff);
+  display:flex;align-items:center;justify-content:center;gap:8px}
+#rcalc:disabled{opacity:.4}
+#rcalc.calc{opacity:.75}
+#rinfo{display:none;margin-top:11px;background:rgba(0,0,0,.28);border:1px solid rgba(76,194,255,.35);
+  border-radius:12px;padding:10px 12px}
+#rinfo .big2{font-size:14.5px;font-weight:800}
+#rinfo .sub3{font-size:11.5px;color:#8fa0bd;margin-top:2px}
+#rrow3{display:flex;align-items:center;gap:8px;margin-top:10px}
+#rrow3 .seg{flex:1}
+#rrow3 .seg button{flex:1;justify-content:center;min-width:0}
+#rgo{margin-top:11px;width:100%;height:48px;border-radius:12px;font-size:15.5px;font-weight:800;
+  color:#fff;background:linear-gradient(180deg,#3ce07b,#1e9e4a);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 8px 22px rgba(48,209,88,.35)}
+.rAB{width:26px;height:26px;border-radius:50%;color:#fff;font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;
+  box-shadow:0 3px 10px rgba(0,0,0,.45)}
+.rAB.a{background:#0a84ff}
+.rAB.b{background:#ff453a}
+@keyframes dashmove{to{stroke-dashoffset:-40}}
+.routeActive{animation:dashmove 1.2s linear infinite}
+.rloop2{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#8fa0bd;flex:none}
+.rloop2 input{width:16px;height:16px;accent-color:#0a84ff}
 #histlist{display:flex;flex-direction:column;gap:9px;padding-bottom:8px}
 .hrow{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.045);
   border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px 12px;cursor:pointer}
@@ -418,33 +449,53 @@ setTimeout(function(){
   </button>
 </div>
 
-<!-- ================= ROUTE BAR ================= -->
+<!-- ================= ROUTE PANEL ================= -->
 <div id="routebar" class="hidden">
   <div class="rrow">
-    <div class="rt" id="r_title">Route planen</div>
-    <span class="rchip" id="r_chip">0 Punkte</span>
+    <div class="rt">Route fahren</div>
+    <span class="rchip">OSRM · echte Straßen</span>
     <button id="rcancel" class="ibtn" title="Abbrechen">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
-  <div class="rrow2" id="r_plan_row">
-    <div class="seg" id="rspeedseg">
-      <button data-sp="5" class="on">🚶 5</button>
-      <button data-sp="15">🚴 15</button>
-      <button data-sp="40">🚗 40</button>
+  <div class="rsteps">
+    <div class="rstep" id="rs_start">
+      <div class="rn2">A</div>
+      <div class="rxt">Startpunkt<div class="sub2" id="rs_start_s">auf Karte tippen</div></div>
+      <div class="rv2" id="rs_start_v"></div>
     </div>
-    <label class="rloop"><input type="checkbox" id="rloop">🔁</label>
-    <button id="rstart">Start</button>
+    <div class="rstep" id="rs_end">
+      <div class="rn2">B</div>
+      <div class="rxt">Zielpunkt<div class="sub2" id="rs_end_s">auf Karte tippen</div></div>
+      <div class="rv2" id="rs_end_v"></div>
+    </div>
   </div>
-  <div class="rrow2 hidden" id="r_run_row">
-    <div style="flex:1;font-size:12.5px;color:#8fa0bd" id="r_runinfo">…</div>
-    <button id="rstop">Route stoppen</button>
+  <div id="rmode">
+    <button data-m="foot">🚶 Gehen</button>
+    <button data-m="bike">🚲 Fahrrad</button>
+    <button data-m="car" class="on">🚗 Auto</button>
   </div>
+  <button id="rcalc" disabled>
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;stroke:#fff"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>
+    Route berechnen
+  </button>
+  <div id="rinfo">
+    <div class="big2" id="ri_big">–</div>
+    <div class="sub3" id="ri_sub">–</div>
+  </div>
+  <div id="rrow3" class="hidden">
+    <div class="seg" id="rspeedseg">
+      <button data-sp="5">🚶 5</button>
+      <button data-sp="15">🚴 15</button>
+      <button data-sp="40" class="on">🚗 40</button>
+    </div>
+    <label class="rloop2"><input type="checkbox" id="rloop">🔁</label>
+  </div>
+  <button id="rgo" class="hidden">
+    <svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M8 5v14l11-7Z"/></svg>
+    Losfahren
+  </button>
 </div>
-
-<div id="movl" class="hidden"><div id="sheet"><div id="mbox"></div></div></div>
-
-<div id="toast" class="hidden"></div>
 
 <!-- ================= SPOOF POPUP ================= -->
 <div id="spovl" class="hidden">
@@ -605,7 +656,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 1.4.1 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 1.5 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -792,7 +843,7 @@ function initMapSafe(){
   map=L.map('map',{zoomControl:false,attributionControl:false,zoomAnimation:true}).setView(Def,12);
   applyMap();updSeg();updSortSeg();
   map.on('click',e=>{
-    if(routePlanning){addRoutePoint(e.latlng.lat,e.latlng.lng);return;}
+    if(routeMode){routeMapClick(e.latlng.lat,e.latlng.lng);return;}
     setTarget(e.latlng.lat,e.latlng.lng);
   });
   return true;
@@ -834,7 +885,7 @@ window.appBack=function(){
     if(!$('#spo_btns').classList.contains('hidden'))closeSpoof();
     return true;
   }
-  if(routePlanning){cancelRoutePlanning();return true;}
+  if(routeMode){cancelRoutePlanning();return true;}
   if($('#settab').classList.contains('open')){closeSettings();return true;}
   if($('#favtab').classList.contains('open')){closeFavs();return true;}
   if($('#histtab').classList.contains('open')){$('#histtab').classList.remove('open');return true;}
@@ -1122,100 +1173,157 @@ window.__onLoc=d=>{
   toast(d.mock?'Gerätestandort ist gespoofed ✓':'Gerätestandort ist NICHT gespoofed');
 };
 
-/* ================= route & verlauf ================= */
-let routePlanning=false,routeRun=false,routePts=[],routeSpeed=5,routeLoop=false;
-let routeLine=null,routeTotalM=0,routeStartT=0,routeTicker=null;
+/* ================= route (echte Straßen via OSRM) ================= */
+let routeMode=false,routeRun=false,routePts=[],routeTotalM=0,routeDur=0;
+let routeSpeed=40,routeLoop=false,routeStartT=0,routeTicker=null;
+let rA=null,rB=null,rStep='a',rProfile='car',rPoly=null,rMarkers=[];
 
 $('#routebtn').onclick=()=>{
   if(routeRun){toast('Route läuft – erst stoppen');return;}
-  if(routePlanning){cancelRoutePlanning();return;}
   if(spoofing){toast('Spoofing aktiv – erst stoppen');return;}
+  if(routeMode){cancelRoutePlanning();return;}
   startRoutePlanning();
 };
 function startRoutePlanning(){
-  routePlanning=true;
+  routeMode=true;rStep='a';rA=null;rB=null;
+  routePts=[];routeTotalM=0;routeDur=0;
+  clearRouteDraw();
   $('#card').classList.add('hidden');
   $('#routebar').classList.remove('hidden');
-  $('#r_title').textContent='Route planen';
-  $('#r_plan_row').classList.remove('hidden');
-  $('#r_run_row').classList.add('hidden');
-  updRouteBar();
-  toast('Tippe mindestens 2 Punkte auf die Karte');
+  $('#rinfo').style.display='none';
+  $('#rgo').classList.add('hidden');
+  $('#rrow3').classList.add('hidden');
+  const rc=$('#rcalc');
+  rc.style.display='flex';rc.disabled=true;rc.classList.remove('calc');
+  rc.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;stroke:#fff"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg> Route berechnen';
+  updRouteSteps();updRouteBar();
+  toast('Tippe den Startpunkt (A) auf die Karte');
 }
-function addRoutePoint(la,lo){
+function routeMapClick(la,lo){
+  if(rStep==='a'){
+    rA={lat:la,lng:lo};rStep='b';
+    toast('Jetzt den Zielpunkt (B) antippen');
+  }else{
+    rB={lat:la,lng:lo};
+  }
+  drawRMarkers();updRouteSteps();
+  $('#rcalc').disabled=!(rA&&rB);
+  if(rA&&rB)calcRoute();
+}
+function drawRMarkers(){
+  rMarkers.forEach(m=>{if(map)map.removeLayer(m);});
+  rMarkers=[];
   if(!map)return;
-  routePts.push({lat:la,lng:lo});
-  routeTotalM=calcRouteLen();
-  if(!routeLine){
-    routeLine=L.polyline(routePts.map(p=>[p.lat,p.lng]),{color:'#4cc2ff',weight:4,dashArray:'7 7',opacity:.9}).addTo(map);
-  }else routeLine.setLatLngs(routePts.map(p=>[p.lat,p.lng]));
-  L.circleMarker([la,lo],{radius:5,color:'#fff',weight:2,fillColor:'#0a84ff',fillOpacity:1}).addTo(map);
-  map.panTo([la,lo]);
-  updRouteBar();vib(8);
+  const aIcon=L.divIcon({className:'',html:'<div class="rAB a">A</div>',iconSize:[26,26],iconAnchor:[13,13]});
+  const bIcon=L.divIcon({className:'',html:'<div class="rAB b">B</div>',iconSize:[26,26],iconAnchor:[13,13]});
+  if(rA)rMarkers.push(L.marker([rA.lat,rA.lng],{icon:aIcon,draggable:true}).addTo(map)
+    .on('dragend',e=>{const p=e.target.getLatLng();rA={lat:p.lat,lng:p.lng};updRouteSteps();if(rA&&rB)calcRoute();}));
+  if(rB)rMarkers.push(L.marker([rB.lat,rB.lng],{icon:bIcon,draggable:true}).addTo(map)
+    .on('dragend',e=>{const p=e.target.getLatLng();rB={lat:p.lat,lng:p.lng};updRouteSteps();if(rA&&rB)calcRoute();}));
 }
-function distM(a,b){
-  const R=6371000,r=Math.PI/180;
-  const dLa=(b.lat-a.lat)*r,dLo=(b.lng-a.lng)*r;
-  const x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)*Math.sin(dLo/2);
-  return 2*R*Math.asin(Math.sqrt(x));
+function updRouteSteps(){
+  const st=$('#rs_start'),en=$('#rs_end');
+  st.classList.toggle('done',!!rA);
+  st.classList.toggle('active',rStep==='a');
+  en.classList.toggle('done',!!rB);
+  en.classList.toggle('active',rStep==='b'&&!!rA);
+  $('#rs_start_s').textContent=rA?'gesetzt – antippen zum Ändern':'auf Karte tippen';
+  $('#rs_end_s').textContent=rB?'gesetzt – antippen zum Ändern':(rA?'auf Karte tippen':'erst Startpunkt setzen');
+  $('#rs_start_v').textContent=rA?rA.lat.toFixed(4)+', '+rA.lng.toFixed(4):'';
+  $('#rs_end_v').textContent=rB?rB.lat.toFixed(4)+', '+rB.lng.toFixed(4):'';
 }
-function calcRouteLen(){
-  let d=0;
-  for(let i=1;i<routePts.length;i++)d+=distM(routePts[i-1],routePts[i]);
-  return d;
+$('#rs_start').onclick=()=>{if(!routeMode)return;rStep='a';updRouteSteps();toast('Startpunkt neu antippen');};
+$('#rs_end').onclick=()=>{if(!routeMode||!rA)return;rStep='b';updRouteSteps();toast('Zielpunkt neu antippen');};
+$$('#rmode button').forEach(b=>b.addEventListener('click',()=>{
+  rProfile=b.dataset.m;
+  $$('#rmode button').forEach(x=>x.classList.toggle('on',x===b));
+  const sp=rProfile==='foot'?5:rProfile==='bike'?15:40;
+  routeSpeed=sp;
+  $$('#rspeedseg button').forEach(x=>x.classList.toggle('on',+x.dataset.sp===sp));
+  if(rA&&rB)calcRoute();
+}));
+function calcRoute(){
+  if(!rA||!rB)return;
+  const rc=$('#rcalc');
+  rc.disabled=true;rc.classList.add('calc');
+  rc.textContent='Berechne Straßenroute …';
+  toast('Berechne echte Straßenroute …');
+  setTimeout(()=>{
+    let j=null;
+    try{j=JSON.parse(window.Native?Native.routeCalc(rA.lat,rA.lng,rB.lat,rB.lng,rProfile):'{"ok":false}');}
+    catch(e){}
+    rc.classList.remove('calc');
+    rc.style.display='none';
+    if(!j||!j.ok||!j.points||j.points.length<2){
+      rc.style.display='flex';rc.disabled=!(rA&&rB);
+      rc.textContent='Route berechnen';
+      toast('Keine Route gefunden – Punkte näher wählen');
+      return;
+    }
+    routePts=j.points.map(p=>({lat:p[0],lng:p[1]}));
+    routeTotalM=j.dist||0;routeDur=j.dur||0;
+    drawRouteLine();
+    $('#ri_big').textContent=fmtDist(routeTotalM)+' · ca. '+Math.max(1,Math.round(routeDur/60))+' Min';
+    $('#ri_sub').textContent='Echte Straßen-Route ('+
+      (rProfile==='foot'?'Gehen':rProfile==='bike'?'Fahrrad':'Auto')+') · '+routePts.length+' Wegpunkte';
+    $('#rinfo').style.display='block';
+    $('#rrow3').classList.remove('hidden');
+    $('#rgo').classList.remove('hidden');
+    updRouteBar();
+    toast('Route bereit ✓');
+  },60);
+}
+function drawRouteLine(){
+  if(!map)return;
+  if(rPoly){map.removeLayer(rPoly);rPoly=null;}
+  rPoly=L.polyline(routePts.map(p=>[p.lat,p.lng]),
+    {color:'#4cc2ff',weight:5,opacity:.95,lineCap:'round'}).addTo(map);
+  map.fitBounds(rPoly.getBounds(),{padding:[46,46]});
+}
+$('#rcalc').onclick=()=>calcRoute();
+$('#rgo').onclick=()=>{
+  routeLoop=$('#rloop').checked;
+  if(routePts.length<2){toast('Erst Route berechnen');return;}
+  startSpoofFlow('route');
+};
+$('#rcancel').onclick=()=>cancelRoutePlanning();
+function cancelRoutePlanning(){
+  routeMode=false;
+  clearRouteDraw();
+  $('#routebar').classList.add('hidden');
+  if(target)$('#card').classList.remove('hidden');
+  toast('Route abgebrochen');
+}
+function clearRouteDraw(){
+  rMarkers.forEach(m=>{if(map)map.removeLayer(m);});
+  rMarkers=[];
+  if(rPoly&&map){map.removeLayer(rPoly);}
+  rPoly=null;routePts=[];routeTotalM=0;routeDur=0;
 }
 function fmtDist(m){return m<1000?Math.round(m)+' m':(m/1000).toFixed(1).replace('.',',')+' km';}
 function updRouteBar(){
-  const planning=routePlanning;
-  $('#r_chip').textContent=planning?(routePts.length+' Punkte'):(routeRun?fmtDist(routeTotalM):'');
-  if(!planning&&routeRun){
-    $('#r_plan_row').classList.add('hidden');
-    $('#r_run_row').classList.remove('hidden');
-    $('#r_title').textContent='Route aktiv';
-  }
+  const c=$('#r_chip');
+  if(c)c.textContent=routeRun?(fmtDist(routeTotalM)+' · '+routeSpeed+' km/h'):'OSRM · echte Straßen';
 }
-function finishRoutePlanning(keep){
-  routePlanning=false;
-  const pr=$('#r_plan_row');
-  if(pr)pr.classList.add('hidden');
-  if(!keep){
-    clearRouteVisuals();
-    $('#routebar').classList.add('hidden');
-    if(target)$('#card').classList.remove('hidden');
-  }
-}
-function clearRouteVisuals(){
-  if(!map)return;
-  const kill=[];
-  map.eachLayer(l=>{ if(l===routeLine||l instanceof L.CircleMarker)kill.push(l); });
-  kill.forEach(l=>map.removeLayer(l));
-  routeLine=null;routePts=[];routeTotalM=0;
-}
-function cancelRoutePlanning(){
-  finishRoutePlanning(false);
-  toast('Route-Planung abgebrochen');
-}
-$('#rcancel').onclick=cancelRoutePlanning;
-$('#rstop').onclick=()=>{const N=window.Native;if(N)N.stopSpoof();setSpoofUI(false);};
-$$('#rspeedseg button').forEach(b=>b.addEventListener('click',()=>{
-  routeSpeed=+b.dataset.sp;
-  $$('#rspeedseg button').forEach(x=>x.classList.toggle('on',x===b));
-}));
-$('#rstart').onclick=()=>{
-  routeLoop=$('#rloop').checked;
-  if(routePts.length<2){toast('Mindestens 2 Punkte antippen');return;}
-  startSpoofFlow('route');
-};
 function startRouteTicker(){
   stopRouteTicker();
   routeTicker=setInterval(()=>{
     if(!routeRun)return;
-    const eta=routeTotalM/(routeSpeed/3.6);
+    const N=window.Native;
+    if(!N||!N.getPos)return;
+    let p='';
+    try{p=N.getPos();}catch(e){}
+    if(!p)return;
+    const parts=p.split(',');
+    const la=parseFloat(parts[0]),lo=parseFloat(parts[1]);
+    if(isNaN(la)||isNaN(lo))return;
+    if(marker)marker.setLatLng([la,lo]);
+    if(target){target.lat=la;target.lng=lo;render();}
     const el=(Date.now()-routeStartT)/1000;
-    const rest=routeLoop?'∞':Math.max(0,Math.round(eta-el));
+    const eta=routeTotalM/(routeSpeed/3.6);
     const mm=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
-    $('#r_runinfo').textContent=fmtDist(routeTotalM)+' · '+routeSpeed+' km/h · '
-      +(routeLoop?'Endlosschleife':'noch '+mm(rest));
+    const rest=routeLoop?'∞':'noch '+mm(Math.max(0,eta-el));
+    $('#statustxt').textContent='Route aktiv · '+fmtDist(routeTotalM)+' · '+routeSpeed+' km/h · '+rest;
   },1000);
 }
 function stopRouteTicker(){clearInterval(routeTicker);}

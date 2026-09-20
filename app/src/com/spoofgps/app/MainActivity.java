@@ -252,6 +252,19 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public String routeCalc(double sla, double slo, double ela, double elo, String profile) {
+            return Router.calc(sla, slo, ela, elo, profile);
+        }
+
+        /** Aktuelle Engine-Position: "lat,lng" oder "". */
+        @JavascriptInterface
+        public String getPos() {
+            SpoofEngine e = SpoofEngine.get();
+            if (!e.running) return "";
+            return e.lat + "," + e.lng;
+        }
+
+        @JavascriptInterface
         public void stopSpoof() {
             SpoofEngine.get().stop(getApplicationContext());
             pushState();

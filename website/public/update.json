@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "1.4.1",
-  "code": 7,
+  "version": "1.5",
+  "code": 8,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Neu in 1.4.1:\n• 🛣️ Routen: Bewegung simulieren (Gehen/Fahren)\n• 🕘 Verlauf der letzten Spoof-Orte\n• Route läuft nach Neustart weiter\n• 🐛 Fix: Ladeanimation konnte hängen bleiben (Karten-CDN-Fallback)",
+  "notes": "Neu in 1.5:\n• 🛣️ Komplett neues Route-System: Start + Ziel wählen, Gerät wählen (Gehen/Fahrrad/Auto), OSRM berechnet den Weg über ECHTE Straßen\n• Marker bewegt sich live entlang der Route\n• 🎨 Website im modernen Weiß-Design",
   "date": "2026-09-20"
 }
