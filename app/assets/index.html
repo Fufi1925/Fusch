@@ -10,7 +10,7 @@
 <script>/* native bridge pre-stubs (defined before page ready) */
 window.onNativeState=function(run,err,lat,lng){window._ps=arguments;if(window.__ready)window.__onState(run,err,lat,lng);};
 window.onDeviceLocation=function(d){window._pl=d;if(window.__ready)window.__onLoc(d);};
-window.permsResult=function(){if(window.__ready)window.__perms();};
+window.permsResult=function(){if(window.__ready){window.__perms();if(window.checkMock)checkMock();}};
 window.Native=window.Android;</script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -377,6 +377,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 #rmode{display:flex;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:3px;gap:3px;margin-top:10px}
 #rmode button{flex:1;padding:9px 4px;border-radius:9px;font-size:12px;font-weight:700;color:#93a0b8;background:transparent;border:0;outline:0;cursor:pointer}
 #rmode button.on{background:#0a84ff;color:#fff}
+#mockwarn{margin:10px 12px 0;padding:11px 13px;background:rgba(255,69,58,.14);border:1px solid rgba(255,69,58,.4);border-radius:13px;font-size:12.5px;line-height:1.5;color:#ffd7d3;cursor:pointer}
 </style>
 </head>
 <body>
@@ -443,6 +444,9 @@ setTimeout(function(){
 <div id="modepill"><span class="pdot"></span><span id="mp_txt">Karte</span></div>
 <div id="attrib">Esri · © OpenStreetMap-Mitwirkende</div>
 
+<div id="mockwarn" class="hidden" onclick="showHint(null)">
+  ⚠️ <b>Spoof ist blockiert:</b> Fusch fehlt die Mock-Standort-Erlaubnis – Android setzt sie bei Updates manchmal zurück. <b>Tippen für Anleitung &amp; Fix.</b>
+</div>
 <div id="card" class="hidden">
   <div class="row1">
     <div id="name">Ausgewählter Standort</div>
@@ -514,6 +518,11 @@ setTimeout(function(){
     Losfahren
   </button>
 </div>
+
+<!-- ================= SPOOF POPUP ================= -->
+<div id="movl" class="hidden"><div id="sheet"><div id="mbox"></div></div></div>
+
+<div id="toast" class="hidden"></div>
 
 <!-- ================= SPOOF POPUP ================= -->
 <div id="spovl" class="hidden">
@@ -674,7 +683,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 1.6 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 1.7 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -793,7 +802,7 @@ function persistAll(){
     try{localStorage.setItem('sg_favs',JSON.stringify(favs));}catch(e){}
     try{localStorage.setItem('sg_hist',JSON.stringify(hist));}catch(e){}
     if(window.Native&&Native.storeSet){
-      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist}));}catch(e){}
+      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist,v:10}));}catch(e){}
     }
   },250);
 }
@@ -1195,7 +1204,7 @@ window.__onState=(run,err,lat,lng)=>{
 };
 
 /* ---------- device location ---------- */
-$('#loc').onclick=()=>{const N=window.Native;if(N)N.deviceLocation();else toast('Nicht verfügbar');};
+$('#loc').onclick=()=>{const N=window.Native;if(N){toast('Standort wird ermittelt …');N.deviceLocation();}else toast('Nicht verfügbar');};
 window.__onLoc=d=>{
   if(!d){toast('Standort nicht verfügbar – Berechtigung erteilen & GPS an');return;}
   if(!map)return;
@@ -1591,7 +1600,7 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'1.6';
+  const cur=N.appVersion?N.appVersion():'1.7';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
@@ -1599,7 +1608,7 @@ function checkForUpdate(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'1.6';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'1.7';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });
@@ -1617,6 +1626,18 @@ function toast(msg){
 
 /* ================= boot ================= */
 window.__ready=true;
+/* v1.7-Migration: wichtige Schalter einmalig AN – alte gespeicherte Werte dürfen neue Defaults nicht ausknipsen */
+const SVER=10;
+let _sv=0;try{_sv=+(localStorage.getItem('sg_sver')||0)||0;}catch(e){}
+if(typeof NAT.v==='number')_sv=Math.max(_sv,NAT.v);
+if(_sv<SVER){
+  ['mock_network','jitter','notif_coords','notif_timer','map_labels','map_key_tiles','autostart','keep_alive'].forEach(k=>{S[k]=true;});
+  try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
+  try{persistAll();}catch(e){}
+}
+try{localStorage.setItem('sg_sver',String(SVER));}catch(e){}
+function checkMock(){const N=window.Native;if(!N||!N.mockAllowed)return;let ok=true;try{ok=!!N.mockAllowed();}catch(e){return;}const w=$('#mockwarn');if(w)w.classList.toggle('hidden',!!ok);}
+checkMock();
 bindSettings();
 setSpoofUI(false);
 if(window.Native&&Native.setSettings)Native.setSettings(JSON.stringify(S));

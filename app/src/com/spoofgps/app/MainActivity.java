@@ -109,6 +109,8 @@ public class MainActivity extends Activity {
         return checkSelfPermission(p) == PackageManager.PERMISSION_GRANTED;
     }
 
+    private volatile boolean locBusy = false;
+
     private void requestNeededPerms() {
         ArrayList<String> need = new ArrayList<>();
         if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION))
@@ -396,25 +398,78 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public void deviceLocation() {
+            if (locBusy) return;
             try {
                 LocationManager lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                android.location.Location best = null;
-                if (hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    for (String p : lmgr.getAllProviders()) {
-                        if (LocationManager.PASSIVE_PROVIDER.equals(p)) continue;
-                        android.location.Location l = lmgr.getLastKnownLocation(p);
-                        if (l != null && (best == null || l.getTime() > best.getTime())) best = l;
-                    }
-                }
-                if (best == null) {
+                if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    runOnUiThread(new Runnable() { @Override public void run() { requestNeededPerms(); } });
                     jsToPage("window.onDeviceLocation && window.onDeviceLocation(null);");
                     return;
                 }
-                boolean mock = Build.VERSION.SDK_INT >= 31 ? best.isMock() : best.isFromMockProvider();
-                jsToPage("window.onDeviceLocation && window.onDeviceLocation({lat:" + best.getLatitude()
-                        + ",lng:" + best.getLongitude() + ",mock:" + mock + "});");
+                android.location.Location best = null;
+                for (String p : lmgr.getAllProviders()) {
+                    if (LocationManager.PASSIVE_PROVIDER.equals(p)) continue;
+                    try {
+                        android.location.Location l = lmgr.getLastKnownLocation(p);
+                        if (l != null && (best == null || l.getTime() > best.getTime())) best = l;
+                    } catch (Exception ignored) {}
+                }
+                if (best != null && System.currentTimeMillis() - best.getTime() <= 120000L) {
+                    sendLoc(best);
+                    return;
+                }
+                locBusy = true;
+                final LocationManager lmF = lmgr;
+                final android.location.Location[] box = new android.location.Location[]{best};
+                final android.location.LocationListener[] ls = new android.location.LocationListener[1];
+                ls[0] = new android.location.LocationListener() {
+                    @Override public void onLocationChanged(android.location.Location l) {
+                        if (l != null && (box[0] == null || l.getTime() > box[0].getTime())) box[0] = l;
+                    }
+                    @Override public void onStatusChanged(String pr, int st, android.os.Bundle ex) {}
+                    @Override public void onProviderEnabled(String pr) {}
+                    @Override public void onProviderDisabled(String pr) {}
+                };
+                boolean any = false;
+                for (String p : new String[]{LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}) {
+                    try {
+                        if (lmgr.isProviderEnabled(p)) { lmgr.requestSingleUpdate(p, ls[0], getMainLooper()); any = true; }
+                    } catch (Exception ignored) {}
+                }
+                final boolean anyF = any;
+                new android.os.Handler(getMainLooper()).postDelayed(new Runnable() {
+                    @Override public void run() {
+                        locBusy = false;
+                        try { if (anyF) lmF.removeUpdates(ls[0]); } catch (Exception ignored) {}
+                        sendLoc(box[0]);
+                    }
+                }, anyF ? 8000L : 300L);
             } catch (Exception e) {
+                locBusy = false;
                 jsToPage("window.onDeviceLocation && window.onDeviceLocation(null);");
+            }
+        }
+
+        private void sendLoc(android.location.Location l) {
+            if (l == null) {
+                jsToPage("window.onDeviceLocation && window.onDeviceLocation(null);");
+                return;
+            }
+            boolean mock = Build.VERSION.SDK_INT >= 31 ? l.isMock() : l.isFromMockProvider();
+            jsToPage("window.onDeviceLocation && window.onDeviceLocation({lat:" + l.getLatitude()
+                    + ",lng:" + l.getLongitude() + ",mock:" + mock + "});");
+        }
+
+        @JavascriptInterface
+        public boolean mockAllowed() {
+            try {
+                android.app.AppOpsManager ops = (android.app.AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+                int op = Build.VERSION.SDK_INT >= 29
+                        ? ops.unsafeCheckOpNoThrow("android:mock_location", android.os.Process.myUid(), getPackageName())
+                        : ops.checkOpNoThrow("android:mock_location", android.os.Process.myUid(), getPackageName());
+                return op == android.app.AppOpsManager.MODE_ALLOWED;
+            } catch (Exception e) {
+                return true;
             }
         }
 

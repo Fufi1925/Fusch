@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "1.6",
-  "code": 9,
+  "version": "1.7",
+  "code": 10,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Neu in 1.6:\n• 🟢 Vanish-Style: grüne Spoofing-Leiste mit Live-Timer + Stop\n• 🛣️ Route-Panel mit START/ZIEL-Namen & Speed-Slider (2–120 km/h)\n• 💾 Einstellungen/Favoriten/Verlauf überleben App-Updates jetzt garantiert (nativ gespeichert)\n• 🐛 Favoriten-Sortierung gefixt + Update-Erkennung robuster",
+  "notes": "Neu in 1.7:\n• 🛠️ Kritischer Fix: versteckter App-Start-Fehler behoben – Einstellungen-Schalter, Fehlerhilfe & Update-Checker funktionieren jetzt wieder voll\n• 📍 Echter Standort: holt jetzt immer einen frischen GPS-Fix statt alter Cache-Positionen\n• ⚙️ Wichtige Schalter (Mock-Netzwerk, Jitter, Autostart, Hintergrund …) werden beim Update einmalig zuverlässig ANgeschaltet\n• ⚠️ Klare Warnung + 1-Tipp-Anleitung, falls Android die Mock-Erlaubnis zurücksetzt (häufigste Spoof-Ursache)",
   "date": "2026-09-20"
 }
