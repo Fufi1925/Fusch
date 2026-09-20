@@ -406,12 +406,19 @@ public class MainActivity extends Activity {
                     jsToPage("window.onDeviceLocation && window.onDeviceLocation(null);");
                     return;
                 }
-                android.location.Location best = null;
+                // FUSED (Google Play Services) zuerst – bleibt beim Spoofen NICHT gemockt
+                java.util.ArrayList<String> provs = new java.util.ArrayList<>();
+                if (Build.VERSION.SDK_INT >= 31 && lmgr.getAllProviders().contains(LocationManager.FUSED_PROVIDER))
+                    provs.add(LocationManager.FUSED_PROVIDER);
                 for (String p : lmgr.getAllProviders()) {
-                    if (LocationManager.PASSIVE_PROVIDER.equals(p)) continue;
+                    if (LocationManager.PASSIVE_PROVIDER.equals(p) || provs.contains(p)) continue;
+                    provs.add(p);
+                }
+                android.location.Location best = null;
+                for (String p : provs) {
                     try {
                         android.location.Location l = lmgr.getLastKnownLocation(p);
-                        if (l != null && (best == null || l.getTime() > best.getTime())) best = l;
+                        best = betterLoc(best, l);
                     } catch (Exception ignored) {}
                 }
                 if (best != null && System.currentTimeMillis() - best.getTime() <= 120000L) {
@@ -424,14 +431,14 @@ public class MainActivity extends Activity {
                 final android.location.LocationListener[] ls = new android.location.LocationListener[1];
                 ls[0] = new android.location.LocationListener() {
                     @Override public void onLocationChanged(android.location.Location l) {
-                        if (l != null && (box[0] == null || l.getTime() > box[0].getTime())) box[0] = l;
+                        if (l != null) box[0] = betterLoc(box[0], l);
                     }
                     @Override public void onStatusChanged(String pr, int st, android.os.Bundle ex) {}
                     @Override public void onProviderEnabled(String pr) {}
                     @Override public void onProviderDisabled(String pr) {}
                 };
                 boolean any = false;
-                for (String p : new String[]{LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER}) {
+                for (String p : provs) {
                     try {
                         if (lmgr.isProviderEnabled(p)) { lmgr.requestSingleUpdate(p, ls[0], getMainLooper()); any = true; }
                     } catch (Exception ignored) {}
@@ -450,12 +457,24 @@ public class MainActivity extends Activity {
             }
         }
 
+        private android.location.Location betterLoc(android.location.Location a, android.location.Location b) {
+            if (a == null) return b;
+            if (b == null) return a;
+            boolean am = isMockL(a), bm = isMockL(b);
+            if (am != bm) return am ? b : a; // echte Position gewinnt IMMER über die gespoofte
+            return b.getTime() > a.getTime() ? b : a;
+        }
+
+        private boolean isMockL(android.location.Location l) {
+            return Build.VERSION.SDK_INT >= 31 ? l.isMock() : l.isFromMockProvider();
+        }
+
         private void sendLoc(android.location.Location l) {
             if (l == null) {
                 jsToPage("window.onDeviceLocation && window.onDeviceLocation(null);");
                 return;
             }
-            boolean mock = Build.VERSION.SDK_INT >= 31 ? l.isMock() : l.isFromMockProvider();
+            boolean mock = isMockL(l);
             jsToPage("window.onDeviceLocation && window.onDeviceLocation({lat:" + l.getLatitude()
                     + ",lng:" + l.getLongitude() + ",mock:" + mock + "});");
         }

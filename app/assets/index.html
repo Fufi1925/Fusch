@@ -683,7 +683,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 1.7 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 1.8 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -1600,7 +1600,7 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'1.7';
+  const cur=N.appVersion?N.appVersion():'1.8';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
@@ -1608,7 +1608,7 @@ function checkForUpdate(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'1.7';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'1.8';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });
