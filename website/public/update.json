@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "1.5",
-  "code": 8,
+  "version": "1.6",
+  "code": 9,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Neu in 1.5:\n• 🛣️ Komplett neues Route-System: Start + Ziel wählen, Gerät wählen (Gehen/Fahrrad/Auto), OSRM berechnet den Weg über ECHTE Straßen\n• Marker bewegt sich live entlang der Route\n• 🎨 Website im modernen Weiß-Design",
+  "notes": "Neu in 1.6:\n• 🟢 Vanish-Style: grüne Spoofing-Leiste mit Live-Timer + Stop\n• 🛣️ Route-Panel mit START/ZIEL-Namen & Speed-Slider (2–120 km/h)\n• 💾 Einstellungen/Favoriten/Verlauf überleben App-Updates jetzt garantiert (nativ gespeichert)\n• 🐛 Favoriten-Sortierung gefixt + Update-Erkennung robuster",
   "date": "2026-09-20"
 }

@@ -236,48 +236,59 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .factrow{display:flex;gap:9px;margin-top:4px;width:100%}
 .factrow .sbtn.danger{font-size:12.5px;padding:9px 12px;white-space:nowrap}
 
-/* ---------- route panel & history ---------- */
+/* ---------- live bar (Vanish-Style) ---------- */
+#livebar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
+  z-index:1200;display:flex;gap:10px}
+#livepill{flex:1;display:flex;align-items:center;gap:10px;background:rgba(16,46,30,.6);
+  backdrop-filter:blur(16px);border:1px solid rgba(48,209,88,.45);border-radius:15px;
+  padding:14px 17px;color:#5ee39a;font-weight:800;font-size:15.5px;
+  box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#livepill .lpdot{width:9px;height:9px;border-radius:50%;background:#30d158;
+  box-shadow:0 0 9px #30d158;animation:blink 1.4s infinite;flex:none}
+#lp_time{margin-left:auto;font-family:ui-monospace,Menlo,Consolas,monospace;
+  color:#8fe8b0;font-weight:700;font-size:15px}
+#live_stop{flex:0 0 32%;background:rgba(74,22,19,.6);border:1px solid rgba(255,69,58,.5);
+  border-radius:15px;color:#ff6b61;font-weight:800;font-size:15.5px;backdrop-filter:blur(16px);
+  box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#live_stop:active{transform:scale(.98)}
+
+/* ---------- route panel (Vanish-Style) & history ---------- */
 #routebar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  z-index:1200;background:rgba(17,22,33,.95);backdrop-filter:blur(18px);
-  border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:14px;
-  box-shadow:0 18px 44px rgba(0,0,0,.5)}
+  z-index:1200;background:rgba(15,20,31,.96);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.11);border-radius:20px;padding:15px 15px 14px;
+  box-shadow:0 20px 50px rgba(0,0,0,.55)}
 #routebar .rrow{display:flex;align-items:center;gap:9px}
-#routebar .rt{flex:1;font-size:15px;font-weight:800;min-width:0;
+#routebar .rt{flex:1;font-size:16px;font-weight:800;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rchip{font-size:11px;font-weight:700;color:#7cc4ff;background:rgba(10,132,255,.16);
-  border-radius:100px;padding:3px 10px;flex:none}
-.rsteps{display:flex;flex-direction:column;gap:7px;margin:11px 0 2px}
-.rstep{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.28);
-  border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:9px 12px;cursor:pointer}
-.rstep .rn2{width:24px;height:24px;border-radius:8px;background:#1e2941;color:#7cc4ff;
-  font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none}
-.rstep.done .rn2{background:rgba(48,209,88,.18);color:#30d158}
-.rstep.active{border-color:rgba(76,194,255,.55);box-shadow:0 0 0 3px rgba(76,194,255,.12)}
-.rstep .rxt{flex:1;font-size:13.5px;font-weight:600;min-width:0}
-.rstep .rxt .sub2{font-size:10.5px;color:#8fa0bd;font-weight:400;margin-top:1px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rstep .rv2{font-size:10.5px;color:#8fa0bd;font-family:ui-monospace,Menlo,monospace;flex:none;max-width:42%;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#rmode{display:flex;background:#1a2133;border-radius:11px;padding:3px;gap:3px;margin-top:10px}
-#rmode button{flex:1;padding:9px 4px;border-radius:9px;font-size:12px;font-weight:700;color:#93a0b8;
-  display:flex;align-items:center;justify-content:center;gap:5px}
-#rmode button.on{background:#0a84ff;color:#fff}
-#rcalc{margin-top:11px;width:100%;height:46px;border-radius:12px;font-size:14.5px;font-weight:800;
+.rsteps{display:flex;flex-direction:column;gap:8px;margin:12px 0 2px}
+.rstep{display:flex;align-items:center;gap:11px;background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 13px;cursor:pointer}
+.rstep.active{border-color:rgba(76,194,255,.6);box-shadow:0 0 0 3px rgba(76,194,255,.12)}
+.rstep .rdot2{width:12px;height:12px;border-radius:50%;flex:none;border:2px solid rgba(255,255,255,.85)}
+.rstep .rdot2.g{background:#30d158}
+.rstep .rdot2.r{background:#ff453a}
+.rstep .rxt{flex:1;min-width:0}
+.rstep .lbl{display:block;font-size:9px;font-weight:800;letter-spacing:.12em;color:#7d8aa3}
+.rstep .rn3{font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:1px}
+.rstep .chev{width:16px;height:16px;stroke:#7d8aa3;flex:none}
+#rsetrow{display:flex;align-items:center;gap:12px;margin-top:12px;background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 13px}
+#rsetrow .ttl{flex:1;font-size:13.5px;font-weight:700;color:#c4cee2}
+#rspdrow{display:flex;align-items:center;gap:10px;margin-top:9px;padding:0 2px}
+#rspdrow input[type=range]{flex:1;width:auto}
+#rcalc{margin-top:12px;width:100%;height:47px;border-radius:13px;font-size:14.5px;font-weight:800;
   color:#fff;background:linear-gradient(180deg,#4cc2ff,#0a84ff);
-  display:flex;align-items:center;justify-content:center;gap:8px}
-#rcalc:disabled{opacity:.4}
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 8px 22px rgba(10,132,255,.35)}
+#rcalc:disabled{opacity:.4;box-shadow:none}
 #rcalc.calc{opacity:.75}
-#rinfo{display:none;margin-top:11px;background:rgba(0,0,0,.28);border:1px solid rgba(76,194,255,.35);
-  border-radius:12px;padding:10px 12px}
-#rinfo .big2{font-size:14.5px;font-weight:800}
-#rinfo .sub3{font-size:11.5px;color:#8fa0bd;margin-top:2px}
-#rrow3{display:flex;align-items:center;gap:8px;margin-top:10px}
-#rrow3 .seg{flex:1}
-#rrow3 .seg button{flex:1;justify-content:center;min-width:0}
-#rgo{margin-top:11px;width:100%;height:48px;border-radius:12px;font-size:15.5px;font-weight:800;
+#rsum{display:none;margin-top:12px;background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.35);
+  border-radius:13px;padding:11px 14px;font-size:13.5px;font-weight:700;color:#7cc4ff;text-align:center}
+#rgo{margin-top:11px;width:100%;height:48px;border-radius:13px;font-size:15.5px;font-weight:800;
   color:#fff;background:linear-gradient(180deg,#3ce07b,#1e9e4a);
   display:flex;align-items:center;justify-content:center;gap:8px;
   box-shadow:0 8px 22px rgba(48,209,88,.35)}
+#rgo:active{transform:scale(.99)}
 .rAB{width:26px;height:26px;border-radius:50%;color:#fff;font-size:12px;font-weight:800;
   display:flex;align-items:center;justify-content:center;border:2.5px solid #fff;
   box-shadow:0 3px 10px rgba(0,0,0,.45)}
@@ -285,8 +296,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .rAB.b{background:#ff453a}
 @keyframes dashmove{to{stroke-dashoffset:-40}}
 .routeActive{animation:dashmove 1.2s linear infinite}
-.rloop2{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#8fa0bd;flex:none}
-.rloop2 input{width:16px;height:16px;accent-color:#0a84ff}
 #histlist{display:flex;flex-direction:column;gap:9px;padding-bottom:8px}
 .hrow{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.045);
   border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px 12px;cursor:pointer}
@@ -365,6 +374,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .ucur{margin-top:10px;font-size:10.5px;color:#5b6880}
 .ubtns{display:flex;gap:9px;margin-top:16px}
 .ufoot{margin-top:14px;font-size:10px;color:#4d5872}
+#rmode{display:flex;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:3px;gap:3px;margin-top:10px}
+#rmode button{flex:1;padding:9px 4px;border-radius:9px;font-size:12px;font-weight:700;color:#93a0b8;background:transparent;border:0;outline:0;cursor:pointer}
+#rmode button.on{background:#0a84ff;color:#fff}
 </style>
 </head>
 <body>
@@ -449,47 +461,53 @@ setTimeout(function(){
   </button>
 </div>
 
+<!-- ================= LIVE BAR (Vanish-Style) ================= -->
+<div id="livebar" class="hidden">
+  <div id="livepill"><span class="lpdot"></span><span id="lp_txt">Spoofing</span><span id="lp_time">00:00</span></div>
+  <button id="live_stop">Stop</button>
+</div>
+
 <!-- ================= ROUTE PANEL ================= -->
 <div id="routebar" class="hidden">
   <div class="rrow">
-    <div class="rt">Route fahren</div>
-    <span class="rchip">OSRM · echte Straßen</span>
+    <div class="rt">Route</div>
     <button id="rcancel" class="ibtn" title="Abbrechen">
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
   <div class="rsteps">
     <div class="rstep" id="rs_start">
-      <div class="rn2">A</div>
-      <div class="rxt">Startpunkt<div class="sub2" id="rs_start_s">auf Karte tippen</div></div>
-      <div class="rv2" id="rs_start_v"></div>
+      <span class="rdot2 g"></span>
+      <div class="rxt"><span class="lbl">START</span><div class="rn3" id="rs_start_n">auf Karte tippen</div></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
     </div>
     <div class="rstep" id="rs_end">
-      <div class="rn2">B</div>
-      <div class="rxt">Zielpunkt<div class="sub2" id="rs_end_s">auf Karte tippen</div></div>
-      <div class="rv2" id="rs_end_v"></div>
+      <span class="rdot2 r"></span>
+      <div class="rxt"><span class="lbl">ZIEL</span><div class="rn3" id="rs_end_n">auf Karte tippen</div></div>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>
     </div>
   </div>
   <div id="rmode">
-    <button data-m="foot">🚶 Gehen</button>
+    <button data-m="foot">🚶 Fuß</button>
     <button data-m="bike">🚲 Fahrrad</button>
     <button data-m="car" class="on">🚗 Auto</button>
+  </div>
+  <div id="rsetrow">
+    <div class="ttl">Geschwindigkeit setzen</div>
+    <label class="sw"><input type="checkbox" id="rsetspeed"><span></span></label>
+  </div>
+  <div id="rspdrow" class="hidden">
+    <input type="range" id="rspd" min="2" max="120" step="1" value="40">
+    <div class="sval" id="rspdv">40 km/h</div>
   </div>
   <button id="rcalc" disabled>
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;stroke:#fff"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>
     Route berechnen
   </button>
-  <div id="rinfo">
-    <div class="big2" id="ri_big">–</div>
-    <div class="sub3" id="ri_sub">–</div>
-  </div>
-  <div id="rrow3" class="hidden">
-    <div class="seg" id="rspeedseg">
-      <button data-sp="5">🚶 5</button>
-      <button data-sp="15">🚴 15</button>
-      <button data-sp="40" class="on">🚗 40</button>
-    </div>
-    <label class="rloop2"><input type="checkbox" id="rloop">🔁</label>
+  <div id="rsum"><span id="rsum_txt">–</span></div>
+  <div id="rlooprow" class="hidden" style="display:flex;align-items:center;gap:12px;margin-top:9px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 13px">
+    <div style="flex:1;font-size:13.5px;font-weight:700;color:#c4cee2">🔁 Route endlos wiederholen</div>
+    <label class="sw"><input type="checkbox" id="rloop"><span></span></label>
   </div>
   <button id="rgo" class="hidden">
     <svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M8 5v14l11-7Z"/></svg>
@@ -656,7 +674,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 1.5 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 1.6 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -755,7 +773,9 @@ const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
 const Def=[33.947340,-118.410538]; // LAX – Startansicht
 let map=null,marker=null,target=null,spoofing=false,deviceMarker=null,retryPending=false,revSeq=0,tl=null;
-let favs=[];try{favs=JSON.parse(localStorage.getItem('sg_favs')||'[]');}catch(e){}
+let NAT={};try{NAT=JSON.parse((window.Native&&Native.storeGet)?(Native.storeGet()||'{}'):'{}')||{};}catch(e){NAT={};}
+if(!NAT||typeof NAT!=='object'||Array.isArray(NAT))NAT={};
+let favs=[];try{favs=(NAT.favs&&NAT.favs.length!==undefined)?NAT.favs:JSON.parse(localStorage.getItem('sg_favs')||'[]');}catch(e){favs=NAT.favs||[]}
 favs.forEach((f,i)=>{if(!f.ts)f.ts=Date.now()-i;});
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
@@ -765,12 +785,25 @@ const DEF_S={mock_network:true,jitter:true,interval_ms:1000,accuracy_m:5,
   fav_sort:'new',autostart:true,keep_alive:true};
 let S=Object.assign({},DEF_S);
 try{Object.assign(S,JSON.parse(localStorage.getItem('sg_settings')||'{}'));}catch(e){}
+if(NAT.S)Object.assign(S,NAT.S);
+let persistT=null;
+function persistAll(){
+  clearTimeout(persistT);
+  persistT=setTimeout(()=>{
+    try{localStorage.setItem('sg_favs',JSON.stringify(favs));}catch(e){}
+    try{localStorage.setItem('sg_hist',JSON.stringify(hist));}catch(e){}
+    if(window.Native&&Native.storeSet){
+      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist}));}catch(e){}
+    }
+  },250);
+}
 let saveT=null;
 function saveS(){
   try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
   clearTimeout(saveT);
   saveT=setTimeout(()=>{if(window.Native&&Native.setSettings)Native.setSettings(JSON.stringify(S));},200);
   applyMap();updSeg();updSortSeg();
+  persistAll();
 }
 function fmtMs(v){return (v/1000).toFixed(1).replace('.',',')+' s';}
 function bindSettings(){
@@ -1098,7 +1131,8 @@ function finishSpoofFlow(){
   if(ok&&isRoute){
     info=routePts.length+' Punkte · '+fmtDist(routeTotalM)+(routeLoop?' · 🔁 Endlosschleife':'');
     routeRun=true;routeStartT=Date.now();
-    finishRoutePlanning(true);
+    routeMode=false;
+    $('#routebar').classList.add('hidden');
     startRouteTicker();
     addHist({name:'Route ('+routePts.length+' Pkt.)',lat:routePts[0].lat,lng:routePts[0].lng});
   }else if(ok){
@@ -1137,14 +1171,14 @@ function setSpoofUI(on){
   spoofing=on;
   const b=$('#spoofbtn');
   b.classList.remove('working','okflash');
-  if(!on){routeRun=false;stopRouteTicker();}
+  if(!on){routeRun=false;stopRouteTicker();hideLive();if(target)$('#card').classList.remove('hidden');}
   b.classList.toggle('stop',on);
   $('#spooflabel').textContent=on?(routeRun?'Route stoppen':'Spoofing stoppen'):'Spoof';
   $('#dot').className=on?'run':'';
   $('#statustxt').textContent=on?(routeRun?'Route aktiv – Standort bewegt sich':'Spoofing aktiv – GPS & Netzwerk gemockt'):
     (target?'Bereit – tippe auf „Spoof“':'Bereit');
   if(marker)marker.setIcon(puckIcon(on));
-  updRouteBar();
+  if(on)showLive(routeRun?'route':'spoof');
 }
 function burstAt(lat,lng,color){
   if(!map)return;
@@ -1178,6 +1212,15 @@ let routeMode=false,routeRun=false,routePts=[],routeTotalM=0,routeDur=0;
 let routeSpeed=40,routeLoop=false,routeStartT=0,routeTicker=null;
 let rA=null,rB=null,rStep='a',rProfile='car',rPoly=null,rMarkers=[];
 
+function distM(a,b){
+  const R=6371000,r=Math.PI/180;
+  const dLa=(b.lat-a.lat)*r,dLo=(b.lng-a.lng)*r;
+  const x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dLo/2)*Math.sin(dLo/2);
+  return 2*R*Math.asin(Math.sqrt(x));
+}
+function fmtDist(m){return m<1000?Math.round(m)+' m':(m/1000).toFixed(1).replace('.',',')+' km';}
+function autoSpeed(){return rProfile==='foot'?5:rProfile==='bike'?15:40;}
+
 $('#routebtn').onclick=()=>{
   if(routeRun){toast('Route läuft – erst stoppen');return;}
   if(spoofing){toast('Spoofing aktiv – erst stoppen');return;}
@@ -1187,12 +1230,13 @@ $('#routebtn').onclick=()=>{
 function startRoutePlanning(){
   routeMode=true;rStep='a';rA=null;rB=null;
   routePts=[];routeTotalM=0;routeDur=0;
+  routeSpeed=$('#rsetspeed').checked?+$('#rspd').value:autoSpeed();
   clearRouteDraw();
   $('#card').classList.add('hidden');
   $('#routebar').classList.remove('hidden');
-  $('#rinfo').style.display='none';
+  $('#rsum').style.display='none';
   $('#rgo').classList.add('hidden');
-  $('#rrow3').classList.add('hidden');
+  $('#rlooprow').classList.add('hidden');
   const rc=$('#rcalc');
   rc.style.display='flex';rc.disabled=true;rc.classList.remove('calc');
   rc.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px;stroke:#fff"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg> Route berechnen';
@@ -1206,9 +1250,23 @@ function routeMapClick(la,lo){
   }else{
     rB={lat:la,lng:lo};
   }
-  drawRMarkers();updRouteSteps();
+  drawRMarkers();updRouteSteps();setPointNames();
   $('#rcalc').disabled=!(rA&&rB);
   if(rA&&rB)calcRoute();
+}
+function nameFor(pt,cb){
+  setTimeout(()=>{
+    let n='';
+    try{
+      const j=geoReverse(pt.lat,pt.lng);
+      n=(j&&(j.name||(j.display_name||'').split(',')[0]))||'';
+    }catch(e){}
+    cb(n&&n.trim()?n.trim():pt.lat.toFixed(4)+', '+pt.lng.toFixed(4));
+  },30);
+}
+function setPointNames(){
+  if(rA)nameFor(rA,t=>{const el=$('#rs_start_n');if(el&&rA)el.textContent=t;});
+  if(rB)nameFor(rB,t=>{const el=$('#rs_end_n');if(el&&rB)el.textContent=t;});
 }
 function drawRMarkers(){
   rMarkers.forEach(m=>{if(map)map.removeLayer(m);});
@@ -1217,31 +1275,40 @@ function drawRMarkers(){
   const aIcon=L.divIcon({className:'',html:'<div class="rAB a">A</div>',iconSize:[26,26],iconAnchor:[13,13]});
   const bIcon=L.divIcon({className:'',html:'<div class="rAB b">B</div>',iconSize:[26,26],iconAnchor:[13,13]});
   if(rA)rMarkers.push(L.marker([rA.lat,rA.lng],{icon:aIcon,draggable:true}).addTo(map)
-    .on('dragend',e=>{const p=e.target.getLatLng();rA={lat:p.lat,lng:p.lng};updRouteSteps();if(rA&&rB)calcRoute();}));
+    .on('dragend',e=>{const p=e.target.getLatLng();rA={lat:p.lat,lng:p.lng};updRouteSteps();setPointNames();if(rA&&rB)calcRoute();}));
   if(rB)rMarkers.push(L.marker([rB.lat,rB.lng],{icon:bIcon,draggable:true}).addTo(map)
-    .on('dragend',e=>{const p=e.target.getLatLng();rB={lat:p.lat,lng:p.lng};updRouteSteps();if(rA&&rB)calcRoute();}));
+    .on('dragend',e=>{const p=e.target.getLatLng();rB={lat:p.lat,lng:p.lng};updRouteSteps();setPointNames();if(rA&&rB)calcRoute();}));
 }
 function updRouteSteps(){
   const st=$('#rs_start'),en=$('#rs_end');
-  st.classList.toggle('done',!!rA);
   st.classList.toggle('active',rStep==='a');
-  en.classList.toggle('done',!!rB);
   en.classList.toggle('active',rStep==='b'&&!!rA);
-  $('#rs_start_s').textContent=rA?'gesetzt – antippen zum Ändern':'auf Karte tippen';
-  $('#rs_end_s').textContent=rB?'gesetzt – antippen zum Ändern':(rA?'auf Karte tippen':'erst Startpunkt setzen');
-  $('#rs_start_v').textContent=rA?rA.lat.toFixed(4)+', '+rA.lng.toFixed(4):'';
-  $('#rs_end_v').textContent=rB?rB.lat.toFixed(4)+', '+rB.lng.toFixed(4):'';
+  const sn=$('#rs_start_n'),en2=$('#rs_end_n');
+  if(!rA&&sn)sn.textContent='auf Karte tippen';
+  if(!rB&&en2)en2.textContent=rA?'auf Karte tippen':'erst Start setzen';
 }
 $('#rs_start').onclick=()=>{if(!routeMode)return;rStep='a';updRouteSteps();toast('Startpunkt neu antippen');};
 $('#rs_end').onclick=()=>{if(!routeMode||!rA)return;rStep='b';updRouteSteps();toast('Zielpunkt neu antippen');};
 $$('#rmode button').forEach(b=>b.addEventListener('click',()=>{
   rProfile=b.dataset.m;
   $$('#rmode button').forEach(x=>x.classList.toggle('on',x===b));
-  const sp=rProfile==='foot'?5:rProfile==='bike'?15:40;
-  routeSpeed=sp;
-  $$('#rspeedseg button').forEach(x=>x.classList.toggle('on',+x.dataset.sp===sp));
+  if(!$('#rsetspeed').checked)routeSpeed=autoSpeed();
+  const sl=$('#rspd');if(sl)sl.value=routeSpeed;
+  const sv=$('#rspdv');if(sv)sv.textContent=routeSpeed+' km/h';
   if(rA&&rB)calcRoute();
 }));
+$('#rsetspeed').addEventListener('change',()=>{
+  const on=$('#rsetspeed').checked;
+  $('#rspdrow').classList.toggle('hidden',!on);
+  routeSpeed=on?+$('#rspd').value:autoSpeed();
+  $('#rspdv').textContent=routeSpeed+' km/h';
+  updRouteBar();
+});
+$('#rspd').addEventListener('input',()=>{
+  routeSpeed=+$('#rspd').value;
+  $('#rspdv').textContent=routeSpeed+' km/h';
+  updRouteBar();
+});
 function calcRoute(){
   if(!rA||!rB)return;
   const rc=$('#rcalc');
@@ -1263,13 +1330,10 @@ function calcRoute(){
     routePts=j.points.map(p=>({lat:p[0],lng:p[1]}));
     routeTotalM=j.dist||0;routeDur=j.dur||0;
     drawRouteLine();
-    $('#ri_big').textContent=fmtDist(routeTotalM)+' · ca. '+Math.max(1,Math.round(routeDur/60))+' Min';
-    $('#ri_sub').textContent='Echte Straßen-Route ('+
-      (rProfile==='foot'?'Gehen':rProfile==='bike'?'Fahrrad':'Auto')+') · '+routePts.length+' Wegpunkte';
-    $('#rinfo').style.display='block';
-    $('#rrow3').classList.remove('hidden');
-    $('#rgo').classList.remove('hidden');
+    $('#rsum').style.display='block';
     updRouteBar();
+    $('#rlooprow').classList.remove('hidden');
+    $('#rgo').classList.remove('hidden');
     toast('Route bereit ✓');
   },60);
 }
@@ -1282,7 +1346,8 @@ function drawRouteLine(){
 }
 $('#rcalc').onclick=()=>calcRoute();
 $('#rgo').onclick=()=>{
-  routeLoop=$('#rloop').checked;
+  const rl=$('#rloop');
+  routeLoop=!!(rl&&rl.checked);
   if(routePts.length<2){toast('Erst Route berechnen');return;}
   startSpoofFlow('route');
 };
@@ -1291,7 +1356,7 @@ function cancelRoutePlanning(){
   routeMode=false;
   clearRouteDraw();
   $('#routebar').classList.add('hidden');
-  if(target)$('#card').classList.remove('hidden');
+  if(target&&!spoofing&&!routeRun)$('#card').classList.remove('hidden');
   toast('Route abgebrochen');
 }
 function clearRouteDraw(){
@@ -1300,10 +1365,43 @@ function clearRouteDraw(){
   if(rPoly&&map){map.removeLayer(rPoly);}
   rPoly=null;routePts=[];routeTotalM=0;routeDur=0;
 }
-function fmtDist(m){return m<1000?Math.round(m)+' m':(m/1000).toFixed(1).replace('.',',')+' km';}
 function updRouteBar(){
-  const c=$('#r_chip');
-  if(c)c.textContent=routeRun?(fmtDist(routeTotalM)+' · '+routeSpeed+' km/h'):'OSRM · echte Straßen';
+  const el=$('#rsum_txt');
+  if(!el)return;
+  if(routePts.length>1){
+    const icon=rProfile==='foot'?'🚶':rProfile==='bike'?'🚲':'🚗';
+    const eta=Math.max(1,Math.round(routeTotalM/(routeSpeed/3.6)/60));
+    el.textContent=icon+' '+fmtDist(routeTotalM)+' · '+routeSpeed+' km/h · ETA '+eta+'m';
+  }
+}
+$('#live_stop').onclick=()=>{
+  const N=window.Native;if(N)N.stopSpoof();
+  setSpoofUI(false);
+  if(routeMode)cancelRoutePlanning();
+  toast('Gestoppt');
+};
+let liveT=null,liveStart=0;
+function showLive(kind){
+  $('#card').classList.add('hidden');
+  $('#routebar').classList.add('hidden');
+  $('#livebar').classList.remove('hidden');
+  $('#lp_txt').textContent=kind==='route'?'Route live':'Spoofing';
+  try{
+    const N=window.Native;
+    liveStart=(N&&N.getStartedAt)?+N.getStartedAt():0;
+  }catch(e){liveStart=0;}
+  if(!liveStart||isNaN(liveStart))liveStart=Date.now();
+  clearInterval(liveT);
+  const two=n=>String(n).padStart(2,'0');
+  const up=()=>{
+    const sec=Math.max(0,Math.floor((Date.now()-liveStart)/1000));
+    $('#lp_time').textContent=two(Math.floor(sec/60))+':'+two(sec%60);
+  };
+  up();liveT=setInterval(up,1000);
+}
+function hideLive(){
+  clearInterval(liveT);liveT=null;
+  $('#livebar').classList.add('hidden');
 }
 function startRouteTicker(){
   stopRouteTicker();
@@ -1319,22 +1417,18 @@ function startRouteTicker(){
     if(isNaN(la)||isNaN(lo))return;
     if(marker)marker.setLatLng([la,lo]);
     if(target){target.lat=la;target.lng=lo;render();}
-    const el=(Date.now()-routeStartT)/1000;
-    const eta=routeTotalM/(routeSpeed/3.6);
-    const mm=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
-    const rest=routeLoop?'∞':'noch '+mm(Math.max(0,eta-el));
-    $('#statustxt').textContent='Route aktiv · '+fmtDist(routeTotalM)+' · '+routeSpeed+' km/h · '+rest;
   },1000);
 }
 function stopRouteTicker(){clearInterval(routeTicker);}
 
 /* ---------- Verlauf ---------- */
-let hist=[];try{hist=JSON.parse(localStorage.getItem('sg_hist')||'[]');}catch(e){}
+let hist=[];try{hist=(NAT.hist&&NAT.hist.length!==undefined)?NAT.hist:JSON.parse(localStorage.getItem('sg_hist')||'[]');}catch(e){hist=NAT.hist||[]}
 function addHist(t){
   if(!t)return;
   hist.unshift({name:t.name||'Standort',lat:t.lat,lng:t.lng,ts:Date.now()});
   hist=hist.slice(0,40);
   try{localStorage.setItem('sg_hist',JSON.stringify(hist));}catch(e){}
+  persistAll();
 }
 $('#histbtn').onclick=()=>{renderHist();$('#histtab').classList.add('open');};
 $('#backhist').onclick=()=>$('#histtab').classList.remove('open');
@@ -1358,11 +1452,12 @@ function renderHist(){
 $('#histclear').onclick=()=>{
   if(!hist.length)return;
   hist=[];try{localStorage.setItem('sg_hist','[]');}catch(e){}
+  persistAll();
   renderHist();toast('Verlauf gelöscht');
 };
 
 /* ================= favorites ================= */
-function saveFavs(){try{localStorage.setItem('sg_favs',JSON.stringify(favs));}catch(e){}}
+function saveFavs(){try{localStorage.setItem('sg_favs',JSON.stringify(favs));}catch(e){}persistAll();}
 function avHue(i){return (i*47+18)%360;}
 function renderFavTab(){
   const list=$('#favlist');list.innerHTML='';
@@ -1496,14 +1591,15 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'1.4.1';
-  if(newerV(j.version,cur))showUpdatePopup(cur,j.version,j.notes,j.url);
+  const cur=N.appVersion?N.appVersion():'1.6';
+  const curCode=N.appCode?+N.appCode():0;
+  if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
 (function(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'1.4.1';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'1.6';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });

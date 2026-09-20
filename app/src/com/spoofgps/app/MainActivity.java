@@ -356,10 +356,35 @@ public class MainActivity extends Activity {
             }
         }
 
-        /** Returns raw update manifest JSON, or "" if unavailable. */
+        @JavascriptInterface
+        public int appCode() {
+            try {
+                return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode;
+            } catch (Exception e) {
+                return 0;
+            }
+        }
+
+        @JavascriptInterface
+        public long getStartedAt() {
+            return SpoofEngine.get().startedAtMs;
+        }
+
+        @JavascriptInterface
+        public String storeGet() {
+            return Prefs.str(getApplicationContext(), "kv_json", "{}");
+        }
+
+        @JavascriptInterface
+        public void storeSet(final String j) {
+            Prefs.put(getApplicationContext(), "kv_json", j == null ? "{}" : j);
+        }
+
+        /** Returns raw update manifest JSON (cache-busted), or "" if unavailable. */
         @JavascriptInterface
         public String checkUpdate() {
-            return httpGet(UPDATE_JSON_URL) == null ? "" : httpGet(UPDATE_JSON_URL);
+            String s = httpGet(UPDATE_JSON_URL + "?t=" + System.currentTimeMillis());
+            return s == null ? "" : s;
         }
 
         @JavascriptInterface
