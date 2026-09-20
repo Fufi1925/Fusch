@@ -42,8 +42,8 @@ button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
 /* ---------- top search ---------- */
 #top{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:12px;right:12px;
   display:flex;gap:10px;z-index:1200;align-items:flex-start}
-.gbtn,#spill{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  background:rgba(18,23,34,.8);border:1px solid rgba(255,255,255,.1)}
+.gbtn,#spill{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:rgba(15,19,29,.62);border:1px solid rgba(255,255,255,.12)}
 .gbtn{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:none}
 .gbtn svg{width:21px;height:21px;stroke:#dfe8f8}
 #swrap{flex:1;position:relative;min-width:0}
@@ -63,10 +63,11 @@ button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
   white-space:nowrap;max-width:64vw}
 
 /* ---------- side buttons ---------- */
-#side{position:fixed;right:12px;top:40%;z-index:1100;display:flex;flex-direction:column;gap:10px}
-#side button{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  backdrop-filter:blur(14px);background:rgba(18,23,34,.8);border:1px solid rgba(255,255,255,.1);
-  box-shadow:0 6px 18px rgba(0,0,0,.35)}
+#side{position:fixed;right:12px;top:40%;z-index:1100;display:flex;flex-direction:column;gap:5px;
+  background:rgba(15,19,29,.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(255,255,255,.11);border-radius:28px;padding:7px;box-shadow:0 12px 34px rgba(0,0,0,.45)}
+#side button{width:40px;height:40px;border-radius:21px;display:flex;align-items:center;justify-content:center;
+  background:transparent;border:0}
 #side svg{width:20px;height:20px;stroke:#dfe8f8}
 
 /* ---------- mode pill ---------- */
@@ -154,8 +155,8 @@ code{background:rgba(255,255,255,.09);border-radius:5px;padding:1px 5px;font-siz
 .backb svg{width:19px;height:19px;stroke:#dfe8f8}
 .chip{font-size:11.5px;font-weight:700;color:#7cc4ff;background:rgba(10,132,255,.16);
   border-radius:100px;padding:4px 10px;flex:none}
-.scard{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);
-  border-radius:16px;padding:4px 14px;margin-bottom:14px;width:100%}
+.scard{background:rgba(255,255,255,.055);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 14px;margin-bottom:14px;width:100%}
 .scard h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:#8fa0bd;
   margin:13px 0 3px;display:flex;gap:7px;align-items:center}
 .srow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
@@ -168,7 +169,7 @@ code{background:rgba(255,255,255,.09);border-radius:5px;padding:1px 5px;font-siz
 .sw span{position:absolute;inset:0;border-radius:100px;background:#39415a;transition:.2s}
 .sw span:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
   background:#fff;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-.sw input:checked+span{background:#0a84ff}
+.sw input:checked+span{background:#3ec5e6}
 .sw input:checked+span:after{transform:translateX(18px)}
 input[type=range]{-webkit-appearance:none;appearance:none;width:140px;height:4px;border-radius:4px;
   background:#39415a;outline:0;flex:none}
@@ -178,7 +179,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
   text-align:right;flex:none}
 .seg{display:flex;background:#1a2133;border-radius:10px;padding:3px;gap:3px;flex:none;max-width:100%}
 .seg button{padding:7px 14px;border-radius:8px;font-size:12.5px;color:#93a0b8;display:flex;align-items:center;gap:6px}
-.seg button.on{background:#0a84ff;color:#fff;font-weight:700}
+.seg button.on{background:#3ec5e6;color:#04222c;font-weight:700}
 .seg.wide{width:100%}
 .seg.wide button{flex:1;justify-content:center;min-width:0}
 .pstat{font-size:12px;font-weight:700;flex:none}
@@ -254,7 +255,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 
 /* ---------- route panel (Vanish-Style) & history ---------- */
 #routebar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  z-index:1200;background:rgba(15,20,31,.96);backdrop-filter:blur(20px);
+  z-index:1200;background:rgba(13,17,26,.72);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);
   border:1px solid rgba(255,255,255,.11);border-radius:20px;padding:15px 15px 14px;
   box-shadow:0 20px 50px rgba(0,0,0,.55)}
 #routebar .rrow{display:flex;align-items:center;gap:9px}
@@ -282,8 +283,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
   box-shadow:0 8px 22px rgba(10,132,255,.35)}
 #rcalc:disabled{opacity:.4;box-shadow:none}
 #rcalc.calc{opacity:.75}
-#rsum{display:none;margin-top:12px;background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.35);
-  border-radius:13px;padding:11px 14px;font-size:13.5px;font-weight:700;color:#7cc4ff;text-align:center}
+#rsum{display:none;margin-top:12px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.09);
+  border-radius:13px;padding:11px 14px;font-size:13.5px;font-weight:700;color:#e8eefc;text-align:center}
 #rgo{margin-top:11px;width:100%;height:48px;border-radius:13px;font-size:15.5px;font-weight:800;
   color:#fff;background:linear-gradient(180deg,#3ce07b,#1e9e4a);
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -376,12 +377,27 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .ufoot{margin-top:14px;font-size:10px;color:#4d5872}
 #rmode{display:flex;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:3px;gap:3px;margin-top:10px}
 #rmode button{flex:1;padding:9px 4px;border-radius:9px;font-size:12px;font-weight:700;color:#93a0b8;background:transparent;border:0;outline:0;cursor:pointer}
-#rmode button.on{background:#0a84ff;color:#fff}
+#rmode button.on{background:#3ec5e6;color:#04222c;font-weight:800}
 #mockwarn{margin:10px 12px 0;padding:11px 13px;background:rgba(255,69,58,.14);border:1px solid rgba(255,69,58,.4);border-radius:13px;font-size:12.5px;line-height:1.5;color:#ffd7d3;cursor:pointer}
+/* ===== v1.9 Vanish-Glass ===== */
+#dim{position:fixed;inset:0;z-index:1005;pointer-events:none;background:rgba(4,7,13,.52);opacity:0;transition:opacity .35s}
+#dim.on{opacity:1}
+#routebar.live #rmode,#routebar.live #rsetrow,#routebar.live #rspdrow,#routebar.live #rlooprow,#routebar.live .microlbl{opacity:.4;pointer-events:none}
+#rmode,#rsetrow,#rspdrow,#rlooprow{transition:opacity .3s}
+#rliverow{display:none;gap:10px;margin-top:11px}
+#rliverow.show{display:flex}
+#rl_pill{flex:1;display:flex;align-items:center;gap:9px;background:rgba(16,46,30,.55);border:1px solid rgba(48,209,88,.45);border-radius:13px;padding:12px 14px;color:#5ee39a;font-weight:800;font-size:14.5px}
+#rl_pill .lpdot{width:8px;height:8px;border-radius:50%;background:#30d158;box-shadow:0 0 8px #30d158;animation:blink 1.4s infinite;flex:none}
+#rl_time{margin-left:auto;font-family:ui-monospace,Menlo,Consolas,monospace;color:#8fe8b0;font-weight:700;font-size:14px}
+#rl_stop{flex:0 0 34%;background:rgba(74,22,19,.55);border:1px solid rgba(255,69,58,.5);border-radius:13px;color:#ff6b61;font-weight:800;font-size:14.5px}
+.microlbl{font-size:9px;font-weight:800;letter-spacing:.16em;color:rgba(196,206,226,.42);text-transform:uppercase;margin-top:11px}
+#wm{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 30px);z-index:1000;color:rgba(255,255,255,.3);font-weight:300;letter-spacing:.45em;font-size:11.5px;pointer-events:none}
+#rspdv{color:#5ad0f5!important}
 </style>
 </head>
 <body>
 <div id="map"></div>
+<div id="dim"></div>
 
 <!-- ================= SPLASH ================= -->
 <div id="splash">
@@ -442,6 +458,7 @@ setTimeout(function(){
 </div>
 
 <div id="modepill"><span class="pdot"></span><span id="mp_txt">Karte</span></div>
+<div id="wm">FUSCH</div>
 <div id="attrib">Esri · © OpenStreetMap-Mitwirkende</div>
 
 <div id="mockwarn" class="hidden" onclick="showHint(null)">
@@ -496,6 +513,7 @@ setTimeout(function(){
     <button data-m="bike">🚲 Fahrrad</button>
     <button data-m="car" class="on">🚗 Auto</button>
   </div>
+  <div class="microlbl">Eigene Geschwindigkeit</div>
   <div id="rsetrow">
     <div class="ttl">Geschwindigkeit setzen</div>
     <label class="sw"><input type="checkbox" id="rsetspeed"><span></span></label>
@@ -517,6 +535,7 @@ setTimeout(function(){
     <svg viewBox="0 0 24 24" fill="currentColor" style="width:17px;height:17px"><path d="M8 5v14l11-7Z"/></svg>
     Losfahren
   </button>
+  <div id="rliverow"><div id="rl_pill"><span class="lpdot"></span><span>Route live</span><span id="rl_time">00:00</span></div><button id="rl_stop">Stop</button></div>
 </div>
 
 <!-- ================= SPOOF POPUP ================= -->
@@ -602,6 +621,7 @@ setTimeout(function(){
     <div class="srow">
       <div class="st"><div>Kartenstil</div><div class="sd">Dunkel oder hell</div></div>
       <div class="seg" id="styleseg">
+        <button data-ms="sat">🛰️ Sat</button>
         <button data-ms="dark">🌙 Dunkel</button>
         <button data-ms="light">☀️ Hell</button>
       </div>
@@ -683,7 +703,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 1.8 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 1.9 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -781,7 +801,7 @@ setTimeout(function(){
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
 const Def=[33.947340,-118.410538]; // LAX – Startansicht
-let map=null,marker=null,target=null,spoofing=false,deviceMarker=null,retryPending=false,revSeq=0,tl=null;
+let map=null,marker=null,target=null,spoofing=false,deviceMarker=null,retryPending=false,revSeq=0,tl=null,tlo=null,rlT=null;
 let NAT={};try{NAT=JSON.parse((window.Native&&Native.storeGet)?(Native.storeGet()||'{}'):'{}')||{};}catch(e){NAT={};}
 if(!NAT||typeof NAT!=='object'||Array.isArray(NAT))NAT={};
 let favs=[];try{favs=(NAT.favs&&NAT.favs.length!==undefined)?NAT.favs:JSON.parse(localStorage.getItem('sg_favs')||'[]');}catch(e){favs=NAT.favs||[]}
@@ -790,7 +810,7 @@ function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 /* ================= settings ================= */
 const DEF_S={mock_network:true,jitter:true,interval_ms:1000,accuracy_m:5,
-  notif_coords:true,notif_timer:true,map_style:'dark',map_labels:true,map_key_tiles:true,
+  notif_coords:true,notif_timer:true,map_style:'sat',map_labels:true,map_key_tiles:true,
   fav_sort:'new',autostart:true,keep_alive:true};
 let S=Object.assign({},DEF_S);
 try{Object.assign(S,JSON.parse(localStorage.getItem('sg_settings')||'{}'));}catch(e){}
@@ -802,7 +822,7 @@ function persistAll(){
     try{localStorage.setItem('sg_favs',JSON.stringify(favs));}catch(e){}
     try{localStorage.setItem('sg_hist',JSON.stringify(hist));}catch(e){}
     if(window.Native&&Native.storeSet){
-      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist,v:10}));}catch(e){}
+      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist,v:11}));}catch(e){}
     }
   },250);
 }
@@ -842,7 +862,11 @@ function applyMap(){
   if(!map)return;
   const lab=S.map_labels;
   let url,sub='abc',opt={};
-  if(keyedActive()){
+  if(tlo){map.removeLayer(tlo);tlo=null;}
+  if(S.map_style==='sat'&&!tileFallback){
+    url='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+    sub='';opt={maxNativeZoom:19,maxZoom:20};
+  }else if(keyedActive()&&S.map_style!=='sat'){
     const st=(S.map_style==='light'?'alidade_smooth':'alidade_smooth_dark')+(lab?'':'_no_labels');
     url='https://tiles.stadiamaps.com/tiles/'+st+'/{z}/{x}/{y}{r}.png';
     sub='abc';
@@ -852,14 +876,19 @@ function applyMap(){
     sub='';
     opt={maxNativeZoom:16,maxZoom:20};
   }
-  curMode=keyedActive()?'api':'public';
+  curMode=(S.map_style==='sat'&&!tileFallback)?'sat':(keyedActive()&&S.map_style!=='sat'?'api':'public');
   if(tl)map.removeLayer(tl);
   tl=L.tileLayer(url,Object.assign({maxZoom:20,subdomains:sub},opt)).addTo(map);
   tl.on('tileerror',onTileErr);
-  $('#attrib').textContent=curMode==='api'?'© Stadia Maps · © OpenStreetMap-Mitwirkende'
-    :'Esri · © OpenStreetMap-Mitwirkende';
+  if(curMode==='sat'&&lab){
+    tlo=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:19,maxZoom:20}).addTo(map);
+  }
+  $('#attrib').textContent=curMode==='sat'?'© Esri, Maxar, Earthstar Geographics'
+    :(curMode==='api'?'© Stadia Maps · © OpenStreetMap-Mitwirkende'
+    :'Esri · © OpenStreetMap-Mitwirkende');
   updPill();
 }
+function setDim(on){const d=document.getElementById('dim');if(d)d.classList.toggle('on',!!on);}
 function onTileErr(){
   const now=Date.now();
   if(now-tileFailT>5000){tileFailT=now;tileFailN=0;}
@@ -1141,7 +1170,15 @@ function finishSpoofFlow(){
     info=routePts.length+' Punkte · '+fmtDist(routeTotalM)+(routeLoop?' · 🔁 Endlosschleife':'');
     routeRun=true;routeStartT=Date.now();
     routeMode=false;
-    $('#routebar').classList.add('hidden');
+    $('#routebar').classList.remove('hidden');
+    $('#routebar').classList.add('live');
+    $('#rgo').classList.add('hidden');
+    const lr=$('#rliverow');if(lr)lr.classList.add('show');
+    const rt0=$('#rl_time');if(rt0)rt0.textContent='00:00';
+    clearInterval(rlT);
+    rlT=setInterval(()=>{if(!routeRun){clearInterval(rlT);return;}
+      const sec=Math.max(0,Math.floor((Date.now()-routeStartT)/1000));
+      const e2=$('#rl_time');if(e2)e2.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');},500);
     startRouteTicker();
     addHist({name:'Route ('+routePts.length+' Pkt.)',lat:routePts[0].lat,lng:routePts[0].lng});
   }else if(ok){
@@ -1187,7 +1224,7 @@ function setSpoofUI(on){
   $('#statustxt').textContent=on?(routeRun?'Route aktiv – Standort bewegt sich':'Spoofing aktiv – GPS & Netzwerk gemockt'):
     (target?'Bereit – tippe auf „Spoof“':'Bereit');
   if(marker)marker.setIcon(puckIcon(on));
-  if(on)showLive(routeRun?'route':'spoof');
+  if(on){if(!routeRun)showLive('spoof');setDim(true);}else{setDim(false);}
 }
 function burstAt(lat,lng,color){
   if(!map)return;
@@ -1237,7 +1274,7 @@ $('#routebtn').onclick=()=>{
   startRoutePlanning();
 };
 function startRoutePlanning(){
-  routeMode=true;rStep='a';rA=null;rB=null;
+  routeMode=true;setDim(true);rStep='a';rA=null;rB=null;
   routePts=[];routeTotalM=0;routeDur=0;
   routeSpeed=$('#rsetspeed').checked?+$('#rspd').value:autoSpeed();
   clearRouteDraw();
@@ -1361,7 +1398,20 @@ $('#rgo').onclick=()=>{
   startSpoofFlow('route');
 };
 $('#rcancel').onclick=()=>cancelRoutePlanning();
+function finishRouteLive(){
+  const wasMode=routeMode;
+  setSpoofUI(false);
+  const rb=$('#routebar');if(rb)rb.classList.remove('live');
+  const lr=$('#rliverow');if(lr)lr.classList.remove('show');
+  clearInterval(rlT);
+  if(routePts.length>1){$('#rgo').classList.remove('hidden');$('#rlooprow').classList.remove('hidden');}
+  if(target)$('#card').classList.add('hidden');
+  setDim(!!wasMode);
+  toast('Route gestoppt');
+}
+$('#rl_stop').onclick=()=>{const N=window.Native;try{if(N)N.stopSpoof();}catch(e){}finishRouteLive();};
 function cancelRoutePlanning(){
+  setDim(false);
   routeMode=false;
   clearRouteDraw();
   $('#routebar').classList.add('hidden');
@@ -1600,7 +1650,7 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'1.8';
+  const cur=N.appVersion?N.appVersion():'1.9';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
@@ -1608,7 +1658,7 @@ function checkForUpdate(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'1.8';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'1.9';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });
@@ -1627,11 +1677,12 @@ function toast(msg){
 /* ================= boot ================= */
 window.__ready=true;
 /* v1.7-Migration: wichtige Schalter einmalig AN – alte gespeicherte Werte dürfen neue Defaults nicht ausknipsen */
-const SVER=10;
+const SVER=11;
 let _sv=0;try{_sv=+(localStorage.getItem('sg_sver')||0)||0;}catch(e){}
 if(typeof NAT.v==='number')_sv=Math.max(_sv,NAT.v);
 if(_sv<SVER){
   ['mock_network','jitter','notif_coords','notif_timer','map_labels','map_key_tiles','autostart','keep_alive'].forEach(k=>{S[k]=true;});
+  S.map_style='sat';
   try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
   try{persistAll();}catch(e){}
 }

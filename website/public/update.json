@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "1.8",
-  "code": 11,
+  "version": "1.9",
+  "code": 12,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Neu in 1.8:\n• 📍 Echter Standort massiv verbessert: funktioniert jetzt auch WÄHREND des Spoofens (Google-Fused-Position, echte Position gewinnt immer über die gemockte)\n• 🛠️ Alle Fixes aus 1.7: Einstellungen-Schalter, Standort-Button & Fehlerhilfe funktionieren wieder zuverlässig\n• ⚙️ Wichtige Schalter sind nach dem Update automatisch AN (Mock-Netzwerk, Jitter, Autostart, Hintergrund …)\n• ⚠️ Warnbanner mit 1-Tipp-Anleitung, falls Android die Mock-Erlaubnis zurücksetzt",
+  "notes": "Neu in 1.9 – Komplettes UI-Revamp:\n• 🛰️ Satelliten-Karte (Standard) mit Orts-Labels – wie in den Vorbild-Videos\n• 🪟 Komplett neue Glass-Optik: Route-Panel, Suche, Seitenleiste, Einstellungen & Favoriten\n• 🟢 „Route live“-Pille mit Timer jetzt IM Route-Panel + Stop daneben\n• 🎛️ Neue Speed-Zeile mitTeal-Akzent + „Eigene Geschwindigkeit“-Label\n• 🧭 Vertikale Glas-Symbolleiste rechts (Route, Verlauf, Standort, Favoriten)\n• 📍 Echter Standort funktioniert auch während des Spoofens (Fix aus 1.8)\n• ⚙️ Wichtige Schalter bleiben nach Updates AN",
   "date": "2026-09-20"
 }
