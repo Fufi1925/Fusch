@@ -1,0 +1,9 @@
+# Build-Artefakte
+app/build/
+app/apk/
+*.idsig
+# Signaturschlüssel – NIEMALS committen!
+app/keys/
+# Sonstiges
+node_modules/
+.DS_Store
