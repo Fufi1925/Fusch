@@ -33,7 +33,7 @@ button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
 @keyframes spbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 .spname{margin-top:17px;font-size:19px;font-weight:800;letter-spacing:.02em}
 .spsub{margin-top:4px;font-size:11.5px;color:#6f7d99}
-.spbar{width:150px;height:4px;border-radius:4px;background:#1e2637;margin-top:20px;overflow:hidden}
+.spbar{width:150px;height:5px;border-radius:100px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);margin-top:20px;overflow:hidden}
 .spbar i{display:block;width:42%;height:100%;border-radius:4px;
   background:linear-gradient(90deg,#5ad0f5,#30d158);animation:spslide 1.1s ease-in-out infinite}
 @keyframes spslide{0%{margin-left:-42%}100%{margin-left:100%}}
@@ -328,18 +328,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 #renin:focus{border-color:rgba(90,208,245,.6)}
 
 /* ================= spoof popup ================= */
-#spovl{position:fixed;inset:0;z-index:4500;background:rgba(4,7,12,.74);backdrop-filter:blur(6px);
+#spovl{position:fixed;inset:0;z-index:4500;background:rgba(4,7,12,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   display:flex;align-items:center;justify-content:center;padding:26px}
 .spocard{width:100%;max-width:302px;background:rgba(17,22,33,.72);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.13);
   border-radius:26px;padding:26px 20px 18px;text-align:center;
   animation:pop .38s cubic-bezier(.2,1.4,.4,1);box-shadow:0 24px 70px rgba(0,0,0,.6)}
 .radar{position:relative;width:132px;height:132px;margin:0 auto 16px}
-.rr{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(62,197,230,.5);
+.rr{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(140,225,250,.45);background:rgba(62,197,230,.06);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
   animation:rad 1.8s ease-out infinite}
 .rr.r2{animation-delay:.6s}.rr.r3{animation-delay:1.2s}
 @keyframes rad{0%{transform:scale(.35);opacity:.9}100%{transform:scale(1.15);opacity:0}}
 .rcore{position:absolute;inset:39px;border-radius:50%;
-  background:radial-gradient(circle at 32% 28%,#223052,#101828);
+  background:rgba(20,28,44,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   border:1.5px solid rgba(90,208,245,.6);display:flex;align-items:center;justify-content:center;
   box-shadow:0 0 22px rgba(62,197,230,.35);z-index:2}
 .rcore svg{width:26px;height:26px}
@@ -349,7 +349,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
   100%{transform:translate(47px,-47px);opacity:0}}
 .spotitle{font-size:16.5px;font-weight:800}
 .spostep{margin-top:6px;font-size:12.5px;color:#8fa0bd;min-height:17px;line-height:1.45}
-.spobar{height:5px;border-radius:5px;background:#1e2637;margin-top:14px;overflow:hidden}
+.spobar{height:6px;border-radius:100px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);margin-top:14px;overflow:hidden}
 .spobar i{display:block;height:100%;width:0;border-radius:5px;
   background:linear-gradient(90deg,#5ad0f5,#3ec5e6);transition:width 2.1s linear}
 .spocard.go .spobar i{width:100%}
@@ -599,7 +599,6 @@ setTimeout(function(){
     <input type="range" class="rslider" min="500" max="5000" step="250" id="rInt">
     <div class="srow"><div class="st">GPS-Genauigkeit</div><div class="sval" id="vAcc">5 m</div></div>
     <input type="range" class="rslider" min="1" max="30" step="1" id="rAcc">
-    <div class="srow"><div class="st">Karte abdunkeln (während Spoof)</div><label class="sw"><input type="checkbox" data-k="dim_active"><span></span></label></div>
     <div class="srow"><div class="st">Autostart nach Neustart</div><label class="sw"><input type="checkbox" data-k="autostart"><span></span></label></div>
     <div class="srow"><div class="st">Im Hintergrund aktiv</div><label class="sw"><input type="checkbox" data-k="keep_alive"><span></span></label></div>
   </div>
@@ -698,7 +697,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 2.1 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 2.2 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -806,7 +805,7 @@ function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 /* ================= settings ================= */
 const DEF_S={mock_network:true,jitter:true,interval_ms:1000,accuracy_m:5,
   notif_coords:true,notif_timer:true,map_style:'sat',map_labels:true,map_key_tiles:true,
-  fav_sort:'new',autostart:true,keep_alive:true,route_profile:'car',route_loop:false,dim_active:true};
+  fav_sort:'new',autostart:true,keep_alive:true,route_profile:'car',route_loop:false};
 let S=Object.assign({},DEF_S);
 try{Object.assign(S,JSON.parse(localStorage.getItem('sg_settings')||'{}'));}catch(e){}
 if(NAT.S)Object.assign(S,NAT.S);
@@ -1231,7 +1230,7 @@ function setSpoofUI(on){
   $('#statustxt').textContent=on?(routeRun?'Route aktiv – Standort bewegt sich':'Spoofing aktiv – GPS & Netzwerk gemockt'):
     (target?'Bereit – tippe auf „Spoof“':'Bereit');
   if(marker)marker.setIcon(puckIcon(on));
-  if(on){if(!routeRun)showLive('spoof');setDim(S.dim_active!==false);}else{setDim(false);}
+  if(on&&!routeRun)showLive('spoof');
   updEmpty();
 }
 function burstAt(lat,lng,color){
@@ -1414,14 +1413,12 @@ $('#rgo').onclick=()=>{
 };
 $('#rcancel').onclick=()=>cancelRoutePlanning();
 function finishRouteLive(){
-  const wasMode=routeMode;
   setSpoofUI(false);
   const rb=$('#routebar');if(rb)rb.classList.remove('live');
   const lr=$('#rliverow');if(lr)lr.classList.remove('show');
   clearInterval(rlT);
   if(routePts.length>1){$('#rgo').classList.remove('hidden');$('#rlooprow').classList.remove('hidden');}
   if(target)$('#cardwrap').classList.add('hidden');
-  setDim(!!wasMode);
   toast('Route gestoppt');
 }
 $('#rl_stop').onclick=()=>{const N=window.Native;try{if(N)N.stopSpoof();}catch(e){}finishRouteLive();};
@@ -1665,7 +1662,7 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'2.1';
+  const cur=N.appVersion?N.appVersion():'2.2';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
@@ -1673,7 +1670,7 @@ function checkForUpdate(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.1';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.2';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });

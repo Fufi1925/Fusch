@@ -262,6 +262,7 @@ public class SpoofEngine {
         handler.removeCallbacks(tick);
         cleanupProviders();
         Context c = appCtx != null ? appCtx : (ctx != null ? ctx.getApplicationContext() : null);
+        kickRealProviders(c);
         if (c != null) {
             Prefs.put(c, "active", false);
             Prefs.put(c, "route_json", "");
@@ -279,6 +280,41 @@ public class SpoofEngine {
             Prefs.put(appCtx, "route_json", "");
             try { appCtx.stopService(new Intent(appCtx, SpoofService.class)); } catch (Exception ignored) {}
         }
+    }
+
+    /** Nach dem Stoppen echte Provider kurz aktivieren, damit das Gerät sofort wieder den echten Standort liefert. */
+    private void kickRealProviders(Context c) {
+        if (c == null) return;
+        try {
+            final LocationManager lmF = (LocationManager) c.getSystemService(Context.LOCATION_SERVICE);
+            if (lmF == null) return;
+            final android.location.LocationListener[] hold = new android.location.LocationListener[1];
+            hold[0] = new android.location.LocationListener() {
+                @Override public void onLocationChanged(Location l) { }
+                @Override public void onStatusChanged(String p, int s, android.os.Bundle e) { }
+                @Override public void onProviderEnabled(String p) { }
+                @Override public void onProviderDisabled(String p) { }
+            };
+            final List<String> provs = new ArrayList<>();
+            if (android.os.Build.VERSION.SDK_INT >= 31) provs.add(LocationManager.FUSED_PROVIDER);
+            provs.add(LocationManager.GPS_PROVIDER);
+            provs.add(LocationManager.NETWORK_PROVIDER);
+            boolean any = false;
+            for (String p : provs) {
+                try {
+                    if (lmF.isProviderEnabled(p)) { lmF.requestSingleUpdate(p, hold[0], c.getMainLooper()); any = true; }
+                } catch (Exception ignored) {}
+            }
+            if (any) {
+                new Handler(c.getMainLooper()).postDelayed(new Runnable() {
+                    @Override public void run() {
+                        for (String p : provs) {
+                            try { lmF.removeUpdates(hold[0]); } catch (Exception ignored) {}
+                        }
+                    }
+                }, 10000L);
+            }
+        } catch (Exception ignored) {}
     }
 
     private void cleanupProviders() {

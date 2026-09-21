@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "2.1",
-  "code": 14,
+  "version": "2.2",
+  "code": 15,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Fusch 2.1:\n• ⚙️ Einstellungen komplett neu: clean, kompakt, in Kategorien (Spoofing / Route / Benachrichtigung / Karte) + NEUE Einstellungen: Standard-Fahrzeug, Endlos-Schleife, Karte abdunkeln an/aus\n• 🎯 Neue Auswahl-UI: „Tippe auf die Karte oder suche“-Hint wie im Vorbild + Ortskarte jetzt mit Titel, Unterzeile, Koordinaten und großer Spoof-Pille\n• 🛣️ Route-Auswahl dunkelt die Karte nicht mehr ab\n• 🔒 Während Spoof/Route läuft ist die Karte gesperrt – erst nach Stop wieder klickbar\n• 🪟 Glass-Design überall, Teal/Green statt Blau (2.0-Look bleibt)",
+  "notes": "Fusch 2.2:\n• ☀️ Beim Spoofen wird der Hintergrund NICHT mehr abgedunkelt – alles bleibt hell und bedienbar\n• ✨ Lade-Animation im Glass-Design (Splash, Spoof-Radar & Balken)\n• 📍 Wichtiger Fix: Nach dem Stoppen bekommst du jetzt wirklich sofort wieder deinen echten Standort (Gerät holt aktiv einen echten Fix, statt beim letzten Mock-Punkt hängen zu bleiben)\n• Alle 2.1-Features: Settings-Kategorien, Tap-Hint, große Spoof-Pille, Karten-Sperre während Spoof/Route",
   "date": "2026-09-21"
 }
