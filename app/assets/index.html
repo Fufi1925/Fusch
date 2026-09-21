@@ -697,7 +697,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 2.3 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 2.4 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -1220,11 +1220,21 @@ $('#spo_help').onclick=()=>{
   showHint(lastSpoofErr&&lastSpoofErr.indexOf('NOT_SELECTED')>=0?null:lastSpoofErr);
 };
 function setSpoofUI(on){
+  const wasSpoof=spoofing;
   spoofing=on;
   const b=$('#spoofbtn');
   b.classList.remove('working','okflash');
-  if(!on){routeRun=false;stopRouteTicker();hideLive();if(target)$('#cardwrap').classList.remove('hidden');
-    if(deviceMarker&&map){map.removeLayer(deviceMarker);deviceMarker=null;}}
+  if(!on){
+    routeRun=false;stopRouteTicker();hideLive();if(target)$('#cardwrap').classList.remove('hidden');
+    if(deviceMarker&&map){map.removeLayer(deviceMarker);deviceMarker=null;}
+    if(wasSpoof){
+      // Nach dem Stop: aktiv den ECHTEN Standort holen und anzeigen (Mocks werden nativ ignoriert)
+      setTimeout(()=>{
+        const N=window.Native;
+        if(N&&N.deviceLocation){toast('Echter Standort wird ermittelt …');try{N.deviceLocation();}catch(e){}}
+      },700);
+    }
+  }
   b.classList.toggle('stop',on);
   $('#spooflabel').textContent=on?(routeRun?'Route stoppen':'Spoofing stoppen'):'Spoof';
   $('#dot').className=on?'run':'';
@@ -1259,7 +1269,7 @@ window.__onLoc=d=>{
     html:'<div class="dev '+(d.mock?'mock':'real')+'"></div>',iconSize:[14,14],iconAnchor:[7,7]})}).addTo(map)
     .bindTooltip(d.mock?('Gerät · gespoofed ✓'+acc):('Gerät · echter Standort'+acc));
   map.flyTo([d.lat,d.lng],14);
-  toast(d.mock?('Gerätestandort ist gespoofed ✓'+acc):('Echter Standort gefunden'+acc));
+  toast(d.mock?('Gerätestandort ist gespoofed ✓'+acc):('📍 Das ist deine echte Position'+acc));
 };
 
 /* ================= route (echte Straßen via OSRM) ================= */
@@ -1664,7 +1674,7 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'2.3';
+  const cur=N.appVersion?N.appVersion():'2.4';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
@@ -1672,7 +1682,7 @@ function checkForUpdate(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.3';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.4';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });

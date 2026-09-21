@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "2.3",
-  "code": 16,
+  "version": "2.4",
+  "code": 17,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Fusch 2.3 – Wichtige Fixes:\n• 🔔 Beim ersten Start fragt die App, ob Spoof im Hintergrund weiterlaufen soll (Jederzeit änderbar in den Einstellungen)\n• 🚗 Autostart nach Neustart ist jetzt standardmäßig AUS und muss extra in den Einstellungen angeschaltet werden\n• 🛡️ „Im Hintergrund aktiv“ bleibt standardmäßig AN\n• 🐛 Verlauf: Auswählen während Spoof/Route läuft wird sauber blockiert (kein Fehler-Overlay mehr)\n• 📍 Nach Stop wird der letzte Spoof-Punkt konsequent verworfen – die App zeigt danach nur noch deinen echten Standort an",
+  "notes": "Fusch 2.4:\n• 📍 Nach dem Stoppen holt die App jetzt automatisch deinen echten Standort und zeigt ihn auf der Karte an („📍 Das ist deine echte Position“ ±m) – Mock-Reste werden komplett ignoriert\n• 🔔 Hintergrund-Frage beim ersten Start, Autostart standardmäßig AUS, „Im Hintergrund aktiv“ bleibt AN (alles aus 2.3)\n• 🛡️ Karte & Verlauf bleiben während Spoof/Route gesperrt",
   "date": "2026-09-21"
 }
