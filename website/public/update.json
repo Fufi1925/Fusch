@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "2.0",
-  "code": 13,
+  "version": "2.1",
+  "code": 14,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Fusch 2.0 – Das große Design-Update:\n• 🪟 ÜBERALL Glass-Design: Karte, Suche, Popups, Einstellungen, Favoriten, Buttons – alles im translucenten Glas-Stil\n• 💙 Blau komplett raus: neue Teal/Green-Akzente durchgängig (Route-Linie bleibt Karten-Blau)\n• 🔴 Stop-Buttons & aktives Spoofing jetzt als rote Glas-Pille, Spoof-CTA als Pill\n• 📍 Echter Standort noch besser: liefert sofort bei gutem GPS-Fix und zeigt die Genauigkeit (±m) an\n• 🛰️ Satellitenkarte, Route-live-Pille im Panel und alle 1.9-Features bleiben",
-  "date": "2026-09-20"
+  "notes": "Fusch 2.1:\n• ⚙️ Einstellungen komplett neu: clean, kompakt, in Kategorien (Spoofing / Route / Benachrichtigung / Karte) + NEUE Einstellungen: Standard-Fahrzeug, Endlos-Schleife, Karte abdunkeln an/aus\n• 🎯 Neue Auswahl-UI: „Tippe auf die Karte oder suche“-Hint wie im Vorbild + Ortskarte jetzt mit Titel, Unterzeile, Koordinaten und großer Spoof-Pille\n• 🛣️ Route-Auswahl dunkelt die Karte nicht mehr ab\n• 🔒 Während Spoof/Route läuft ist die Karte gesperrt – erst nach Stop wieder klickbar\n• 🪟 Glass-Design überall, Teal/Green statt Blau (2.0-Look bleibt)",
+  "date": "2026-09-21"
 }

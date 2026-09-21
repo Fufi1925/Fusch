@@ -97,7 +97,8 @@ button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
 @keyframes bur{from{transform:scale(.4);opacity:.95}to{transform:scale(3.6);opacity:0}}
 
 /* ---------- bottom card ---------- */
-#card{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:1200;
+#cardwrap{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:1200}
+#card{
   background:rgba(13,17,26,.66);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);border:1px solid rgba(255,255,255,.11);
   border-radius:18px;padding:14px 14px 12px;box-shadow:0 18px 44px rgba(0,0,0,.5)}
 .row1{display:flex;align-items:center;gap:8px}
@@ -110,8 +111,13 @@ button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
 #dot{width:8px;height:8px;border-radius:50%;background:#5b6880;flex:none}
 #dot.run{background:#30d158;box-shadow:0 0 8px #30d158}
 #dot.err{background:#ff453a}
-#spoofbtn{margin-top:11px;width:100%;height:52px;border-radius:100px;font-size:17px;font-weight:800;color:#fff;
-  background:linear-gradient(180deg,#5ad0f5,#3ec5e6);box-shadow:0 8px 24px rgba(62,197,230,.35);
+#csub{font-size:12.5px;color:#8fa0bd;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#name{font-size:19px;font-weight:800;letter-spacing:-.01em}
+#cardempty{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 74px);z-index:1100;display:flex;align-items:center;gap:9px;background:rgba(13,17,26,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:11px 18px;font-size:14px;font-weight:600;color:#aebad1;white-space:nowrap}
+#cardempty svg{width:18px;height:18px;stroke:#aebad1;flex:none}
+#spoofbtn{width:100%;margin-top:10px;height:54px;border-radius:100px;font-size:17.5px;font-weight:800;color:#fff;
+  background:rgba(62,197,230,.62);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(140,225,250,.55);box-shadow:0 10px 30px rgba(0,0,0,.4);
   display:flex;align-items:center;justify-content:center;gap:9px;transition:opacity .15s}
 #spoofbtn:active{transform:scale(.985)}
 #spoofbtn svg{width:19px;height:19px;stroke:#fff}
@@ -262,6 +268,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 #routebar .rt{flex:1;font-size:16px;font-weight:800;min-width:0;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rsteps{display:flex;flex-direction:column;gap:8px;margin:12px 0 2px}
+.srow>.st{flex:1;font-size:14px;font-weight:600;color:#e2e9f6;min-width:0}
+.srow .sval{color:#8fe0f2;font-weight:700;font-size:13px;flex:none}
+.rslider{width:100%!important;margin:0 0 6px;flex:none}
 .rstep{display:flex;align-items:center;gap:11px;background:rgba(10,14,22,.45);
   border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 13px;cursor:pointer}
 .rstep.active{border-color:rgba(90,208,245,.6);box-shadow:0 0 0 3px rgba(90,208,245,.12)}
@@ -464,7 +473,13 @@ setTimeout(function(){
 <div id="mockwarn" class="hidden" onclick="showHint(null)">
   ⚠️ <b>Spoof ist blockiert:</b> Fusch fehlt die Mock-Standort-Erlaubnis – Android setzt sie bei Updates manchmal zurück. <b>Tippen für Anleitung &amp; Fix.</b>
 </div>
-<div id="card" class="hidden">
+<div id="cardempty" class="hidden">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.4" fill="#dfe8f8" stroke="none"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21"/></svg>
+  <span>Tippe auf die Karte oder suche</span>
+</div>
+
+<div id="cardwrap" class="hidden">
+<div id="card">
   <div class="row1">
     <div id="name">Ausgewählter Standort</div>
     <button id="star" class="ibtn" title="Zu Favoriten hinzufügen">
@@ -474,12 +489,14 @@ setTimeout(function(){
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
   </div>
+  <div id="csub"></div>
   <div id="coords">&mdash;</div>
   <div id="status"><span id="dot"></span><span id="statustxt">Bereit</span></div>
-  <button id="spoofbtn">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.4" fill="#fff" stroke="none"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21"/></svg>
-    <span id="spooflabel">Spoof</span>
-  </button>
+</div>
+<button id="spoofbtn">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.4" fill="#fff" stroke="none"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21"/></svg>
+  <span id="spooflabel">Spoof</span>
+</button>
 </div>
 
 <!-- ================= LIVE BAR (Vanish-Style) ================= -->
@@ -576,67 +593,47 @@ setTimeout(function(){
 
   <div class="scard">
     <h3>🛰️ Spoofing</h3>
-    <div class="srow">
-      <div class="st"><div>Netzwerk-Standort auch fälschen</div><div class="sd">WLAN-/Netzwerk-Position wird mitgefälscht (empfohlen)</div></div>
-      <label class="sw"><input type="checkbox" data-k="mock_network"><span></span></label>
+    <div class="srow"><div class="st">Netzwerk-Standort mitfälschen</div><label class="sw"><input type="checkbox" data-k="mock_network"><span></span></label></div>
+    <div class="srow"><div class="st">GPS-Verwacklung</div><label class="sw"><input type="checkbox" data-k="jitter"><span></span></label></div>
+    <div class="srow"><div class="st">Update-Intervall</div><div class="sval" id="vInt">1,0 s</div></div>
+    <input type="range" class="rslider" min="500" max="5000" step="250" id="rInt">
+    <div class="srow"><div class="st">GPS-Genauigkeit</div><div class="sval" id="vAcc">5 m</div></div>
+    <input type="range" class="rslider" min="1" max="30" step="1" id="rAcc">
+    <div class="srow"><div class="st">Karte abdunkeln (während Spoof)</div><label class="sw"><input type="checkbox" data-k="dim_active"><span></span></label></div>
+    <div class="srow"><div class="st">Autostart nach Neustart</div><label class="sw"><input type="checkbox" data-k="autostart"><span></span></label></div>
+    <div class="srow"><div class="st">Im Hintergrund aktiv</div><label class="sw"><input type="checkbox" data-k="keep_alive"><span></span></label></div>
+  </div>
+
+  <div class="scard">
+    <h3>🧭 Route</h3>
+    <div class="srow"><div class="st">Standard-Fahrzeug</div>
+      <div class="seg" id="profseg">
+        <button data-p="foot" title="Fuß">🚶</button>
+        <button data-p="bike" title="Fahrrad">🚲</button>
+        <button data-p="car" title="Auto">🚗</button>
+      </div>
     </div>
-    <div class="srow">
-      <div class="st"><div>GPS-Verwacklung simulieren</div><div class="sd">Leichte natürliche Bewegung statt fixem Punkt</div></div>
-      <label class="sw"><input type="checkbox" data-k="jitter"><span></span></label>
-    </div>
-    <div class="srow">
-      <div class="st"><div>Update-Intervall</div><div class="sd">Wie oft der Standort erneuert wird</div></div>
-      <input type="range" min="500" max="5000" step="250" id="rInt">
-      <div class="sval" id="vInt">1,0 s</div>
-    </div>
-    <div class="srow">
-      <div class="st"><div>GPS-Genauigkeit</div><div class="sd">Simulierte Streuung in Metern</div></div>
-      <input type="range" min="1" max="30" step="1" id="rAcc">
-      <div class="sval" id="vAcc">5 m</div>
-    </div>
-    <div class="srow">
-      <div class="st"><div>Autostart nach Neustart</div><div class="sd">Aktives Spoofing läuft nach dem Geräte-Neustart automatisch weiter</div></div>
-      <label class="sw"><input type="checkbox" data-k="autostart"><span></span></label>
-    </div>
-    <div class="srow">
-      <div class="st"><div>Im Hintergrund aktiv bleiben</div><div class="sd">Spoof läuft weiter, wenn die App geschlossen oder weggewischt wird</div></div>
-      <label class="sw"><input type="checkbox" data-k="keep_alive"><span></span></label>
-    </div>
+    <div class="srow"><div class="st">Endlos-Schleife standardmäßig</div><label class="sw"><input type="checkbox" data-k="route_loop"><span></span></label></div>
   </div>
 
   <div class="scard">
     <h3>🔔 Benachrichtigung</h3>
-    <div class="srow">
-      <div class="st"><div>Koordinaten anzeigen</div><div class="sd">Position in der Benachrichtigung mit anzeigen</div></div>
-      <label class="sw"><input type="checkbox" data-k="notif_coords"><span></span></label>
-    </div>
-    <div class="srow">
-      <div class="st"><div>Laufzeit-Timer</div><div class="sd">Zeigt in der Benachrichtigung, wie lange Spoofing läuft</div></div>
-      <label class="sw"><input type="checkbox" data-k="notif_timer"><span></span></label>
-    </div>
+    <div class="srow"><div class="st">Koordinaten anzeigen</div><label class="sw"><input type="checkbox" data-k="notif_coords"><span></span></label></div>
+    <div class="srow"><div class="st">Laufzeit-Timer</div><label class="sw"><input type="checkbox" data-k="notif_timer"><span></span></label></div>
   </div>
 
   <div class="scard">
     <h3>🗺️ Karte</h3>
-    <div class="srow">
-      <div class="st"><div>Kartenstil</div><div class="sd">Dunkel oder hell</div></div>
+    <div class="srow"><div class="st">Stil</div>
       <div class="seg" id="styleseg">
         <button data-ms="sat">🛰️ Sat</button>
         <button data-ms="dark">🌙 Dunkel</button>
         <button data-ms="light">☀️ Hell</button>
       </div>
     </div>
-    <div class="srow">
-      <div class="st"><div>Labels &amp; POIs</div><div class="sd">Straßennamen und Orte auf der Karte</div></div>
-      <label class="sw"><input type="checkbox" data-k="map_labels"><span></span></label>
-    </div>
-    <div class="srow">
-      <div class="st"><div>Karte mit API-Key laden</div><div class="sd">Versucht keyed Kacheln zu laden; bei Ablehnung automatisch öffentliche Karte (Key bleibt nativ geschützt)</div></div>
-      <label class="sw"><input type="checkbox" data-k="map_key_tiles"><span></span></label>
-    </div>
-    <div class="srow">
-      <button class="sbtn wide" id="mapreload">🔄 Karte neu laden</button>
-    </div>
+    <div class="srow"><div class="st">Labels &amp; POIs</div><label class="sw"><input type="checkbox" data-k="map_labels"><span></span></label></div>
+    <div class="srow"><div class="st">Keyed Kacheln (API-Key)</div><label class="sw"><input type="checkbox" data-k="map_key_tiles"><span></span></label></div>
+    <div class="srow"><button class="sbtn wide" id="mapreload">🔄 Karte neu laden</button></div>
   </div>
 
   <div class="scard">
@@ -648,16 +645,14 @@ setTimeout(function(){
     <div class="srow col">
       <div class="st" style="flex:none">So bekommst du einen API-Key (kostenlos)</div>
       <ol class="guide">
-        <li>Button unten tippen → <b>geocode.maps.co</b> öffnet sich</li>
-        <li>Mit E-Mail registrieren (Free: <b>25.000 Anfragen</b> · 5/Sek.)</li>
-        <li>Im Dashboard unter <b>Account</b> den <b>API Key</b> kopieren</li>
-        <li>Hier unten einfügen → <b>OK</b> – Karte &amp; Suche nutzen ihn sofort</li>
+        <li>Key kostenlos auf <b>geocode.maps.co</b> holen</li>
+        <li>Hier einfügen → <b>OK</b> – fertig</li>
       </ol>
       <button class="sbtn wide" id="getkey">🔑 Kostenlos API-Key holen</button>
     </div>
     <div class="srow col">
       <div class="st" style="flex:none">Eigener Schlüssel
-        <div class="sd">Wird verschlüsselt im sicheren Speicher abgelegt, nie wieder angezeigt und nur nativ verwendet. Beim Speichern lädt die Karte automatisch neu – beim Entfernen wird alles zurückgesetzt.</div>
+        <div class="sd">Verschlüsselt & nativ geschützt – wird nie wieder angezeigt.</div>
       </div>
       <div style="display:flex;gap:8px;width:100%">
         <input id="ckin" type="password" placeholder="api_key eingeben" autocomplete="off" spellcheck="false">
@@ -670,11 +665,11 @@ setTimeout(function(){
   <div class="scard">
     <h3>✅ Berechtigungen</h3>
     <div class="srow">
-      <div class="st"><div>Standort</div><div class="sd" id="ploc">Wird für Gerätestandort-Anzeige genutzt</div></div>
+      <div class="st"><div>Standort</div><div class="sd" id="ploc">Für echten-Standort-Anzeige</div></div>
       <span class="pstat" id="ploci">…</span>
     </div>
     <div class="srow">
-      <div class="st"><div>Benachrichtigungen</div><div class="sd" id="pnot">Zeigt die Spoofing-Dauerbenachrichtigung</div></div>
+      <div class="st"><div>Benachrichtigungen</div><div class="sd" id="pnot">Spoofing-Dauerbenachrichtigung</div></div>
       <span class="pstat" id="pnoti">…</span>
     </div>
     <div class="srow">
@@ -703,7 +698,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 2.0 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 2.1 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -811,7 +806,7 @@ function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 /* ================= settings ================= */
 const DEF_S={mock_network:true,jitter:true,interval_ms:1000,accuracy_m:5,
   notif_coords:true,notif_timer:true,map_style:'sat',map_labels:true,map_key_tiles:true,
-  fav_sort:'new',autostart:true,keep_alive:true};
+  fav_sort:'new',autostart:true,keep_alive:true,route_profile:'car',route_loop:false,dim_active:true};
 let S=Object.assign({},DEF_S);
 try{Object.assign(S,JSON.parse(localStorage.getItem('sg_settings')||'{}'));}catch(e){}
 if(NAT.S)Object.assign(S,NAT.S);
@@ -831,7 +826,7 @@ function saveS(){
   try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
   clearTimeout(saveT);
   saveT=setTimeout(()=>{if(window.Native&&Native.setSettings)Native.setSettings(JSON.stringify(S));},200);
-  applyMap();updSeg();updSortSeg();
+  applyMap();updSeg();updSortSeg();if(window.updProf)updProf();
   persistAll();
 }
 function fmtMs(v){return (v/1000).toFixed(1).replace('.',',')+' s';}
@@ -847,8 +842,10 @@ function bindSettings(){
   rI.addEventListener('input',()=>{S.interval_ms=+rI.value;$('#vInt').textContent=fmtMs(rI.value);saveS();});
   rA.addEventListener('input',()=>{S.accuracy_m=+rA.value;$('#vAcc').textContent=rA.value+' m';saveS();});
   $$('#styleseg button').forEach(b=>b.addEventListener('click',()=>{S.map_style=b.dataset.ms;saveS();}));
+  $$('#profseg button').forEach(b=>b.addEventListener('click',()=>{S.route_profile=b.dataset.p;saveS();}));
 }
 function updSeg(){$$('#styleseg button').forEach(b=>b.classList.toggle('on',b.dataset.ms===S.map_style));}
+function updProf(){$$('#profseg button').forEach(b=>b.classList.toggle('on',b.dataset.p===S.route_profile));}
 function updSortSeg(){$$('#favsort button').forEach(b=>b.classList.toggle('on',b.dataset.fs===S.fav_sort));}
 
 /* ================= map layers ================= */
@@ -914,6 +911,7 @@ function initMapSafe(){
   map=L.map('map',{zoomControl:false,attributionControl:false,zoomAnimation:true}).setView(Def,12);
   applyMap();updSeg();updSortSeg();
   map.on('click',e=>{
+    if(spoofing||routeRun){toast('Läuft – erst Stop tippen');return;}
     if(routeMode){routeMapClick(e.latlng.lat,e.latlng.lng);return;}
     setTarget(e.latlng.lat,e.latlng.lng);
   });
@@ -1033,16 +1031,24 @@ function setTarget(lat,lng,opts){
   else marker.setLatLng([lat,lng]);
   marker.off('dragend');
   marker.on('dragend',()=>{const p=marker.getLatLng();setTarget(p.lat,p.lng);});
-  $('#card').classList.remove('hidden');
+  $('#cardwrap').classList.remove('hidden');
   $('#name').textContent='Lade Name …';
   render();
   if(!opts.noFly)map.panTo([lat,lng]);
   reverse(lat,lng);
 }
+function updEmpty(){
+  const e=$('#cardempty');if(!e)return;
+  const show=!target&&!spoofing&&!routeRun&&!routeMode;
+  e.classList.toggle('hidden',!show);
+}
 function render(){
   if(!target)return;
-  $('#coords').textContent=target.lat.toFixed(6)+',  '+target.lng.toFixed(6);
+  $('#coords').textContent=target.lat.toFixed(6)+'   '+target.lng.toFixed(6);
   $('#name').textContent=target.name||'Ausgewählter Standort';
+  const ad=target.addr||'';
+  $('#csub').textContent=(ad&&ad!==target.name)?ad:'';
+  updEmpty();
   $('#spoofbtn').disabled=false;
   const saved=favs.some(f=>Math.abs(f.lat-target.lat)<1e-6&&Math.abs(f.lng-target.lng)<1e-6);
   $('#star').classList.toggle('on',saved);
@@ -1062,6 +1068,7 @@ async function reverse(lat,lng){
   const j=geoReverse(lat,lng);
   if(seq!==revSeq||!target)return;
   let n=j.name||null;
+  if(j.display_name&&target)target.addr=j.display_name;
   if(!n&&j.address){
     const a=j.address;
     n=[a.road,a.house_number].filter(Boolean).join(' ')||a.neighbourhood||a.suburb||a.village||a.town||a.city||a.state;
@@ -1217,14 +1224,15 @@ function setSpoofUI(on){
   spoofing=on;
   const b=$('#spoofbtn');
   b.classList.remove('working','okflash');
-  if(!on){routeRun=false;stopRouteTicker();hideLive();if(target)$('#card').classList.remove('hidden');}
+  if(!on){routeRun=false;stopRouteTicker();hideLive();if(target)$('#cardwrap').classList.remove('hidden');}
   b.classList.toggle('stop',on);
   $('#spooflabel').textContent=on?(routeRun?'Route stoppen':'Spoofing stoppen'):'Spoof';
   $('#dot').className=on?'run':'';
   $('#statustxt').textContent=on?(routeRun?'Route aktiv – Standort bewegt sich':'Spoofing aktiv – GPS & Netzwerk gemockt'):
     (target?'Bereit – tippe auf „Spoof“':'Bereit');
   if(marker)marker.setIcon(puckIcon(on));
-  if(on){if(!routeRun)showLive('spoof');setDim(true);}else{setDim(false);}
+  if(on){if(!routeRun)showLive('spoof');setDim(S.dim_active!==false);}else{setDim(false);}
+  updEmpty();
 }
 function burstAt(lat,lng,color){
   if(!map)return;
@@ -1275,11 +1283,15 @@ $('#routebtn').onclick=()=>{
   startRoutePlanning();
 };
 function startRoutePlanning(){
-  routeMode=true;setDim(true);rStep='a';rA=null;rB=null;
+  routeMode=true;setDim(false);rStep='a';rA=null;rB=null;
+  rProfile=S.route_profile||'car';
+  $$('#rmode button').forEach(x=>x.classList.toggle('on',x.dataset.m===rProfile));
+  {const rl0=$('#rloop');if(rl0)rl0.checked=!!S.route_loop;}
+  {const asp=autoSpeed();const sp=$('#rspd');if(sp)sp.value=asp;const sv=$('#rspdv');if(sv)sv.textContent=asp+' km/h';}
   routePts=[];routeTotalM=0;routeDur=0;
   routeSpeed=$('#rsetspeed').checked?+$('#rspd').value:autoSpeed();
   clearRouteDraw();
-  $('#card').classList.add('hidden');
+  $('#cardwrap').classList.add('hidden');
   $('#routebar').classList.remove('hidden');
   $('#rsum').style.display='none';
   $('#rgo').classList.add('hidden');
@@ -1290,7 +1302,9 @@ function startRoutePlanning(){
   updRouteSteps();updRouteBar();
   toast('Tippe den Startpunkt (A) auf die Karte');
 }
+function mapLocked(){return spoofing||routeRun;}
 function routeMapClick(la,lo){
+  if(mapLocked()){toast('Läuft – erst Stop tippen');return;}
   if(rStep==='a'){
     rA={lat:la,lng:lo};rStep='b';
     toast('Jetzt den Zielpunkt (B) antippen');
@@ -1406,17 +1420,17 @@ function finishRouteLive(){
   const lr=$('#rliverow');if(lr)lr.classList.remove('show');
   clearInterval(rlT);
   if(routePts.length>1){$('#rgo').classList.remove('hidden');$('#rlooprow').classList.remove('hidden');}
-  if(target)$('#card').classList.add('hidden');
+  if(target)$('#cardwrap').classList.add('hidden');
   setDim(!!wasMode);
   toast('Route gestoppt');
 }
 $('#rl_stop').onclick=()=>{const N=window.Native;try{if(N)N.stopSpoof();}catch(e){}finishRouteLive();};
 function cancelRoutePlanning(){
-  setDim(false);
+  setDim(false);updEmpty();
   routeMode=false;
   clearRouteDraw();
   $('#routebar').classList.add('hidden');
-  if(target&&!spoofing&&!routeRun)$('#card').classList.remove('hidden');
+  if(target&&!spoofing&&!routeRun)$('#cardwrap').classList.remove('hidden');
   toast('Route abgebrochen');
 }
 function clearRouteDraw(){
@@ -1442,7 +1456,7 @@ $('#live_stop').onclick=()=>{
 };
 let liveT=null,liveStart=0;
 function showLive(kind){
-  $('#card').classList.add('hidden');
+  $('#cardwrap').classList.add('hidden');
   $('#routebar').classList.add('hidden');
   $('#livebar').classList.remove('hidden');
   $('#lp_txt').textContent=kind==='route'?'Route live':'Spoofing';
@@ -1599,9 +1613,9 @@ $('#star').onclick=()=>{ $('#favsave').click(); openFavs(); };
 /* ---------- X ---------- */
 $('#x').onclick=()=>{
   if(spoofing||routeRun){toast('Läuft noch – erst stoppen');return;}
-  target=null;
+  target=null;updEmpty();
   if(marker&&map){map.removeLayer(marker);marker=null;}
-  $('#card').classList.add('hidden');
+  $('#cardwrap').classList.add('hidden');
 };
 
 /* ---------- error hint / modal ---------- */
@@ -1651,7 +1665,7 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'2.0';
+  const cur=N.appVersion?N.appVersion():'2.1';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
@@ -1659,7 +1673,7 @@ function checkForUpdate(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.0';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.1';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });
@@ -1690,7 +1704,7 @@ if(_sv<SVER){
 try{localStorage.setItem('sg_sver',String(SVER));}catch(e){}
 function checkMock(){const N=window.Native;if(!N||!N.mockAllowed)return;let ok=true;try{ok=!!N.mockAllowed();}catch(e){return;}const w=$('#mockwarn');if(w)w.classList.toggle('hidden',!!ok);}
 checkMock();
-bindSettings();
+bindSettings();updProf();
 setSpoofUI(false);
 if(window.Native&&Native.setSettings)Native.setSettings(JSON.stringify(S));
 if(window._ps){window.__onState.apply(null,window._ps);window._ps=null;}
