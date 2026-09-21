@@ -493,6 +493,32 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
+        public boolean battOpt() {
+            try {
+                android.os.PowerManager pm = (android.os.PowerManager) getSystemService(Context.POWER_SERVICE);
+                return pm.isIgnoringBatteryOptimizations(getPackageName());
+            } catch (Exception e) {
+                return true;
+            }
+        }
+
+        @JavascriptInterface
+        public void requestBattOpt() {
+            try {
+                Intent i;
+                try {
+                    i = new Intent("android.settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+                            Uri.parse("package:" + getPackageName()));
+                } catch (Exception e) {
+                    i = new Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+                }
+                startActivity(i);
+            } catch (Exception e) {
+                try { startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS)); } catch (Exception ignored) {}
+            }
+        }
+
+        @JavascriptInterface
         public boolean mockAllowed() {
             try {
                 android.app.AppOpsManager ops = (android.app.AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);

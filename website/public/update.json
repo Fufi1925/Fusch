@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "2.4",
-  "code": 17,
+  "version": "2.5",
+  "code": 18,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Fusch 2.4:\n• 📍 Nach dem Stoppen holt die App jetzt automatisch deinen echten Standort und zeigt ihn auf der Karte an („📍 Das ist deine echte Position“ ±m) – Mock-Reste werden komplett ignoriert\n• 🔔 Hintergrund-Frage beim ersten Start, Autostart standardmäßig AUS, „Im Hintergrund aktiv“ bleibt AN (alles aus 2.3)\n• 🛡️ Karte & Verlauf bleiben während Spoof/Route gesperrt",
+  "notes": "Fusch 2.5 – Neues Onboarding beim ersten Start (wie die großen Vorbilder, auf Deutsch):\n• 👋 5 Schritte: Willkommen → Berechtigungen → Mock-Standort-Auswahl → Hintergrund/Akku → Fertig\n• 📍 Berechtigungen werden erst auf Tipp angefragt, mit Live-Status („Erlaubt“)\n• 🛡️ Schritt-für-Schritt-Anleitung zur Mock-Standort-Auswahl, prüft automatisch beim Zurückkehren\n• 🔋 Optional: Akku-Optimierungs-Ausnahme für lang laufende Spoofs\n• Alles Bekannte bleibt: Glass-Design, Satellitenkarte, Route-Panel, echter Standort nach Stop",
   "date": "2026-09-21"
 }

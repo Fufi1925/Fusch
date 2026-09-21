@@ -402,6 +402,53 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .microlbl{font-size:9px;font-weight:800;letter-spacing:.16em;color:rgba(196,206,226,.42);text-transform:uppercase;margin-top:11px}
 #wm{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 30px);z-index:1000;color:rgba(255,255,255,.3);font-weight:300;letter-spacing:.45em;font-size:11.5px;pointer-events:none}
 #rspdv{color:#5ad0f5!important}
+/* ===== v2.5 Onboarding ===== */
+#onb{position:fixed;inset:0;z-index:9500;background:#08090d;display:none;flex-direction:column;overflow-y:auto}
+#onb.show{display:flex}
+.onb-top{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 6px;min-height:34px}
+.onb-back{display:flex;align-items:center;gap:8px;color:#e8eefc;font-weight:700;font-size:15.5px;background:none;border:0;padding:4px 0}
+.onb-back svg{width:18px;height:18px;stroke:#e8eefc}
+.onb-stepno{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;letter-spacing:.22em;color:#8fa0bd;font-weight:700}
+.onb-bars{display:flex;gap:7px;padding:6px 20px 0}
+.onb-bars i{flex:1;height:4px;border-radius:4px;background:#1c2331;transition:background .25s}
+.onb-bars i.on{background:#4fd8f7}
+.onb-body{flex:1;padding:26px 20px 8px;display:flex;flex-direction:column}
+.onb-step{display:none;flex-direction:column;flex:1}
+.onb-step.on{display:flex}
+.onb-eyebrow{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;letter-spacing:.24em;color:#7d8aa3;font-weight:700;margin:10px 0 12px}
+.onb-h1{font-size:33px;font-weight:800;letter-spacing:-.02em;line-height:1.12;color:#fff}
+.onb-sub{font-size:15.5px;color:#aab6cb;line-height:1.5;margin-top:12px}
+.onb-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:16px;margin-top:18px}
+.onb-card h4{font-size:17px;font-weight:800;display:flex;align-items:center;gap:10px}
+.onb-card h4 .oi{font-size:19px}
+.onb-status{font-size:13px;font-weight:700;color:#7d8aa3;margin-top:3px}
+.onb-status.ok{color:#30d158}
+.onb-status.amber{color:#ffb340}
+.onb-card p{font-size:14px;color:#aab6cb;line-height:1.5;margin-top:9px}
+.onb-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;height:52px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:15.5px;font-weight:700;margin-top:14px}
+.onb-link{width:100%;text-align:center;background:none;border:0;color:#fff;font-weight:800;font-size:15px;padding:14px 0 2px}
+.onb-bullet{display:flex;gap:12px;margin-top:16px;color:#aab6cb;font-size:14px;line-height:1.5}
+.onb-bullet .ic{font-size:17px;flex:none}
+.onb-path{display:flex;align-items:center;flex-wrap:wrap;column-gap:7px;row-gap:4px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:13px 15px;margin-top:16px;font-size:12.5px;font-weight:700;color:#e2e9f6}
+
+.onb-path svg{width:13px;height:13px;stroke:#7d8aa3;flex:none}
+.onb-nlist{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:8px 16px;margin-top:14px}
+.onb-nrow{display:flex;align-items:center;gap:13px;padding:11px 0}
+.onb-num{width:30px;height:30px;border-radius:50%;background:#4fd8f7;color:#04222c;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;flex:none}
+.onb-nrow div{flex:1;font-size:14.5px;color:#c4cee2;line-height:1.45}
+.onb-nrow b{color:#fff}
+.onb-ok{display:none;align-items:center;gap:10px;margin-top:16px;color:#5ee39a;font-weight:700;font-size:14.5px}
+.onb-ok.show{display:flex}
+.onb-ok .tick{width:22px;height:22px;border-radius:50%;background:#30d158;color:#04240f;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:none}
+.onb-note{font-size:13px;color:#7d8aa3;line-height:1.5;margin-top:14px}
+.onb-warn{display:flex;gap:10px;margin-top:16px;color:#aab6cb;font-size:13.5px;line-height:1.5}
+.onb-foot{padding:10px 20px calc(env(safe-area-inset-bottom,0px) + 16px)}
+.onb-cta{width:100%;height:56px;border-radius:100px;background:#4fd8f7;color:#04222c;font-size:17px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;border:0}
+.onb-cta:disabled{opacity:.32}
+.onb-icon{width:92px;height:92px;border-radius:26px;background:radial-gradient(circle at 30% 25%,#1c2740,#0e1422);border:1.5px solid rgba(90,208,245,.5);display:flex;align-items:center;justify-content:center;box-shadow:0 0 44px rgba(62,197,230,.32)}
+.onb-icon svg{width:52px;height:52px}
+.onb-circle{width:96px;height:96px;border-radius:50%;background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.25);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.onb-circle .onb-icon{width:60px;height:60px;border-radius:18px;box-shadow:0 0 26px rgba(48,209,88,.3);border-color:rgba(48,209,88,.45);background:radial-gradient(circle at 30% 25%,#173325,#0c1a12)}
 </style>
 </head>
 <body>
@@ -433,6 +480,90 @@ setTimeout(function(){
   setTimeout(function(){try{s.remove();}catch(e){}},500);
 },1400);
 </script>
+
+<div id="onb">
+  <div class="onb-top">
+    <button class="onb-back hidden" id="onb_back"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg><span>Zurück</span></button>
+    <span></span>
+    <span class="onb-stepno" id="onb_no">SCHRITT 1 VON 5</span>
+  </div>
+  <div class="onb-bars" id="onb_bars"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+  <div class="onb-body">
+
+    <div class="onb-step on" id="onb_s1">
+      <div class="onb-icon"><svg viewBox="0 0 24 24"><path fill="#EAF2FA" d="M7.1,3.4 h3.1 v17.2 h-3.1 Z M10.2,3.4 h6.2 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-6.2 Z M10.2,10.3 h4.3 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-4.3 Z"/><circle cx="17.4" cy="11.9" r="2" fill="#38BDF8"/><circle cx="17.4" cy="11.9" r="3.7" fill="none" stroke="#38BDF8" stroke-opacity=".45" stroke-width="1.1"/></svg></div>
+      <div class="onb-eyebrow">WILLKOMMEN</div>
+      <div class="onb-h1">Standort setzen, ganz einfach.</div>
+      <div class="onb-sub">Wähle einen Ort – und dieses Android-Handy scheint dort zu sein.</div>
+      <div class="onb-card"><h4><span style="color:#4fd8f7">Nie einen Computer. Nie.</span></h4>
+        <p>Fusch richtet alles auf diesem Handy ein und läuft komplett hierauf.</p></div>
+      <div class="onb-bullet"><span class="ic">🕐</span><span>Das Setup dauert nur ein paar Minuten – und Fusch bringt dich danach zurück zum richtigen Ort.</span></div>
+      <div class="onb-bullet"><span class="ic">ℹ️</span><span>Android markiert gesetzte Standorte als simuliert, und Apps dürfen das prüfen. Spiele wie Pokémon GO, Tracker wie Life360 und viele Banking-Apps durchschauen das.</span></div>
+    </div>
+
+    <div class="onb-step" id="onb_s2">
+      <div class="onb-eyebrow">BERECHTIGUNGEN</div>
+      <div class="onb-h1">Erst ein bisschen Kontext.</div>
+      <div class="onb-sub">Fusch fragt erst, wenn du auf eine Berechtigung tippst – so weißt du immer, warum Android fragt.</div>
+      <div class="onb-card">
+        <h4><span class="oi">📍</span>Genauer Standort<span class="onb-status" id="onb_loc_stat" style="margin-left:auto">Noch nicht angefragt</span></h4>
+        <p>Fusch braucht den genauen Standort, um den gewählten Ort zu veröffentlichen. Deine echte Position wird nie mitgelesen oder hochgeladen.</p>
+        <button class="onb-btn" id="onb_allow_loc">📍 Genauen Standort erlauben</button>
+      </div>
+      <div class="onb-card">
+        <h4><span class="oi">🔔</span>Benachrichtigungen – Optional<span class="onb-status" id="onb_not_stat" style="margin-left:auto">Noch nicht angefragt</span></h4>
+        <p>Benachrichtigungen halten einen laufenden Spoof sichtbar und sagen dir Bescheid, wenn er stoppt. Du kannst auch ohne sie weitermachen.</p>
+        <button class="onb-btn" id="onb_allow_not">🔔 Benachrichtigungen erlauben</button>
+        <button class="onb-link" id="onb_not_skip">Jetzt nicht</button>
+      </div>
+    </div>
+
+    <div class="onb-step" id="onb_s3">
+      <div class="onb-eyebrow">MOCK-STANDORT</div>
+      <div class="onb-h1">Wähle einmal Fusch.</div>
+      <div class="onb-sub">Android verlangt, dass du auswählst, welche App Test-Standorte liefern darf. Wähle Fusch und komm zurück – das Setup prüft automatisch weiter.</div>
+      <div class="onb-path"><span>Einstellungen</span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg><span>System</span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg><span>Entwickleropt.</span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg><span>Mock-Standort-App</span></div>
+      <div class="onb-nlist">
+        <div class="onb-nrow"><span class="onb-num">1</span><div>Öffne die <b>Entwickleroptionen</b> in den Einstellungen.</div></div>
+        <div class="onb-nrow"><span class="onb-num">2</span><div>Tippe auf <b>Standort-Override-App auswählen</b> und wähle <b>Fusch</b>.</div></div>
+        <div class="onb-nrow"><span class="onb-num">3</span><div><b>Komm zu Fusch zurück.</b> Die Auswahl wird beim Zurückkehren automatisch geprüft.</div></div>
+      </div>
+      <div class="onb-ok" id="onb_mock_ok"><span class="tick">✓</span>Android akzeptiert jetzt Standorte von Fusch.</div>
+      <div class="onb-card">
+        <h4>Entwickleroptionen nicht sichtbar?</h4>
+        <p>Öffne Einstellungen › Telefoninfo, tippe <b>7-mal auf „Buildnummer“</b>. Gib deine Displaysperre ein, wenn Android fragt, und kehre zu System › Entwickleroptionen zurück.</p>
+        <div class="onb-note">Immer noch nicht? Xiaomi/MIUI und Huawei verstecken oder benennen die Auswahl manchmal um. Suche in den Einstellungen nach „Mock-Standort“ und lasse die Entwickleroptionen aktiviert.</div>
+        <button class="onb-btn" id="onb_dev">⚙ Entwickleroptionen öffnen</button>
+      </div>
+    </div>
+
+    <div class="onb-step" id="onb_s4">
+      <div class="onb-eyebrow">HINTERGRUND – OPTIONAL</div>
+      <div class="onb-h1">Spoof am Laufen halten.</div>
+      <div class="onb-sub">Akku-Optimierung kann Fuschs Vordergrund-Dienst stoppen, sobald der Bildschirm aus ist. Eine Ausnahme macht längere Sitzungen zuverlässiger.</div>
+      <div class="onb-card">
+        <h4><span class="oi">🔋</span>Akku-Optimierung<span class="onb-status amber" id="onb_batt_stat" style="margin-left:auto">Android kann Fusch stoppen</span></h4>
+        <p>Das ändert nichts an deiner Standort-Berechtigung – du kannst es später jederzeit in den Einstellungen zurücksetzen.</p>
+        <button class="onb-btn" id="onb_allow_batt">🔋 Hintergrund-Aktivität erlauben</button>
+        <button class="onb-link" id="onb_batt_skip">Jetzt nicht</button>
+      </div>
+      <div class="onb-warn"><span>⚠️</span><span>Dieser Schritt ist optional. Überspringen ist ein Hinweis, kein Setup-Fehler.</span></div>
+    </div>
+
+    <div class="onb-step" id="onb_s5">
+      <div class="onb-circle"><div class="onb-icon"><svg viewBox="0 0 24 24"><path fill="#EAF2FA" d="M7.1,3.4 h3.1 v17.2 h-3.1 Z M10.2,3.4 h6.2 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-6.2 Z M10.2,10.3 h4.3 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-4.3 Z"/><circle cx="17.4" cy="11.9" r="2" fill="#30d158"/><circle cx="17.4" cy="11.9" r="3.7" fill="none" stroke="#30d158" stroke-opacity=".45" stroke-width="1.1"/></svg></div></div>
+      <div class="onb-eyebrow">SETUP ABGESCHLOSSEN</div>
+      <div class="onb-h1">Fusch ist bereit.</div>
+      <div class="onb-sub">Wähle einen Ort und tippe hier auf Spoof.</div>
+      <div class="onb-card"><h4>Dein erster Spoof</h4>
+        <p style="color:#4fd8f7;font-weight:700">Wähle einen Ort auf der Karte und tippe auf „Spoof“.</p></div>
+    </div>
+
+  </div>
+  <div class="onb-foot">
+    <button class="onb-cta" id="onb_cta"><span>→</span><span id="onb_cta_t">Los geht's</span></button>
+  </div>
+</div>
 
 <div id="top">
   <button id="gear" class="gbtn" title="Einstellungen">
@@ -697,7 +828,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 2.4 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 2.5 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -1674,7 +1805,7 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'2.4';
+  const cur=N.appVersion?N.appVersion():'2.5';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
@@ -1682,7 +1813,7 @@ function checkForUpdate(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.4';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.5';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });
@@ -1709,6 +1840,7 @@ window.askBg=function(ans){
   toast(ans?'Hintergrund aktiv – Spoof läuft weiter, auch wenn du die App schließt':'Hintergrund deaktiviert');
 };
 function maybeAskBg(){
+  const o=document.getElementById('onb');if(o&&o.classList.contains('show'))return;
   let asked=0;try{asked=+(localStorage.getItem('sg_bgask')||0);}catch(e){}
   if(typeof NAT.bgask==='number')asked=asked||NAT.bgask;
   if(asked)return;
@@ -1720,6 +1852,74 @@ function maybeAskBg(){
   try{localStorage.setItem('sg_bgask','1');}catch(e){}
 }
 setTimeout(maybeAskBg,1800);
+
+/* ================= onboarding (v2.5) ================= */
+let onbStep=1;
+function onbRefresh(){
+  const N=window.Native||{};
+  const st=(el,ok,okT,noT)=>{const e=typeof el==='string'?document.getElementById(el):el;if(!e)return;
+    e.textContent=ok?okT:noT;e.classList.toggle('ok',!!ok);e.classList.toggle('amber',!ok);};
+  let loc=false,not=false;try{loc=!!N.hasLocPerm();not=!!N.hasNotifPerm();}catch(e){}
+  st('onb_loc_stat',loc,'Erlaubt','Noch nicht angefragt');
+  st('onb_not_stat',not,'Erlaubt','Noch nicht angefragt');
+  const bl=document.getElementById('onb_allow_loc');if(bl)bl.style.display=loc?'none':'flex';
+  const bn=document.getElementById('onb_allow_not');if(bn)bn.style.display=not?'none':'flex';
+  let mock=false;try{mock=!!N.mockAllowed();}catch(e){}
+  const mo=document.getElementById('onb_mock_ok');if(mo)mo.classList.toggle('show',!!mock);
+  const cta=document.getElementById('onb_cta');if(cta)cta.disabled=(onbStep===2&&!loc)||(onbStep===3&&!mock);
+  let batt=false;try{batt=!!N.battOpt();}catch(e){}
+  st('onb_batt_stat',batt,'Ausnahme erlaubt','Android kann Fusch stoppen');
+  const bb=document.getElementById('onb_allow_batt');if(bb)bb.style.display=batt?'none':'flex';
+}
+function onbShow(i){
+  onbStep=i;
+  for(let k=1;k<=5;k++){const el=document.getElementById('onb_s'+k);if(el)el.classList.toggle('on',k===i);}
+  const bars=document.getElementById('onb_bars');
+  if(bars)Array.from(bars.children).forEach((b,k)=>b.classList.toggle('on',k<i));
+  const no=document.getElementById('onb_no');if(no)no.textContent='SCHRITT '+i+' VON 5';
+  const back=document.getElementById('onb_back');if(back)back.classList.toggle('hidden',i===1);
+  const ct=document.getElementById('onb_cta_t');
+  const ctIco=document.querySelector('#onb_cta span');
+  if(ct){
+    ct.textContent=i===1?"Los geht's":i===5?'Karte öffnen':'Weiter';
+    const ico=ct.previousElementSibling;if(ico)ico.textContent=i===5?'🗺️':i===3&&(()=>{try{return !!(window.Native&&Native.mockAllowed());}catch(e){return false;}})()?'✓':'→';
+  }
+  onbRefresh();
+}
+function onbGoto(i){onbShow(i);}
+function onbDone(){
+  try{localStorage.setItem('sg_onboard','1');}catch(e){}
+  try{localStorage.setItem('sg_bgask','1');}catch(e){}
+  if(typeof persistAll==='function'){try{persistAll();}catch(e){}}
+  const el=document.getElementById('onb');if(el)el.classList.remove('show');
+  if(typeof closeModal==='function')closeModal();
+}
+(function(){
+  let seen=false;
+  try{seen=localStorage.getItem('sg_onboard')==='1';}catch(e){}
+  if(typeof NAT!=='undefined'&&NAT&&NAT.onb===1)seen=true;
+  if(seen)return;
+  const el=document.getElementById('onb');if(!el)return;
+  setTimeout(()=>{el.classList.add('show');onbShow(1);},1500);
+  const N=window.Native||{};
+  const bl=document.getElementById('onb_allow_loc');if(bl)bl.onclick=()=>{try{N.requestPerms();}catch(e){}};
+  const bn=document.getElementById('onb_allow_not');if(bn)bn.onclick=()=>{try{N.requestPerms();}catch(e){}};
+  const ns=document.getElementById('onb_not_skip');if(ns)ns.onclick=()=>{const n2=document.getElementById('onb_not_stat');if(n2){n2.textContent='Übersprungen';n2.classList.remove('ok','amber');}};
+  const ob=document.getElementById('onb_allow_batt');if(ob)ob.onclick=()=>{try{N.requestBattOpt();}catch(e){}};
+  const bs=document.getElementById('onb_batt_skip');if(bs)bs.onclick=()=>{const b2=document.getElementById('onb_batt_stat');if(b2){b2.textContent='Übersprungen';b2.classList.remove('ok','amber');}};
+  const dv=document.getElementById('onb_dev');if(dv)dv.onclick=()=>{try{N.devOptions();}catch(e){}};
+  const od=document.getElementById('onb_cta');
+  if(od)od.onclick=()=>{
+    if(onbStep===3){try{if(!N.mockAllowed||!N.mockAllowed())return;}catch(e){}}
+    if(onbStep>=5){onbDone();return;}
+    onbGoto(onbStep+1);
+  };
+  const bk=document.getElementById('onb_back');
+  if(bk)bk.onclick=()=>{if(onbStep>1)onbGoto(onbStep-1);};
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&onbStep>=2)onbRefresh();});
+  setInterval(()=>{const o=document.getElementById('onb');if(o&&o.classList.contains('show')&&onbStep>=2)onbRefresh();},1200);
+})();
+
 window.__ready=true;
 /* v1.7-Migration: wichtige Schalter einmalig AN – alte gespeicherte Werte dürfen neue Defaults nicht ausknipsen */
 const SVER=12;
