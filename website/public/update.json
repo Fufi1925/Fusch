@@ -1,8 +1,8 @@
 {
   "app": "Fusch",
-  "version": "1.9",
-  "code": 12,
+  "version": "2.0",
+  "code": 13,
   "url": "https://fusch.up.railway.app/downloads/Fusch-latest.apk",
-  "notes": "Neu in 1.9 – Komplettes UI-Revamp:\n• 🛰️ Satelliten-Karte (Standard) mit Orts-Labels – wie in den Vorbild-Videos\n• 🪟 Komplett neue Glass-Optik: Route-Panel, Suche, Seitenleiste, Einstellungen & Favoriten\n• 🟢 „Route live“-Pille mit Timer jetzt IM Route-Panel + Stop daneben\n• 🎛️ Neue Speed-Zeile mitTeal-Akzent + „Eigene Geschwindigkeit“-Label\n• 🧭 Vertikale Glas-Symbolleiste rechts (Route, Verlauf, Standort, Favoriten)\n• 📍 Echter Standort funktioniert auch während des Spoofens (Fix aus 1.8)\n• ⚙️ Wichtige Schalter bleiben nach Updates AN",
+  "notes": "Fusch 2.0 – Das große Design-Update:\n• 🪟 ÜBERALL Glass-Design: Karte, Suche, Popups, Einstellungen, Favoriten, Buttons – alles im translucenten Glas-Stil\n• 💙 Blau komplett raus: neue Teal/Green-Akzente durchgängig (Route-Linie bleibt Karten-Blau)\n• 🔴 Stop-Buttons & aktives Spoofing jetzt als rote Glas-Pille, Spoof-CTA als Pill\n• 📍 Echter Standort noch besser: liefert sofort bei gutem GPS-Fix und zeigt die Genauigkeit (±m) an\n• 🛰️ Satellitenkarte, Route-live-Pille im Panel und alle 1.9-Features bleiben",
   "date": "2026-09-20"
 }

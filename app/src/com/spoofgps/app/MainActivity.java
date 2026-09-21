@@ -428,10 +428,19 @@ public class MainActivity extends Activity {
                 locBusy = true;
                 final LocationManager lmF = lmgr;
                 final android.location.Location[] box = new android.location.Location[]{best};
+                final boolean[] done = {false};
                 final android.location.LocationListener[] ls = new android.location.LocationListener[1];
                 ls[0] = new android.location.LocationListener() {
                     @Override public void onLocationChanged(android.location.Location l) {
-                        if (l != null) box[0] = betterLoc(box[0], l);
+                        if (l == null) return;
+                        box[0] = betterLoc(box[0], l);
+                        // Sofort liefern, sobald ein guter ECHTER Fix da ist (nicht gemockt, ≤75 m)
+                        if (!done[0] && !isMockL(l) && l.getAccuracy() <= 75f) {
+                            done[0] = true;
+                            locBusy = false;
+                            try { lmF.removeUpdates(ls[0]); } catch (Exception ignored) {}
+                            sendLoc(box[0]);
+                        }
                     }
                     @Override public void onStatusChanged(String pr, int st, android.os.Bundle ex) {}
                     @Override public void onProviderEnabled(String pr) {}
@@ -446,6 +455,8 @@ public class MainActivity extends Activity {
                 final boolean anyF = any;
                 new android.os.Handler(getMainLooper()).postDelayed(new Runnable() {
                     @Override public void run() {
+                        if (done[0]) return;
+                        done[0] = true;
                         locBusy = false;
                         try { if (anyF) lmF.removeUpdates(ls[0]); } catch (Exception ignored) {}
                         sendLoc(box[0]);
@@ -475,8 +486,9 @@ public class MainActivity extends Activity {
                 return;
             }
             boolean mock = isMockL(l);
+            int acc = Math.round(l.getAccuracy());
             jsToPage("window.onDeviceLocation && window.onDeviceLocation({lat:" + l.getLatitude()
-                    + ",lng:" + l.getLongitude() + ",mock:" + mock + "});");
+                    + ",lng:" + l.getLongitude() + ",mock:" + mock + ",acc:" + acc + "});");
         }
 
         @JavascriptInterface
