@@ -418,6 +418,7 @@ public class MainActivity extends Activity {
                 for (String p : provs) {
                     try {
                         android.location.Location l = lmgr.getLastKnownLocation(p);
+                        if (l != null && isMockL(l)) continue; // Mock-Reste konsequent verwerfen
                         best = betterLoc(best, l);
                     } catch (Exception ignored) {}
                 }
@@ -432,7 +433,7 @@ public class MainActivity extends Activity {
                 final android.location.LocationListener[] ls = new android.location.LocationListener[1];
                 ls[0] = new android.location.LocationListener() {
                     @Override public void onLocationChanged(android.location.Location l) {
-                        if (l == null) return;
+                        if (l == null || isMockL(l)) return; // nur ECHTE Positionen
                         box[0] = betterLoc(box[0], l);
                         // Sofort liefern, sobald ein guter ECHTER Fix da ist (nicht gemockt, ≤75 m)
                         if (!done[0] && !isMockL(l) && l.getAccuracy() <= 75f) {
@@ -461,7 +462,7 @@ public class MainActivity extends Activity {
                         try { if (anyF) lmF.removeUpdates(ls[0]); } catch (Exception ignored) {}
                         sendLoc(box[0]);
                     }
-                }, anyF ? 8000L : 300L);
+                }, anyF ? 10000L : 300L);
             } catch (Exception e) {
                 locBusy = false;
                 jsToPage("window.onDeviceLocation && window.onDeviceLocation(null);");

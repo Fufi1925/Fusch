@@ -697,7 +697,7 @@ setTimeout(function(){
       </svg>
     </div>
     <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 2.2 · Android 8.0+</div>
+    <div class="cv" id="verline">Version 2.3 · Android 8.0+</div>
     <div class="made">Made by <b>Fufi/!L</b></div>
     <div class="made2">Aleks heißt Fusch</div>
     <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
@@ -805,7 +805,7 @@ function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 /* ================= settings ================= */
 const DEF_S={mock_network:true,jitter:true,interval_ms:1000,accuracy_m:5,
   notif_coords:true,notif_timer:true,map_style:'sat',map_labels:true,map_key_tiles:true,
-  fav_sort:'new',autostart:true,keep_alive:true,route_profile:'car',route_loop:false};
+  fav_sort:'new',autostart:false,keep_alive:true,route_profile:'car',route_loop:false};
 let S=Object.assign({},DEF_S);
 try{Object.assign(S,JSON.parse(localStorage.getItem('sg_settings')||'{}'));}catch(e){}
 if(NAT.S)Object.assign(S,NAT.S);
@@ -816,7 +816,7 @@ function persistAll(){
     try{localStorage.setItem('sg_favs',JSON.stringify(favs));}catch(e){}
     try{localStorage.setItem('sg_hist',JSON.stringify(hist));}catch(e){}
     if(window.Native&&Native.storeSet){
-      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist,v:11}));}catch(e){}
+      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist,v:12,bgask:1}));}catch(e){}
     }
   },250);
 }
@@ -1223,7 +1223,8 @@ function setSpoofUI(on){
   spoofing=on;
   const b=$('#spoofbtn');
   b.classList.remove('working','okflash');
-  if(!on){routeRun=false;stopRouteTicker();hideLive();if(target)$('#cardwrap').classList.remove('hidden');}
+  if(!on){routeRun=false;stopRouteTicker();hideLive();if(target)$('#cardwrap').classList.remove('hidden');
+    if(deviceMarker&&map){map.removeLayer(deviceMarker);deviceMarker=null;}}
   b.classList.toggle('stop',on);
   $('#spooflabel').textContent=on?(routeRun?'Route stoppen':'Spoofing stoppen'):'Spoof';
   $('#dot').className=on?'run':'';
@@ -1514,7 +1515,8 @@ function renderHist(){
     d.querySelector('.hn').textContent=h.name;
     d.querySelector('.hs').textContent=h.lat.toFixed(5)+', '+h.lng.toFixed(5);
     d.querySelector('.hd').textContent=new Date(h.ts).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'});
-    d.onclick=()=>{$('#histtab').classList.remove('open');
+    d.onclick=()=>{if(spoofing||routeRun){toast('Läuft – erst Stop tippen');return;}
+      $('#histtab').classList.remove('open');
       setTarget(h.lat,h.lng,{noFly:true});
       if(map)map.flyTo([h.lat,h.lng],14);};
     l.appendChild(d);
@@ -1662,7 +1664,7 @@ function checkForUpdate(){
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'2.2';
+  const cur=N.appVersion?N.appVersion():'2.3';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
@@ -1670,7 +1672,7 @@ function checkForUpdate(){
   let lp=null;const el=$('#verline');
   el.addEventListener('touchstart',()=>{
     lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.2';
+      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.3';
       showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
     },550);
   });
@@ -1687,13 +1689,34 @@ function toast(msg){
 }
 
 /* ================= boot ================= */
+window.askBg=function(ans){
+  try{localStorage.setItem('sg_bgask','1');}catch(e){}
+  S.keep_alive=!!ans;
+  const el=document.querySelector('input[data-k=keep_alive]');if(el)el.checked=!!ans;
+  try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
+  try{persistAll();}catch(e){}
+  closeModal();
+  toast(ans?'Hintergrund aktiv – Spoof läuft weiter, auch wenn du die App schließt':'Hintergrund deaktiviert');
+};
+function maybeAskBg(){
+  let asked=0;try{asked=+(localStorage.getItem('sg_bgask')||0);}catch(e){}
+  if(typeof NAT.bgask==='number')asked=asked||NAT.bgask;
+  if(asked)return;
+  openModal(
+    '<h3>🔔 Im Hintergrund aktiv bleiben?</h3>'+
+    '<p>Dann läuft dein Spoof <b>weiter</b>, auch wenn du die App schließt oder wegwischst – Android zeigt eine Dauerbenachrichtigung.</p>'+
+    '<div class="mrow"><button class="mbtn g" onclick="askBg(0)">Nicht aktivieren</button>'+
+    '<button class="mbtn p" onclick="askBg(1)">Aktivieren</button></div>');
+  try{localStorage.setItem('sg_bgask','1');}catch(e){}
+}
+setTimeout(maybeAskBg,1800);
 window.__ready=true;
 /* v1.7-Migration: wichtige Schalter einmalig AN – alte gespeicherte Werte dürfen neue Defaults nicht ausknipsen */
-const SVER=11;
+const SVER=12;
 let _sv=0;try{_sv=+(localStorage.getItem('sg_sver')||0)||0;}catch(e){}
 if(typeof NAT.v==='number')_sv=Math.max(_sv,NAT.v);
 if(_sv<SVER){
-  ['mock_network','jitter','notif_coords','notif_timer','map_labels','map_key_tiles','autostart','keep_alive'].forEach(k=>{S[k]=true;});
+  ['mock_network','jitter','notif_coords','notif_timer','map_labels','map_key_tiles','keep_alive'].forEach(k=>{S[k]=true;});
   S.map_style='sat';
   try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
   try{persistAll();}catch(e){}
