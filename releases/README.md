@@ -1,0 +1,15 @@
+# Separat signierte Fusch-APK
+
+`Fusch-2.9-ohne-Kapsel.apk` ist Fusch **2.9 / VersionCode 22**, signiert mit dem
+separaten, wiederverwendbaren Release-Zertifikat. Die Paket-ID lautet
+`com.spoofgps.app`.
+
+Diese APK aktualisiert nur die mit **demselben separaten Schlüssel** signierten
+Versionen 2.6, 2.7 und 2.8. Sie kann die ursprünglich über die Website
+veröffentlichte APK (2.5 / Code 18) **nicht** direkt aktualisieren: Zuerst müsste
+diese deinstalliert werden, wodurch ihre lokalen App-Daten verloren gehen.
+
+Der Website-Download `website/public/downloads/Fusch-latest.apk` und das
+Website-Update-Manifest `website/public/update.json` bleiben unverändert bei
+2.5 / Code 18. Der private Signaturschlüssel gehört **nicht** ins GitHub-Repo;
+`app/keys/` ist ignoriert und muss separat sicher aufbewahrt werden.

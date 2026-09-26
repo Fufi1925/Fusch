@@ -43,9 +43,46 @@ public class SpoofEngine {
     public volatile boolean routeLoop = false;
     public volatile double speedMs = 1.388; // ~5 km/h
     private final List<double[]> rPts = new ArrayList<>(); // {lat,lng}
+    private final List<Double> rPrefix = new ArrayList<>(); // cumulative meters at each waypoint
+    private double rTotal = 0;
     private int rIdx = 0;
     private double rProg = 0; // meters into current segment
     private long rLast = 0;
+
+    /** Immutable snapshot for the in-app activity screen and service notification. */
+    public static final class StatusState {
+        public final boolean running, route, loop;
+        public final double lat, lng, speedMs, totalMeters, doneMeters;
+        public final String name;
+        public final long startedAtMs;
+
+        private StatusState(boolean running, boolean route, boolean loop, double lat, double lng,
+                             double speedMs, double totalMeters, double doneMeters,
+                             String name, long startedAtMs) {
+            this.running = running;
+            this.route = route;
+            this.loop = loop;
+            this.lat = lat;
+            this.lng = lng;
+            this.speedMs = speedMs;
+            this.totalMeters = totalMeters;
+            this.doneMeters = doneMeters;
+            this.name = name;
+            this.startedAtMs = startedAtMs;
+        }
+    }
+
+    public synchronized StatusState statusState() {
+        double total = 0, done = 0;
+        if (running && routeMode && rPts.size() > 1 && rPrefix.size() == rPts.size()) {
+            total = rTotal;
+            done = rIdx >= rPts.size() - 1 ? total
+                    : rPrefix.get(Math.max(0, rIdx))
+                    + Math.max(0, Math.min(segLen(rIdx), rProg));
+        }
+        return new StatusState(running, routeMode, routeLoop, lat, lng, speedMs,
+                total, Math.min(done, total), name, startedAtMs);
+    }
 
     private LocationManager lm;
     private Context appCtx;
@@ -94,6 +131,10 @@ public class SpoofEngine {
             name = (nm == null || nm.trim().isEmpty()) ? null : nm.trim();
             startedAtMs = System.currentTimeMillis();
             running = true;
+            // The foreground service can be recreated after process death.
+            // Persist static spoofs too; startRoute() stores its route JSON below.
+            persist(appCtx, lat, lng, name);
+            if (!routeMode) Prefs.put(appCtx, "route_json", "");
             handler.removeCallbacks(tick);
             handler.post(tick);
             return null;
@@ -104,6 +145,15 @@ public class SpoofEngine {
             error = friendly(e);
             return error;
         }
+    }
+
+    /** A fresh static spoof must not inherit a prior route's progress/state. */
+    public synchronized String startStatic(Context ctx, double la, double lo, String nm) {
+        routeMode = false;
+        routeLoop = false;
+        rPts.clear();rPrefix.clear();rTotal = 0;
+        rIdx = 0;rProg = 0;rLast = 0;
+        return start(ctx, la, lo, nm);
     }
 
     /** Starts a route simulation. ptsJson: [[lat,lng],[lat,lng],...] */
@@ -119,6 +169,14 @@ public class SpoofEngine {
             }
             rPts.clear();
             rPts.addAll(pts);
+            rPrefix.clear();
+            rTotal = 0;
+            rPrefix.add(0.0);
+            for (int i = 0; i < pts.size() - 1; i++) {
+                double[] a = pts.get(i), b = pts.get(i + 1);
+                rTotal += distM(a[0], a[1], b[0], b[1]);
+                rPrefix.add(rTotal);
+            }
             rIdx = 0;
             rProg = 0;
             rLast = 0;
@@ -128,7 +186,7 @@ public class SpoofEngine {
             String err = start(ctx, pts.get(0)[0], pts.get(0)[1], nm);
             if (err != null) {
                 routeMode = false;
-                rPts.clear();
+                rPts.clear();rPrefix.clear();rTotal = 0;
                 return err;
             }
             Context c = appCtx;
@@ -138,7 +196,7 @@ public class SpoofEngine {
             return null;
         } catch (Exception e) {
             routeMode = false;
-            rPts.clear();
+            rPts.clear();rPrefix.clear();rTotal = 0;
             return "ERR:BADROUTE";
         }
     }
@@ -156,7 +214,7 @@ public class SpoofEngine {
         double la = Double.longBitsToDouble(Prefs.lng(ctx, "last_lat", 0L));
         double lo = Double.longBitsToDouble(Prefs.lng(ctx, "last_lng", 0L));
         if (la == 0.0 && lo == 0.0) return "INACTIVE";
-        return start(ctx, la, lo, Prefs.str(ctx, "last_name", ""));
+        return startStatic(ctx, la, lo, Prefs.str(ctx, "last_name", ""));
     }
 
     private static void persist(Context c, double la, double lo, String nm) {
@@ -255,7 +313,7 @@ public class SpoofEngine {
         routeLoop = false;
         name = null;
         startedAtMs = 0L;
-        rPts.clear();
+        rPts.clear();rPrefix.clear();rTotal = 0;
         rIdx = 0;
         rProg = 0;
         rLast = 0;

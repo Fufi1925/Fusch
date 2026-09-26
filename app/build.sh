@@ -13,7 +13,40 @@ SDK=~/buildtools/sdk/android-14              # build-tools 34
 PLAT=~/buildtools/sdk/android-34/android.jar # platform android-34
 BUILD=$PROJ/build
 OUTDIR=$PROJ/apk
+DEV_BUILD=${FUSCH_DEV_BUILD:-0}
+STANDALONE_BUILD=${FUSCH_STANDALONE_BUILD:-0}
+KEY_DIR=$PROJ/keys
 OUT=$OUTDIR/Fusch-latest.apk
+
+if [ "$DEV_BUILD" = 1 ] && [ "$STANDALONE_BUILD" = 1 ]; then
+  echo "Entweder Test-Build oder eigenständig signierter Build, nicht beides." >&2
+  exit 1
+fi
+if [ "$DEV_BUILD" = 1 ]; then
+  KEY_DIR=$BUILD/dev-keys
+  OUT=$OUTDIR/Fusch-dev.apk
+elif [ "$STANDALONE_BUILD" = 1 ]; then
+  OUT=$OUTDIR/Fusch-standalone.apk
+fi
+if [ "$DEV_BUILD" != 1 ] && { [ ! -f "$KEY_DIR/key.pkcs8" ] || [ ! -f "$KEY_DIR/cert.pem" ]; }; then
+  echo "Signaturschlüssel fehlt in app/keys/ (key.pkcs8 und cert.pem)." >&2
+  echo "Für eine temporäre Test-APK: FUSCH_DEV_BUILD=1 bash app/build.sh." >&2
+  exit 1
+fi
+
+# Only a regular release may replace the website APK. Its signing identity
+# MUST match the published APK; a standalone build deliberately skips the
+# comparison but is NEVER copied to the website or served as an update.
+PUBLISHED=$ROOT/website/public/downloads/Fusch-latest.apk
+if [ "$DEV_BUILD" != 1 ] && [ "$STANDALONE_BUILD" != 1 ] && [ -f "$PUBLISHED" ]; then
+  expected=$(java -jar "$SDK/lib/apksigner.jar" verify --print-certs "$PUBLISHED" \
+    | sed -n 's/^Signer #1 certificate SHA-256 digest: //p' | head -1)
+  actual=$(openssl x509 -in "$KEY_DIR/cert.pem" -outform DER | sha256sum | cut -d' ' -f1)
+  if [ -z "$expected" ] || [ "$expected" != "$actual" ]; then
+    echo "Signatur passt nicht zur veröffentlichten APK – Build abgebrochen." >&2
+    exit 1
+  fi
+fi
 
 rm -rf "$BUILD"
 mkdir -p "$BUILD/gen" "$BUILD/classes" "$BUILD/dex" "$OUTDIR"
@@ -33,7 +66,7 @@ echo "== aapt2 link =="
 
 echo "== javac =="
 find "$PROJ/src" "$BUILD/gen" -name "*.java" > "$BUILD/sources.txt"
-javac -encoding UTF-8 -classpath "$PLAT" -d "$BUILD/classes" @"$BUILD/sources.txt" 2>&1 | grep -v "^Note:" || true
+javac -encoding UTF-8 -classpath "$PLAT" -d "$BUILD/classes" @"$BUILD/sources.txt"
 
 echo "== d8 =="
 find "$BUILD/classes" -name "*.class" > "$BUILD/classes.txt"
@@ -55,24 +88,29 @@ echo "== zipalign =="
 "$SDK/zipalign" -f 4 "$BUILD/base.apk" "$BUILD/aligned.apk"
 
 echo "== sign =="
-mkdir -p "$PROJ/keys"
-if [ ! -f "$PROJ/keys/cert.pem" ]; then
+if [ "$DEV_BUILD" = 1 ]; then
+  mkdir -p "$KEY_DIR"
   openssl req -x509 -newkey rsa:2048 -nodes \
-    -keyout "$PROJ/keys/key.pem" -out "$PROJ/keys/cert.pem" \
-    -days 10950 -subj "/CN=Fusch Debug/O=Fufi-IL/C=DE" 2>/dev/null
-  openssl pkcs8 -topk8 -inform PEM -outform DER -in "$PROJ/keys/key.pem" \
-    -out "$PROJ/keys/key.pkcs8" -nocrypt
+    -keyout "$KEY_DIR/key.pem" -out "$KEY_DIR/cert.pem" \
+    -days 365 -subj "/CN=Fusch Development/O=Fufi-IL/C=DE" 2>/dev/null
+  openssl pkcs8 -topk8 -inform PEM -outform DER -in "$KEY_DIR/key.pem" \
+    -out "$KEY_DIR/key.pkcs8" -nocrypt
 fi
 java -jar "$SDK/lib/apksigner.jar" sign \
-  --key "$PROJ/keys/key.pkcs8" --cert "$PROJ/keys/cert.pem" \
+  --key "$KEY_DIR/key.pkcs8" --cert "$KEY_DIR/cert.pem" \
   --out "$OUT" "$BUILD/aligned.apk"
 
 echo "== verify =="
 java -jar "$SDK/lib/apksigner.jar" verify --print-certs "$OUT" | head -3
 
-# APK automatisch in die Website übernehmen (Download-Link immer aktuell)
-if [ -d "$ROOT/website/public/downloads" ]; then
-  cp "$OUT" "$ROOT/website/public/downloads/Fusch-latest.apk"
+# New/dev signatures must NEVER replace the published APK: existing users
+# could not install the result as an update.
+if [ "$DEV_BUILD" = 1 ]; then
+  echo "== Test-APK: nicht update-kompatibel und NICHT auf die Website kopiert =="
+elif [ "$STANDALONE_BUILD" = 1 ]; then
+  echo "== Neue Signatur: eigenständige APK, NICHT auf die Website kopiert =="
+elif [ -d "$ROOT/website/public/downloads" ]; then
+  cp "$OUT" "$PUBLISHED"
   echo "== kopiert nach website/public/downloads/Fusch-latest.apk =="
 fi
 

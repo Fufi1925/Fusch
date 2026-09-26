@@ -30,7 +30,7 @@ Auf GitHub: Repo-Settings → **Danger Zone → Change visibility → Private**.
 ### 4. Domain holen
 - Service → **Settings → Networking → Generate Domain**
 - Als Subdomain **`fusch`** eintragen → Ergebnis:
-  **https://fusch.up.railway.app** ✅
+  **https://fusch.up.railway.app**
 
 > Wenn `fusch` vergeben sein sollte: erst den Service umbenennen
 > (Settings → Service Name = `fusch`), dann Domain generieren.
@@ -38,10 +38,20 @@ Auf GitHub: Repo-Settings → **Danger Zone → Change visibility → Private**.
 ### 5. Fertig – Update-Flow
 - Die App prüft bei jedem Start `https://fusch.up.railway.app/update.json`
 - Neue Version veröffentlichen:
-  1. `bash app/build.sh`  (APK wird automatisch in `website/public/downloads/` gelegt)
-  2. `website/public/update.json` → `version`, `code`, `notes`, `date` anpassen
-  3. `git add . && git commit -m "Release 1.x" && git push`
-  4. Railway baut neu (~1 Minute) → User bekommen das Update-Pop-up ✅
+  1. `app/AndroidManifest.xml` → Version und Versionscode erhöhen.
+  2. **Originale** Signaturdateien unter `app/keys/` bereitstellen und `bash app/build.sh`
+     ausführen (Test-Builds werden aus gutem Grund nie hierher kopiert).
+  3. `website/public/update.json` → `version`, `code`, `notes`, `date` anpassen.
+  4. `git add . && git commit -m "Release 2.x" && git push`.
+  5. Railway baut neu (~1 Minute) → User bekommen das Update-Pop-up.
+
+> Ohne den ursprünglichen privaten Schlüssel ist keine update-kompatible APK
+> für bestehende Website-Installationen möglich. Die neue separat signierte APK
+> (2.9 / Code 22) lässt sich mit `FUSCH_STANDALONE_BUILD=1 bash app/build.sh`
+> bauen, wird aber **nicht** auf die Website kopiert. `update.json` und der
+> Website-Download bleiben bei 2.5 / Code 18. Die neue APK lässt sich wegen der
+> anderen Signatur nur nach Deinstallation der alten App installieren (lokale
+> App-Daten gehen dabei verloren). `FUSCH_DEV_BUILD=1` ist nur ein Test-Build.
 
 ## Lokal testen
 ```bash

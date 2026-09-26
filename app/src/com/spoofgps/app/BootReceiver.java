@@ -16,7 +16,7 @@ public class BootReceiver extends BroadcastReceiver {
             if (a == null) return;
             if (!Intent.ACTION_BOOT_COMPLETED.equals(a)
                     && !"android.intent.action.QUICKBOOT_POWERON".equals(a)) return;
-            if (!Prefs.bool(context, "autostart", true)) return;
+            if (!Prefs.bool(context, "autostart", false)) return;
             if (!Prefs.bool(context, "active", false)) return;
             String err = SpoofEngine.get().restore(context);
             if (err == null) {

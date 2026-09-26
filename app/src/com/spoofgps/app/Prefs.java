@@ -28,6 +28,10 @@ public final class Prefs {
         return v == null ? d : v;
     }
 
+    public static void remove(Context c, String k) {
+        sp(c).edit().remove(k).apply();
+    }
+
     public static void put(Context c, String k, boolean v) {
         sp(c).edit().putBoolean(k, v).apply();
     }

@@ -22,6 +22,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -33,7 +34,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends Activity {
-    private static final int REQ_PERMS = 42;
+    private static final int REQ_LOCATION = 42;
+    private static final int REQ_NOTIFICATIONS = 43;
 
     /**
      * Update-Manifest: JSON mit {"version":"x.y","url":"https://...","notes":"..."}
@@ -47,11 +49,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 2.9 removes the 2.8 overlay entirely, including its saved opt-in.
+        Prefs.remove(this, "dynamic_island");
         web = new WebView(this);
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);
         s.setGeolocationEnabled(true);
+        s.setAllowFileAccessFromFileURLs(false);
+        s.setAllowUniversalAccessFromFileURLs(false);
+        s.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         web.setBackgroundColor(0xFF0B0F17);
         web.setWebViewClient(new WebClient());
         web.setWebChromeClient(new WebChromeClient() {
@@ -74,13 +81,22 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 pushState();
-                // Ask for location + notification permission right on first open
-                if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)
-                        || (Build.VERSION.SDK_INT >= 33 && !hasPerm(Manifest.permission.POST_NOTIFICATIONS))) {
-                    requestNeededPerms();
-                }
             }
         }, 800);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (web != null) web.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (web != null) web.evaluateJavascript(
+                        "window.onSystemSettingsReturn && window.onSystemSettingsReturn();", null);
+                // A foreground-service notification may stop a route in the background.
+                pushState();
+            }
+        }, 250);
     }
 
     @Override
@@ -111,20 +127,42 @@ public class MainActivity extends Activity {
 
     private volatile boolean locBusy = false;
 
-    private void requestNeededPerms() {
-        ArrayList<String> need = new ArrayList<>();
-        if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION))
-            need.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        if (Build.VERSION.SDK_INT >= 33 && !hasPerm(Manifest.permission.POST_NOTIFICATIONS))
-            need.add(Manifest.permission.POST_NOTIFICATIONS);
-        if (!need.isEmpty())
-            requestPermissions(need.toArray(new String[0]), REQ_PERMS);
+    /** Only called after an explicit tap on the location permission button. */
+    private void askLocationPermission() {
+        if (hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            notifyPermissionResult();
+            return;
+        }
+        // Android 12+ requires requesting COARSE and FINE together so the
+        // system can show its "precise location" choice.
+        String[] permissions = Build.VERSION.SDK_INT >= 31
+                ? new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION}
+                : new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+        requestPermissions(permissions, REQ_LOCATION);
+    }
+
+    /** Notification permission is separate and optional (Android 13+). */
+    private void askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= 33
+                && !hasPerm(Manifest.permission.POST_NOTIFICATIONS)) {
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    REQ_NOTIFICATIONS);
+        } else {
+            notifyPermissionResult();
+        }
+    }
+
+    private void notifyPermissionResult() {
+        if (web != null)
+            web.evaluateJavascript("window.permsResult && window.permsResult();", null);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQ_PERMS && web != null)
-            web.evaluateJavascript("window.permsResult && window.permsResult();", null);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQ_LOCATION || requestCode == REQ_NOTIFICATIONS)
+            notifyPermissionResult();
     }
 
     @Override
@@ -148,6 +186,18 @@ public class MainActivity extends Activity {
      * keyed tile service are re-signed with the real key here.
      */
     private class WebClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
+            if (!req.isForMainFrame()) return false;
+            Uri uri = req.getUrl();
+            if (uri != null && "file".equals(uri.getScheme())
+                    && "/android_asset/index.html".equals(uri.getPath())) return false;
+            // Never navigate the WebView (and its native bridge) to remote content.
+            if (uri != null && "https".equals(uri.getScheme()))
+                launchSetting(new Intent(Intent.ACTION_VIEW, uri));
+            return true;
+        }
+
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest req) {
             Uri u = req.getUrl();
@@ -191,6 +241,15 @@ public class MainActivity extends Activity {
         }
     }
 
+    private boolean launchSetting(Intent intent) {
+        try {
+            startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static String httpGet(String url) {
         HttpURLConnection c = null;
         try {
@@ -217,14 +276,8 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public String startSpoof(final double lat, final double lng, final String name) {
-            if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() { requestNeededPerms(); }
-                });
-                return "NEED_PERMS";
-            }
-            String err = SpoofEngine.get().start(getApplicationContext(), lat, lng, name);
+            if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)) return "NEED_PERMS";
+            String err = SpoofEngine.get().startStatic(getApplicationContext(), lat, lng, name);
             if (err == null) {
                 Intent i = new Intent(getApplicationContext(), SpoofService.class);
                 getApplicationContext().startForegroundService(i);
@@ -236,13 +289,7 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public String startRoute(final String pts, final double speedKmh, final boolean loop, final String name) {
-            if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() { requestNeededPerms(); }
-                });
-                return "NEED_PERMS";
-            }
+            if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)) return "NEED_PERMS";
             String err = SpoofEngine.get().startRoute(getApplicationContext(), pts, speedKmh, loop, name);
             if (err == null) {
                 Intent i = new Intent(getApplicationContext(), SpoofService.class);
@@ -256,6 +303,42 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public String routeCalc(double sla, double slo, double ela, double elo, String profile) {
             return Router.calc(sla, slo, ela, elo, profile);
+        }
+
+        /** Restore an already-running route when the WebView/Activity is recreated. */
+        @JavascriptInterface
+        public String activeRoute() {
+            SpoofEngine.StatusState s = SpoofEngine.get().statusState();
+            if (!s.running || !s.route) return "";
+            String pts = Prefs.str(getApplicationContext(), "route_json", "");
+            if (pts.isEmpty()) return "";
+            try {
+                JSONObject j = new JSONObject();
+                j.put("points", new JSONArray(pts));
+                j.put("loop", s.loop);
+                j.put("speed", s.speedMs * 3.6);
+                j.put("total", s.totalMeters);
+                j.put("startedAt", s.startedAtMs);
+                return j.toString();
+            } catch (Exception ignored) { return ""; }
+        }
+
+        /** Current state for the in-app activity screen; no system overlay. */
+        @JavascriptInterface
+        public String activeStatus() {
+            SpoofEngine.StatusState s = SpoofEngine.get().statusState();
+            if (!s.running) return "";
+            try {
+                JSONObject j = new JSONObject();
+                j.put("route", s.route);
+                j.put("loop", s.loop);
+                j.put("name", s.name == null ? "" : s.name);
+                j.put("startedAt", s.startedAtMs);
+                j.put("totalMeters", s.totalMeters);
+                j.put("doneMeters", s.doneMeters);
+                j.put("speedMs", s.speedMs);
+                return j.toString();
+            } catch (Exception ignored) { return ""; }
         }
 
         /** Aktuelle Engine-Position: "lat,lng" oder "". */
@@ -288,10 +371,18 @@ public class MainActivity extends Activity {
         }
 
         @JavascriptInterface
-        public void requestPerms() {
+        public void requestLocationPermission() {
             runOnUiThread(new Runnable() {
                 @Override
-                public void run() { requestNeededPerms(); }
+                public void run() { askLocationPermission(); }
+            });
+        }
+
+        @JavascriptInterface
+        public void requestNotificationPermission() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() { askNotificationPermission(); }
             });
         }
 
@@ -307,7 +398,7 @@ public class MainActivity extends Activity {
                 Prefs.put(c, "notif_coords", o.optBoolean("notif_coords", true));
                 Prefs.put(c, "notif_timer", o.optBoolean("notif_timer", true));
                 Prefs.put(c, "map_key_tiles", o.optBoolean("map_key_tiles", true));
-                Prefs.put(c, "autostart", o.optBoolean("autostart", true));
+                Prefs.put(c, "autostart", o.optBoolean("autostart", false));
                 Prefs.put(c, "keep_alive", o.optBoolean("keep_alive", true));
                 SpoofEngine.get().reconfigure();
                 if (SpoofEngine.get().running) {
@@ -354,7 +445,7 @@ public class MainActivity extends Activity {
             try {
                 return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             } catch (Exception e) {
-                return "1.2";
+                return "2.9";
             }
         }
 
@@ -402,7 +493,6 @@ public class MainActivity extends Activity {
             try {
                 LocationManager lmgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 if (!hasPerm(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    runOnUiThread(new Runnable() { @Override public void run() { requestNeededPerms(); } });
                     jsToPage("window.onDeviceLocation && window.onDeviceLocation(null);");
                     return;
                 }
@@ -496,26 +586,29 @@ public class MainActivity extends Activity {
         public boolean battOpt() {
             try {
                 android.os.PowerManager pm = (android.os.PowerManager) getSystemService(Context.POWER_SERVICE);
-                return pm.isIgnoringBatteryOptimizations(getPackageName());
+                return pm != null && pm.isIgnoringBatteryOptimizations(getPackageName());
             } catch (Exception e) {
-                return true;
+                return false;
             }
         }
 
         @JavascriptInterface
         public void requestBattOpt() {
-            try {
-                Intent i;
-                try {
-                    i = new Intent("android.settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
-                            Uri.parse("package:" + getPackageName()));
-                } catch (Exception e) {
-                    i = new Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Uri app = Uri.parse("package:" + getPackageName());
+                    if (battOpt() && launchSetting(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)))
+                        return;
+                    // First try Android's dialog for THIS app. Some manufacturers
+                    // omit it; then open the battery optimization list or app info.
+                    if (launchSetting(new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, app)))
+                        return;
+                    if (launchSetting(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)))
+                        return;
+                    launchSetting(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, app));
                 }
-                startActivity(i);
-            } catch (Exception e) {
-                try { startActivity(new Intent(android.provider.Settings.ACTION_SETTINGS)); } catch (Exception ignored) {}
-            }
+            });
         }
 
         @JavascriptInterface
@@ -533,11 +626,24 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public void openDevSettings() {
-            try {
-                startActivity(new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));
-            } catch (Exception e) {
-                try { startActivity(new Intent(Settings.ACTION_SETTINGS)); } catch (Exception ignored) {}
-            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!launchSetting(new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS)))
+                        launchSetting(new Intent(Settings.ACTION_SETTINGS));
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void openAppSettings() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    launchSetting(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.parse("package:" + getPackageName())));
+                }
+            });
         }
 
         @JavascriptInterface

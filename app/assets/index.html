@@ -5,14 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0b0f17">
 <title>Fusch</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <script>/* native bridge pre-stubs (defined before page ready) */
 window.onNativeState=function(run,err,lat,lng){window._ps=arguments;if(window.__ready)window.__onState(run,err,lat,lng);};
 window.onDeviceLocation=function(d){window._pl=d;if(window.__ready)window.__onLoc(d);};
-window.permsResult=function(){if(window.__ready){window.__perms();if(window.checkMock)checkMock();}};
+window.permsResult=function(){if(window.__ready){window.__perms();checkMock();}};
+window.onSystemSettingsReturn=function(){if(window.__ready){window.__perms();checkMock();}};
 window.Native=window.Android;</script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="icons.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:#0b0f17;color:#e8eefc;max-width:100vw;overflow-x:hidden;
@@ -21,6 +22,11 @@ html,body{height:100%;overflow:hidden;background:#0b0f17;color:#e8eefc;max-width
 .leaflet-container{background:#0b0f17}
 .hidden{display:none!important}
 button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
+/* Decorative symbols are local SVGs in exactly one neutral gray, even on active buttons. */
+.mono-icon{display:inline-flex;align-items:center;justify-content:center;width:1.15em;height:1.15em;flex:none;vertical-align:-.17em;line-height:1;color:#9a9a9a!important}
+.mono-icon-glyph{display:block;width:100%;height:100%;stroke:#9a9a9a!important;fill:none!important}
+#rmode button{display:flex;align-items:center;justify-content:center;gap:6px}
+.onb-btn .mono-icon{width:20px;height:20px}
 
 /* ================= splash ================= */
 #splash{position:fixed;inset:0;z-index:9000;background:#0b0f17;display:flex;flex-direction:column;
@@ -105,7 +111,8 @@ button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
 #name{flex:1;font-size:15.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ibtn{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
 .ibtn svg{width:18px;height:18px;stroke:#93a0b8}
-.ibtn.on svg{stroke:#ffd60a;fill:#ffd60a}
+.ibtn.on svg{stroke:#9a9a9a;fill:rgba(154,154,154,.22)}
+#star svg{stroke:#9a9a9a}
 #coords{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:#93a0b8;margin-top:3px}
 #status{display:flex;align-items:center;gap:7px;margin-top:9px;font-size:12.5px;color:#93a0b8}
 #dot{width:8px;height:8px;border-radius:50%;background:#5b6880;flex:none}
@@ -128,7 +135,7 @@ button{border:0;background:none;color:inherit;font:inherit;cursor:pointer}
   font-size:9.5px;color:rgba(255,255,255,.35)}
 
 /* ---------- overlays / modal ---------- */
-#movl{position:fixed;inset:0;background:rgba(4,7,12,.6);z-index:2000;backdrop-filter:blur(3px)}
+#movl{position:fixed;inset:0;background:rgba(4,7,12,.7);z-index:3000;backdrop-filter:blur(3px)}
 #sheet{position:absolute;left:0;right:0;bottom:0;background:rgba(16,21,32,.8);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);border-radius:22px 22px 0 0;
   padding:18px 16px calc(env(safe-area-inset-bottom,0px) + 18px)}
 #sheet h3{font-size:16px;margin-bottom:10px}
@@ -156,15 +163,6 @@ code{background:rgba(255,255,255,.09);border-radius:5px;padding:1px 5px;font-siz
   padding:calc(env(safe-area-inset-top,0px) + 14px) 2px 12px;
   background:rgba(11,15,23,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06)}
 .tabhead h2{font-size:18px;font-weight:800;flex:1}
-.backb{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.07);
-  display:flex;align-items:center;justify-content:center;flex:none}
-.backb svg{width:19px;height:19px;stroke:#dfe8f8}
-.chip{font-size:11.5px;font-weight:700;color:#8fe0f2;background:rgba(62,197,230,.16);
-  border-radius:100px;padding:4px 10px;flex:none}
-.scard{background:rgba(255,255,255,.055);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 14px;margin-bottom:14px;width:100%}
-.scard h3{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:#8fa0bd;
-  margin:13px 0 3px;display:flex;gap:7px;align-items:center}
 .srow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06)}
 .srow:last-child{border-bottom:0}
 .srow.col{flex-direction:column;align-items:stretch;gap:8px}
@@ -190,74 +188,179 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .seg.wide button{flex:1;justify-content:center;min-width:0}
 .pstat{font-size:12px;font-weight:700;flex:none}
 .pstat.ok{color:#30d158}.pstat.bad{color:#ff453a}
-.sbtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:9px 15px;font-size:13px;font-weight:600;flex:none;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.sbtn.wide{flex:1 1 0;width:auto;min-width:0;background:rgba(62,197,230,.14);border-color:rgba(62,197,230,.4);color:#8fe0f2;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
-.sbtn.danger{width:auto;flex:0 0 auto;background:rgba(255,69,58,.14);color:#ff8b84}
-.sbtn:active{opacity:.7}
 #ckin{flex:1;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);border-radius:10px;
   padding:9px 12px;color:#e8eefc;font-size:13px;outline:0;min-width:0}
 #ckin::placeholder{color:#5b6880}
-.guide{padding:8px 0 4px;list-style:none;counter-reset:g}
-.guide li{counter-increment:g;position:relative;padding:7px 0 7px 34px;font-size:13px;color:#c4cee2;line-height:1.5}
-.guide li:before{content:counter(g);position:absolute;left:0;top:8px;width:22px;height:22px;border-radius:50%;
-  background:rgba(62,197,230,.2);color:#8fe0f2;font-size:12px;font-weight:700;
+/* ---------- settings: compact, grouped cards ---------- */
+#settab{background:#111216;color:#f3f4f6;padding:0 18px calc(env(safe-area-inset-bottom,0px) + 32px);scrollbar-width:none}
+#settab::-webkit-scrollbar{display:none}
+#settab .settings-head{padding:calc(env(safe-area-inset-top,0px) + 28px) 2px 20px;
+  background:#111216;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom:0;gap:14px}
+#settab .settings-head h2{font-size:24px;letter-spacing:-.025em;font-weight:750}
+#settab .settings-done{color:#46d9ef;font-size:16px;font-weight:700;min-height:44px;padding:0 4px;flex:none}
+#settab .settings-done:focus-visible,#settab button:focus-visible,#settab summary:focus-visible{outline:2px solid #41d9ee;outline-offset:3px}
+#settab .settings-section{margin:0 0 25px}
+#settab .settings-label{font-size:11px;line-height:1.3;font-weight:700;letter-spacing:.13em;color:#9799a3;margin:0 0 11px 2px}
+#settab .settings-card,#settab .settings-help{background:#191a1f;border:1px solid #303139;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,.1)}
+#settab .settings-card .srow{padding:15px 16px;gap:12px;min-height:63px;border-color:#303139}
+#settab .settings-card .srow:last-child{border-bottom:0}
+#settab .settings-card .st{color:#f2f2f5;font-size:15px;line-height:1.25;font-weight:700;min-width:0}
+#settab .settings-card .sd{color:#a7a9b4;font-size:12.5px;font-weight:400;line-height:1.4;margin-top:3px}
+#settab .sw{width:48px;height:29px}
+#settab .sw span{border:1px solid #30323c;background:#222329}
+#settab .sw span:after{top:3px;left:3px;width:21px;height:21px;background:#969aa6}
+#settab .sw input:checked+span{background:#43d8ef;border-color:#43d8ef}
+#settab .sw input:checked+span:after{transform:translateX(19px);background:#10212b}
+#settab .sw input:focus-visible+span{outline:2px solid #e5faff;outline-offset:3px}
+#settab .setup-card{padding:3px 15px 14px}
+#settab .setup-row{display:flex;align-items:flex-start;gap:12px;width:100%;min-height:65px;text-align:left;padding:14px 0;border-bottom:1px solid #303139}
+#settab .setup-row .setup-text{display:flex;flex-direction:column;min-width:0;flex:1}
+#settab .setup-row strong{font-size:15px;line-height:1.3;font-weight:700;color:#f2f2f5}
+#settab .setup-row .sd{font-size:12.5px;color:#a7a9b4;line-height:1.35;margin-top:3px}
+#settab .status-dot{display:block;width:10px;height:10px;flex:none;border-radius:50%;background:#858995;margin-top:6px}
+#settab .status-dot.is-ok{background:#32c99c;box-shadow:0 0 0 2px rgba(50,201,156,.1)}
+#settab .status-dot.needs{background:#efb659}
+#settab .setup-chevron,#settab .help-chevron{width:10px;height:10px;flex:none;border-top:2px solid #8f919b;
+  border-right:2px solid #8f919b;transform:rotate(45deg)}
+#settab .setup-chevron{margin-top:8px;margin-right:5px;width:8px;height:8px}
+#settab .setup-actions{padding-top:14px}
+#settab .settings-secondary{display:flex;align-items:center;justify-content:center;gap:9px;
+  min-height:49px;width:100%;padding:8px 12px;border-radius:12px;background:#292a30;
+  color:#f3f4f6;font-size:14.5px;font-weight:700;text-align:center}
+#settab .settings-secondary .mono-icon{width:18px;height:18px}
+#settab .settings-textlink{width:100%;min-height:37px;text-align:center;font-size:12.5px;
+  font-weight:650;color:#4dd9f0;padding:9px 6px 0;line-height:1.35}
+#settab .settings-smallbtn{padding:8px 10px;background:#292a30;border-radius:10px;
+  font-size:12px;font-weight:700;color:#f2f2f5;white-space:nowrap}
+#settab .settings-card-action{padding:11px 15px 15px}
+#settab .seg{border-color:#343740;background:#25262d}
+#settab .seg button{padding:7px 10px}
+#settab .settings-inline-detail{border-top:1px solid #303139}
+#settab .settings-inline-detail>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  list-style:none;cursor:pointer;padding:14px 16px;font-size:13.5px;color:#c4cad4}
+#settab .settings-inline-detail>summary::-webkit-details-marker{display:none}
+#settab .advanced-chevron{display:block;width:8px;height:8px;border-right:2px solid #9b9fa9;
+  border-bottom:2px solid #9b9fa9;transform:rotate(45deg);transition:transform .2s}
+#settab .settings-inline-detail[open] .advanced-chevron{transform:rotate(225deg)}
+#settab .settings-key-area{padding:0 15px 15px}
+#settab .settings-key-input{display:flex;align-items:center;gap:7px;width:100%;min-width:0}
+#settab #ckin{background:#222329}
+#settab .settings-help{display:flex;align-items:center;width:100%;min-height:74px;text-align:left;
+  gap:14px;padding:15px;margin:6px 0 0}
+#settab .help-icon{display:flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px;
+  border-radius:8px;background:rgba(74,217,237,.12)}
+#settab .help-icon .mono-icon{font-size:20px}
+#settab .help-copy{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+#settab .help-copy strong{font-size:16px;font-weight:750;color:#f3f4f6}
+#settab .help-copy small{font-size:12.5px;line-height:1.38;color:#a7a9b4}
+#settab .help-chevron{margin-right:5px}
+#settab .settings-footer{text-align:center;font-size:12px;color:#858995;padding:21px 0 4px}
+#settab .settings-help:active,#settab .settings-secondary:active{filter:brightness(1.1)}
+@media(max-width:350px){#settab{padding-left:13px;padding-right:13px}
+  #settab .settings-card .srow{padding-left:13px;padding-right:13px}
+  #settab .seg button{padding:7px 8px;font-size:11px}}
+
+/* ---------- in-app active session; no window over other apps ---------- */
+#activePanel{position:fixed;inset:0;z-index:4000;background:#111216;color:#f3f4f6;
+  padding:0 18px;overflow-y:auto;overscroll-behavior:contain}
+.active-layout{max-width:620px;min-height:100%;margin:0 auto;display:flex;flex-direction:column}
+.active-header{padding:calc(env(safe-area-inset-top,0px) + 42px) 2px 30px}
+.active-eyebrow{color:#9799a3;font-size:11px;font-weight:800;letter-spacing:.13em;margin-bottom:14px}
+.active-header h2{font-size:28px;font-weight:750;letter-spacing:-.025em;line-height:1.2}
+.active-header p{color:#a7a9b4;font-size:14px;line-height:1.4;margin-top:8px}
+.active-content{flex:1}
+.active-card{border:1px solid #303139;background:#191a1f;border-radius:20px;
+  padding:20px 18px 21px;box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.active-card-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  color:#9ba1ad;font-size:12px;font-weight:700}
+.active-indicator{display:inline-flex;align-items:center;gap:9px;letter-spacing:.1em}
+.active-indicator i{width:9px;height:9px;border-radius:50%;background:#32c99c;box-shadow:0 0 0 3px rgba(50,201,156,.1)}
+#activeTime{font:700 14px ui-monospace,Menlo,Consolas,monospace;color:#f2f2f5}
+.active-place{font-size:22px;line-height:1.25;font-weight:750;margin-top:23px;
+  overflow-wrap:anywhere}
+.active-detail{font-size:13px;line-height:1.5;color:#a7a9b4;margin-top:7px}
+.active-route{margin-top:22px;border-top:1px solid #303139;padding-top:17px}
+.active-progress-head,.active-route-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  color:#a7a9b4;font-size:12.5px}
+.active-progress-head strong{color:#f3f4f6;font-size:13.5px}
+.active-progress{height:6px;background:#303139;border-radius:10px;overflow:hidden;margin:11px 0 10px}
+.active-progress i{display:block;width:0;height:100%;background:#43d8ef;border-radius:10px;transition:width .4s}
+.active-route-meta span:last-child{text-align:right}
+.active-note{color:#858995;font-size:12.5px;text-align:center;line-height:1.4;margin:18px 0}
+.active-footer{background:#111216;padding:15px 0 calc(env(safe-area-inset-bottom,0px) + 22px)}
+#activeStop{width:100%;min-height:56px;border-radius:14px;background:#34272c;
+  color:#ffaaa4;font-size:16px;font-weight:750;border:1px solid #6c3a3e}
+#activeStop:active{filter:brightness(1.15)}
+#activeStop:focus-visible{outline:2px solid #41d9ee;outline-offset:3px}
+#activeStop:disabled{opacity:.5}
+@media(max-width:350px){#activePanel{padding-left:13px;padding-right:13px}}
+
+/* ---------- favorites & history: same grouped-card language as settings ---------- */
+.library-tab{background:#111216!important;color:#f3f4f6!important;
+  padding:0 18px calc(env(safe-area-inset-bottom,0px) + 32px)!important;scrollbar-width:none}
+.library-tab::-webkit-scrollbar{display:none}
+.library-head{padding:calc(env(safe-area-inset-top,0px) + 28px) 2px 20px;
+  background:#111216;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom:0;gap:14px}
+.library-head h2{font-size:24px;font-weight:750;letter-spacing:-.025em}
+.library-done{color:#46d9ef;font-size:16px;font-weight:700;min-height:44px;padding:0 4px;flex:none}
+.library-tab button:focus-visible,.library-tab input:focus-visible{outline:2px solid #41d9ee;outline-offset:3px}
+.library-section{margin:0 0 25px}
+.library-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:0 2px 11px}
+.library-heading h3,.library-heading h4{font-size:11px;line-height:1.3;font-weight:700;letter-spacing:.13em;color:#9799a3}
+.library-count{font-size:12px;font-weight:700;color:#abb1bb;font-variant-numeric:tabular-nums}
+.library-card,.library-empty{background:#191a1f;border:1px solid #303139;
+  border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.library-card{overflow:hidden}
+.library-search{display:flex;align-items:center;gap:12px;background:#191a1f;
+  border:1px solid #303139;border-radius:14px;min-height:52px;padding:0 15px;margin:0 0 23px}
+.library-search .mono-icon{width:18px;height:18px}
+.library-search input{background:none;color:#f2f2f5;border:0;outline:none;font:400 14px Roboto,-apple-system,"Segoe UI",system-ui,sans-serif;
+  min-width:0;width:100%;flex:1}
+.library-search input::placeholder{color:#9498a4}
+.library-search input::-webkit-search-cancel-button{display:none}
+.library-search button{font-size:21px;line-height:1;color:#a7a9b4;width:28px;height:38px;flex:none}
+.library-tab .library-sort{width:100%;background:#25262d;border:1px solid #343740;
+  padding:4px;border-radius:13px;gap:4px}
+.library-tab .library-sort button{flex:1;justify-content:center;padding:9px 5px;
+  font-size:13px;font-weight:650;color:#a7a9b4}
+.library-tab .library-sort button.on{background:#43d8ef;color:#10212b}
+.library-row{display:flex;align-items:center;gap:12px;min-height:79px;padding:13px 14px}
+.library-row+.library-row{border-top:1px solid #303139}
+.entry-icon{width:38px;height:38px;border-radius:12px;flex:none;background:#25272d;
   display:flex;align-items:center;justify-content:center}
-.creditbox{text-align:center;padding:24px 0 10px}
-.creditbox .cico{width:56px;height:56px;border-radius:18px;background:#101623;
-  border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
-.creditbox .cico svg{width:28px;height:28px}
-.creditbox .cn{font-size:15px;font-weight:800}
-.creditbox .cv{font-size:11.5px;color:#8fa0bd;margin-top:3px}
-.creditbox .made{margin-top:16px;font-size:13px;color:#8fa0bd}
-.creditbox .made b{background:linear-gradient(90deg,#5ad0f5,#30d158);-webkit-background-clip:text;
-  background-clip:text;color:transparent;font-size:14.5px;letter-spacing:.02em}
-.creditbox .made2{margin-top:5px;font-size:12px;color:#6f7d99}
-.creditbox .cpr{margin-top:12px;font-size:10px;color:#4d5872}
-
-/* ---------- favorites tab ---------- */
-#fsearch{display:flex;align-items:center;gap:9px;background:rgba(13,17,26,.62);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-  border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:0 13px;height:44px;margin-bottom:12px;width:100%}
-#fsearch svg{width:16px;height:16px;stroke:#7d8aa3;flex:none}
-#fsearch input{flex:1;background:none;border:0;outline:0;color:#e8eefc;font-size:14px;min-width:0}
-#favlist{display:flex;flex-direction:column;gap:9px;padding-bottom:8px;width:100%}
-.fvcard{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.045);
-  border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px 12px;animation:fin .25s both;
-  width:100%;min-width:0}
-@keyframes fin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.fvav{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:800;flex:none;overflow:hidden}
-.fvmain{flex:1;min-width:0;cursor:pointer}
-.fvmain .fvn{font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fvmain .fvs{font-size:11px;color:#8fa0bd;margin-top:2px;font-family:ui-monospace,Menlo,monospace;
+.entry-icon .mono-icon{font-size:20px}
+.entry-main{min-width:0;flex:1;text-align:left;display:flex;flex-direction:column;gap:2px;
+  padding:6px 0;line-height:1.3}
+.entry-name{display:block;color:#f3f4f6;font-size:15px;font-weight:700;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fvmain .fvd{font-size:10.5px;color:#6f7d99;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fvact{display:flex;flex-direction:column;gap:2px;flex:none}
-.fvact button{width:34px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center}
-.fvact button:active{background:rgba(255,255,255,.08)}
-.fvact svg{width:16px;height:16px;stroke:#93a0b8}
-#favempty,#histempty{text-align:center;padding:52px 20px 30px;color:#8fa0bd}
-#favempty svg{width:64px;height:64px;stroke:#39415a;margin-bottom:14px}
-#favempty .ft,#histempty .ft{font-size:15px;font-weight:700;color:#c4cee2}
-#favempty .fs,#histempty .fs{font-size:12.5px;margin-top:5px;line-height:1.5}
-.factrow{display:flex;gap:9px;margin-top:4px;width:100%}
-.factrow .sbtn.danger{font-size:12.5px;padding:9px 12px;white-space:nowrap}
-
-/* ---------- live bar (Vanish-Style) ---------- */
-#livebar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  z-index:1200;display:flex;gap:10px}
-#livepill{flex:1;display:flex;align-items:center;gap:10px;background:rgba(16,46,30,.6);
-  backdrop-filter:blur(16px);border:1px solid rgba(48,209,88,.45);border-radius:15px;
-  padding:14px 17px;color:#5ee39a;font-weight:800;font-size:15.5px;
-  box-shadow:0 10px 30px rgba(0,0,0,.4)}
-#livepill .lpdot{width:9px;height:9px;border-radius:50%;background:#30d158;
-  box-shadow:0 0 9px #30d158;animation:blink 1.4s infinite;flex:none}
-#lp_time{margin-left:auto;font-family:ui-monospace,Menlo,Consolas,monospace;
-  color:#8fe8b0;font-weight:700;font-size:15px}
-#live_stop{flex:0 0 32%;background:rgba(74,22,19,.6);border:1px solid rgba(255,69,58,.5);
-  border-radius:15px;color:#ff6b61;font-weight:800;font-size:15.5px;backdrop-filter:blur(16px);
-  box-shadow:0 10px 30px rgba(0,0,0,.4)}
-#live_stop:active{transform:scale(.98)}
+.entry-coords{display:block;font:400 11.5px ui-monospace,Menlo,Consolas,monospace;
+  color:#a7a9b4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.entry-sub{display:block;color:#858995;font-size:11px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.entry-actions{display:flex;gap:4px;flex:none}
+.entry-action{width:35px;height:36px;display:flex;align-items:center;justify-content:center;
+  border-radius:10px;background:#292a30}
+.entry-action .mono-icon{font-size:16px}
+.entry-action:active,.entry-main:active{filter:brightness(1.2)}
+.library-empty{text-align:center;display:flex;flex-direction:column;align-items:center;
+  gap:6px;padding:32px 18px;color:#a7a9b4;font-size:12.5px;line-height:1.45}
+.library-empty-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;
+  border-radius:15px;background:#25272d;margin:0 0 10px}
+.library-empty-icon .mono-icon{font-size:24px}
+.library-empty strong{color:#f3f4f6;font-size:15px;font-weight:700}
+.library-empty span:last-child{max-width:265px}
+.library-action{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;
+  padding:14px 17px;text-align:left;color:#f2f2f5;font-size:14.5px;font-weight:650}
+.library-action+.library-action{border-top:1px solid #303139}
+.library-action .mono-icon{font-size:18px}
+.library-action.destructive{color:#ffaaa4}
+.library-action:active{background:#292a30}
+#histlist{display:flex;flex-direction:column;gap:19px}
+#histlist .library-heading{margin-bottom:9px}
+@media(max-width:350px){.library-tab{padding-left:13px!important;padding-right:13px!important}
+  .library-row{padding-left:11px;padding-right:11px;gap:9px}
+  .entry-action{width:32px}}
 
 /* ---------- route panel (Vanish-Style) & history ---------- */
 #routebar{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
@@ -306,17 +409,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .rAB.b{background:#ff453a}
 @keyframes dashmove{to{stroke-dashoffset:-40}}
 .routeActive{animation:dashmove 1.2s linear infinite}
-#histlist{display:flex;flex-direction:column;gap:9px;padding-bottom:8px}
-.hrow{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.045);
-  border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:11px 12px;cursor:pointer}
-.hrow .hico{width:38px;height:38px;border-radius:12px;background:rgba(62,197,230,.14);
-  display:flex;align-items:center;justify-content:center;flex:none;font-size:15px}
-.hrow .hm{flex:1;min-width:0}
-.hrow .hn{font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hrow .hs{font-size:10.5px;color:#8fa0bd;margin-top:2px;font-family:ui-monospace,Menlo,monospace;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hrow .hd{font-size:10px;color:#6f7d99;margin-top:2px}
-
 /* ---------- rename modal ---------- */
 #renovl{position:fixed;inset:0;background:rgba(4,7,12,.65);z-index:3000;backdrop-filter:blur(4px);
   display:flex;align-items:center;justify-content:center;padding:24px}
@@ -326,6 +418,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 #renin{width:100%;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);border-radius:11px;
   padding:11px 13px;color:#e8eefc;font-size:14px;outline:0}
 #renin:focus{border-color:rgba(90,208,245,.6)}
+#renovl .rbox{background:#191a1f;border-color:#303139;box-shadow:0 16px 45px rgba(0,0,0,.28)}
+#renovl .rbox h3{font-size:18px}
+#renovl #renin{background:#222329;border-color:#343740}
+#renovl .mbtn.p{background:#292a30;color:#f3f4f6}
 
 /* ================= spoof popup ================= */
 #spovl{position:fixed;inset:0;z-index:4500;background:rgba(4,7,12,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
@@ -391,7 +487,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 /* ===== v1.9 Vanish-Glass ===== */
 #dim{position:fixed;inset:0;z-index:1005;pointer-events:none;background:rgba(4,7,13,.52);opacity:0;transition:opacity .35s}
 #dim.on{opacity:1}
-#routebar.live #rmode,#routebar.live #rsetrow,#routebar.live #rspdrow,#routebar.live #rlooprow,#routebar.live .microlbl{opacity:.4;pointer-events:none}
+#routebar.live #rmode,#routebar.live #rsetrow,#routebar.live #rspdrow,#routebar.live #rlooprow,#routebar.live .microlbl,#routebar.live #rcancel{opacity:.4;pointer-events:none}
 #rmode,#rsetrow,#rspdrow,#rlooprow{transition:opacity .3s}
 #rliverow{display:none;gap:10px;margin-top:11px}
 #rliverow.show{display:flex}
@@ -449,6 +545,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .onb-icon svg{width:52px;height:52px}
 .onb-circle{width:96px;height:96px;border-radius:50%;background:rgba(48,209,88,.08);border:1px solid rgba(48,209,88,.25);display:flex;align-items:center;justify-content:center;margin-bottom:4px}
 .onb-circle .onb-icon{width:60px;height:60px;border-radius:18px;box-shadow:0 0 26px rgba(48,209,88,.3);border-color:rgba(48,209,88,.45);background:radial-gradient(circle at 30% 25%,#173325,#0c1a12)}
+/* Keep check/cross pictograms monochrome as well; status remains in text. */
+.onb-ok .tick{background:rgba(154,154,154,.16);border:1px solid #9a9a9a;color:#9a9a9a}
+.spores .big.ok,.spores .big.bad{color:#9a9a9a;text-shadow:none}
 </style>
 </head>
 <body>
@@ -497,8 +596,8 @@ setTimeout(function(){
       <div class="onb-sub">Wähle einen Ort – und dieses Android-Handy scheint dort zu sein.</div>
       <div class="onb-card"><h4><span style="color:#4fd8f7">Nie einen Computer. Nie.</span></h4>
         <p>Fusch richtet alles auf diesem Handy ein und läuft komplett hierauf.</p></div>
-      <div class="onb-bullet"><span class="ic">🕐</span><span>Das Setup dauert nur ein paar Minuten – und Fusch bringt dich danach zurück zum richtigen Ort.</span></div>
-      <div class="onb-bullet"><span class="ic">ℹ️</span><span>Android markiert gesetzte Standorte als simuliert, und Apps dürfen das prüfen. Spiele wie Pokémon GO, Tracker wie Life360 und viele Banking-Apps durchschauen das.</span></div>
+      <div class="onb-bullet"><span class="ic"><span class="mono-icon" data-icon="clock" aria-hidden="true"></span></span><span>Das Setup dauert nur ein paar Minuten – und Fusch bringt dich danach zurück zum richtigen Ort.</span></div>
+      <div class="onb-bullet"><span class="ic"><span class="mono-icon" data-icon="info" aria-hidden="true"></span></span><span>Android markiert gesetzte Standorte als simuliert, und Apps dürfen das prüfen. Spiele wie Pokémon GO, Tracker wie Life360 und viele Banking-Apps durchschauen das.</span></div>
     </div>
 
     <div class="onb-step" id="onb_s2">
@@ -506,14 +605,15 @@ setTimeout(function(){
       <div class="onb-h1">Erst ein bisschen Kontext.</div>
       <div class="onb-sub">Fusch fragt erst, wenn du auf eine Berechtigung tippst – so weißt du immer, warum Android fragt.</div>
       <div class="onb-card">
-        <h4><span class="oi">📍</span>Genauer Standort<span class="onb-status" id="onb_loc_stat" style="margin-left:auto">Noch nicht angefragt</span></h4>
-        <p>Fusch braucht den genauen Standort, um den gewählten Ort zu veröffentlichen. Deine echte Position wird nie mitgelesen oder hochgeladen.</p>
-        <button class="onb-btn" id="onb_allow_loc">📍 Genauen Standort erlauben</button>
+        <h4><span class="oi"><span class="mono-icon" data-icon="pin" aria-hidden="true"></span></span>Genauer Standort<span class="onb-status" id="onb_loc_stat" style="margin-left:auto">Noch nicht angefragt</span></h4>
+        <p>Fusch braucht den genauen Standort, um den gewählten Ort zu veröffentlichen. Deinen echten Standort zeigt die App nur auf deinem Gerät an.</p>
+        <button class="onb-btn" id="onb_allow_loc"><span class="mono-icon" data-icon="pin" aria-hidden="true"></span> Genauen Standort erlauben</button>
+        <button class="onb-link" id="onb_app_settings">Schon abgelehnt? In Android-Einstellungen erlauben</button>
       </div>
       <div class="onb-card">
-        <h4><span class="oi">🔔</span>Benachrichtigungen – Optional<span class="onb-status" id="onb_not_stat" style="margin-left:auto">Noch nicht angefragt</span></h4>
+        <h4><span class="oi"><span class="mono-icon" data-icon="bell" aria-hidden="true"></span></span>Benachrichtigungen – Optional<span class="onb-status" id="onb_not_stat" style="margin-left:auto">Noch nicht angefragt</span></h4>
         <p>Benachrichtigungen halten einen laufenden Spoof sichtbar und sagen dir Bescheid, wenn er stoppt. Du kannst auch ohne sie weitermachen.</p>
-        <button class="onb-btn" id="onb_allow_not">🔔 Benachrichtigungen erlauben</button>
+        <button class="onb-btn" id="onb_allow_not"><span class="mono-icon" data-icon="bell" aria-hidden="true"></span> Benachrichtigungen erlauben</button>
         <button class="onb-link" id="onb_not_skip">Jetzt nicht</button>
       </div>
     </div>
@@ -528,12 +628,12 @@ setTimeout(function(){
         <div class="onb-nrow"><span class="onb-num">2</span><div>Tippe auf <b>Standort-Override-App auswählen</b> und wähle <b>Fusch</b>.</div></div>
         <div class="onb-nrow"><span class="onb-num">3</span><div><b>Komm zu Fusch zurück.</b> Die Auswahl wird beim Zurückkehren automatisch geprüft.</div></div>
       </div>
-      <div class="onb-ok" id="onb_mock_ok"><span class="tick">✓</span>Android akzeptiert jetzt Standorte von Fusch.</div>
+      <div class="onb-ok" id="onb_mock_ok"><span class="tick"><span class="mono-icon" data-icon="check" aria-hidden="true"></span></span>Android akzeptiert jetzt Standorte von Fusch.</div>
       <div class="onb-card">
         <h4>Entwickleroptionen nicht sichtbar?</h4>
         <p>Öffne Einstellungen › Telefoninfo, tippe <b>7-mal auf „Buildnummer“</b>. Gib deine Displaysperre ein, wenn Android fragt, und kehre zu System › Entwickleroptionen zurück.</p>
         <div class="onb-note">Immer noch nicht? Xiaomi/MIUI und Huawei verstecken oder benennen die Auswahl manchmal um. Suche in den Einstellungen nach „Mock-Standort“ und lasse die Entwickleroptionen aktiviert.</div>
-        <button class="onb-btn" id="onb_dev">⚙ Entwickleroptionen öffnen</button>
+        <button class="onb-btn" id="onb_dev"><span class="mono-icon" data-icon="settings" aria-hidden="true"></span> Entwickleroptionen öffnen</button>
       </div>
     </div>
 
@@ -542,12 +642,12 @@ setTimeout(function(){
       <div class="onb-h1">Spoof am Laufen halten.</div>
       <div class="onb-sub">Akku-Optimierung kann Fuschs Vordergrund-Dienst stoppen, sobald der Bildschirm aus ist. Eine Ausnahme macht längere Sitzungen zuverlässiger.</div>
       <div class="onb-card">
-        <h4><span class="oi">🔋</span>Akku-Optimierung<span class="onb-status amber" id="onb_batt_stat" style="margin-left:auto">Android kann Fusch stoppen</span></h4>
+        <h4><span class="oi"><span class="mono-icon" data-icon="battery" aria-hidden="true"></span></span>Akku-Optimierung<span class="onb-status amber" id="onb_batt_stat" style="margin-left:auto">Android kann Fusch stoppen</span></h4>
         <p>Das ändert nichts an deiner Standort-Berechtigung – du kannst es später jederzeit in den Einstellungen zurücksetzen.</p>
-        <button class="onb-btn" id="onb_allow_batt">🔋 Hintergrund-Aktivität erlauben</button>
+        <button class="onb-btn" id="onb_allow_batt"><span class="mono-icon" data-icon="battery" aria-hidden="true"></span> Hintergrund-Aktivität erlauben</button>
         <button class="onb-link" id="onb_batt_skip">Jetzt nicht</button>
       </div>
-      <div class="onb-warn"><span>⚠️</span><span>Dieser Schritt ist optional. Überspringen ist ein Hinweis, kein Setup-Fehler.</span></div>
+      <div class="onb-warn"><span><span class="mono-icon" data-icon="warning" aria-hidden="true"></span></span><span>Dieser Schritt ist optional. Überspringen ist ein Hinweis, kein Setup-Fehler.</span></div>
     </div>
 
     <div class="onb-step" id="onb_s5">
@@ -602,7 +702,7 @@ setTimeout(function(){
 <div id="attrib">Esri · © OpenStreetMap-Mitwirkende</div>
 
 <div id="mockwarn" class="hidden" onclick="showHint(null)">
-  ⚠️ <b>Spoof ist blockiert:</b> Fusch fehlt die Mock-Standort-Erlaubnis – Android setzt sie bei Updates manchmal zurück. <b>Tippen für Anleitung &amp; Fix.</b>
+  <span class="mono-icon" data-icon="warning" aria-hidden="true"></span> <b>Spoof ist blockiert:</b> Fusch fehlt die Mock-Standort-Erlaubnis – Android setzt sie bei Updates manchmal zurück. <b>Tippen für Anleitung &amp; Fix.</b>
 </div>
 <div id="cardempty" class="hidden">
   <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.4" fill="#dfe8f8" stroke="none"/><path d="M12 3v2.2M12 18.8V21M3 12h2.2M18.8 12H21"/></svg>
@@ -630,12 +730,6 @@ setTimeout(function(){
 </button>
 </div>
 
-<!-- ================= LIVE BAR (Vanish-Style) ================= -->
-<div id="livebar" class="hidden">
-  <div id="livepill"><span class="lpdot"></span><span id="lp_txt">Spoofing</span><span id="lp_time">00:00</span></div>
-  <button id="live_stop">Stop</button>
-</div>
-
 <!-- ================= ROUTE PANEL ================= -->
 <div id="routebar" class="hidden">
   <div class="rrow">
@@ -657,9 +751,9 @@ setTimeout(function(){
     </div>
   </div>
   <div id="rmode">
-    <button data-m="foot">🚶 Fuß</button>
-    <button data-m="bike">🚲 Fahrrad</button>
-    <button data-m="car" class="on">🚗 Auto</button>
+    <button data-m="foot"><span class="mono-icon" data-icon="walk" aria-hidden="true"></span> Fuß</button>
+    <button data-m="bike"><span class="mono-icon" data-icon="bike" aria-hidden="true"></span> Fahrrad</button>
+    <button data-m="car" class="on"><span class="mono-icon" data-icon="car" aria-hidden="true"></span> Auto</button>
   </div>
   <div class="microlbl">Eigene Geschwindigkeit</div>
   <div id="rsetrow">
@@ -676,7 +770,7 @@ setTimeout(function(){
   </button>
   <div id="rsum"><span id="rsum_txt">–</span></div>
   <div id="rlooprow" class="hidden" style="display:flex;align-items:center;gap:12px;margin-top:9px;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:11px 13px">
-    <div style="flex:1;font-size:13.5px;font-weight:700;color:#c4cee2">🔁 Route endlos wiederholen</div>
+    <div style="flex:1;font-size:13.5px;font-weight:700;color:#c4cee2"><span class="mono-icon" data-icon="loop" aria-hidden="true"></span> Route endlos wiederholen</div>
     <label class="sw"><input type="checkbox" id="rloop"><span></span></label>
   </div>
   <button id="rgo" class="hidden">
@@ -684,6 +778,33 @@ setTimeout(function(){
     Losfahren
   </button>
   <div id="rliverow"><div id="rl_pill"><span class="lpdot"></span><span>Route live</span><span id="rl_time">00:00</span></div><button id="rl_stop">Stop</button></div>
+</div>
+
+<!-- ================= ACTIVE SESSION: only Stop is interactive in Fusch ================= -->
+<div id="activePanel" class="hidden" role="dialog" aria-modal="true" aria-labelledby="activeTitle">
+  <div class="active-layout">
+    <header class="active-header">
+      <div class="active-eyebrow">FUSCH LÄUFT</div>
+      <h2 id="activeTitle">Standort aktiv</h2>
+      <p id="activeDescription">Dein Standort ist gesetzt.</p>
+    </header>
+    <main class="active-content">
+      <section class="active-card" aria-label="Aktueller Status">
+        <div class="active-card-meta"><span class="active-indicator"><i aria-hidden="true"></i> AKTIV</span><span id="activeTime">00:00</span></div>
+        <div id="activePlace" class="active-place">Standort</div>
+        <div id="activeDetail" class="active-detail">Spoofing läuft</div>
+        <div id="activeRoute" class="active-route hidden">
+          <div class="active-progress-head"><span>Route</span><strong id="activePercent">0 %</strong></div>
+          <div class="active-progress" role="progressbar" aria-label="Routenfortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="activeProgressFill"></i></div>
+          <div class="active-route-meta"><span id="activeRemaining">–</span><span id="activeEta">–</span></div>
+        </div>
+      </section>
+      <p class="active-note">Für andere Aktionen zuerst stoppen.</p>
+    </main>
+    <footer class="active-footer">
+      <button id="activeStop" type="button">Spoofing stoppen</button>
+    </footer>
+  </div>
 </div>
 
 <!-- ================= SPOOF POPUP ================= -->
@@ -716,175 +837,163 @@ setTimeout(function(){
 </div>
 
 <!-- ================= SETTINGS TAB ================= -->
-<div id="settab">
-  <div class="tabhead">
-    <button class="backb" id="backset"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+<div id="settab" aria-label="Einstellungen">
+  <div class="tabhead settings-head">
     <h2>Einstellungen</h2>
+    <button id="backset" class="settings-done" type="button">Fertig</button>
   </div>
 
-  <div class="scard">
-    <h3>🛰️ Spoofing</h3>
-    <div class="srow"><div class="st">Netzwerk-Standort mitfälschen</div><label class="sw"><input type="checkbox" data-k="mock_network"><span></span></label></div>
-    <div class="srow"><div class="st">GPS-Verwacklung</div><label class="sw"><input type="checkbox" data-k="jitter"><span></span></label></div>
-    <div class="srow"><div class="st">Update-Intervall</div><div class="sval" id="vInt">1,0 s</div></div>
-    <input type="range" class="rslider" min="500" max="5000" step="250" id="rInt">
-    <div class="srow"><div class="st">GPS-Genauigkeit</div><div class="sval" id="vAcc">5 m</div></div>
-    <input type="range" class="rslider" min="1" max="30" step="1" id="rAcc">
-    <div class="srow"><div class="st">Autostart nach Neustart</div><label class="sw"><input type="checkbox" data-k="autostart"><span></span></label></div>
-    <div class="srow"><div class="st">Im Hintergrund aktiv</div><label class="sw"><input type="checkbox" data-k="keep_alive"><span></span></label></div>
-  </div>
+  <section class="settings-section" aria-labelledby="set-spoof-title">
+    <h3 class="settings-label" id="set-spoof-title">SPOOFING</h3>
+    <div class="settings-card">
+      <div class="srow"><div class="st">Im Hintergrund aktiv<div class="sd">Spoof läuft nach App-Wechsel weiter</div></div><label class="sw"><input type="checkbox" data-k="keep_alive" aria-label="Im Hintergrund aktiv"><span></span></label></div>
+      <div class="srow"><div class="st">Netzwerk-Standort<div class="sd">GPS und Netzwerk gemeinsam</div></div><label class="sw"><input type="checkbox" data-k="mock_network" aria-label="Netzwerk-Standort mitfälschen"><span></span></label></div>
+      <div class="srow"><div class="st">GPS-Bewegung<div class="sd">Kleine natürliche Schwankungen</div></div><label class="sw"><input type="checkbox" data-k="jitter" aria-label="GPS-Verwacklung"><span></span></label></div>
+      <div class="srow"><div class="st">Autostart<div class="sd">Aktiven Spoof nach Neustart fortsetzen</div></div><label class="sw"><input type="checkbox" data-k="autostart" aria-label="Autostart nach Neustart"><span></span></label></div>
+    </div>
+  </section>
 
-  <div class="scard">
-    <h3>🧭 Route</h3>
-    <div class="srow"><div class="st">Standard-Fahrzeug</div>
-      <div class="seg" id="profseg">
-        <button data-p="foot" title="Fuß">🚶</button>
-        <button data-p="bike" title="Fahrrad">🚲</button>
-        <button data-p="car" title="Auto">🚗</button>
+  <section class="settings-section" aria-labelledby="set-setup-title">
+    <h3 class="settings-label" id="set-setup-title">EINRICHTUNG</h3>
+    <div class="settings-card setup-card">
+      <button class="setup-row" id="devset" type="button">
+        <span class="status-dot" id="pmockdot" aria-hidden="true"></span>
+        <span class="setup-text"><strong>Mock-Standort-App</strong><span class="sd" id="pmock">Wird geprüft …</span></span>
+        <span class="setup-chevron" aria-hidden="true"></span>
+      </button><span id="pmocki" class="pstat hidden" aria-live="polite">…</span>
+      <button class="setup-row" id="reqLoc" type="button">
+        <span class="status-dot" id="plocdot" aria-hidden="true"></span>
+        <span class="setup-text"><strong>Standort</strong><span class="sd" id="ploc">Wird geprüft …</span></span>
+        <span class="setup-chevron" aria-hidden="true"></span>
+      </button><span id="ploci" class="pstat hidden" aria-live="polite">…</span>
+      <button class="setup-row" id="reqNotif" type="button">
+        <span class="status-dot" id="pnotdot" aria-hidden="true"></span>
+        <span class="setup-text"><strong>Benachrichtigungen</strong><span class="sd" id="pnot">Wird geprüft …</span></span>
+        <span class="setup-chevron" aria-hidden="true"></span>
+      </button><span id="pnoti" class="pstat hidden" aria-live="polite">…</span>
+      <button class="setup-row" id="battSettings" type="button">
+        <span class="status-dot" id="pbattdot" aria-hidden="true"></span>
+        <span class="setup-text"><strong>Akku-Ausnahme</strong><span class="sd" id="pbatt">Wird geprüft …</span></span>
+        <span class="setup-chevron" aria-hidden="true"></span>
+      </button><span id="pbatti" class="pstat hidden" aria-live="polite">…</span>
+      <div class="setup-actions">
+        <button class="settings-secondary" id="refreshChecks" type="button"><span class="mono-icon" data-icon="reload" aria-hidden="true"></span> Status prüfen</button>
+        <button class="settings-textlink" id="appPermSettings" type="button">Android-App-Einstellungen öffnen</button>
       </div>
     </div>
-    <div class="srow"><div class="st">Endlos-Schleife standardmäßig</div><label class="sw"><input type="checkbox" data-k="route_loop"><span></span></label></div>
-  </div>
+  </section>
 
-  <div class="scard">
-    <h3>🔔 Benachrichtigung</h3>
-    <div class="srow"><div class="st">Koordinaten anzeigen</div><label class="sw"><input type="checkbox" data-k="notif_coords"><span></span></label></div>
-    <div class="srow"><div class="st">Laufzeit-Timer</div><label class="sw"><input type="checkbox" data-k="notif_timer"><span></span></label></div>
-  </div>
-
-  <div class="scard">
-    <h3>🗺️ Karte</h3>
-    <div class="srow"><div class="st">Stil</div>
-      <div class="seg" id="styleseg">
-        <button data-ms="sat">🛰️ Sat</button>
-        <button data-ms="dark">🌙 Dunkel</button>
-        <button data-ms="light">☀️ Hell</button>
+  <section class="settings-section" aria-labelledby="set-route-title">
+    <h3 class="settings-label" id="set-route-title">ROUTE</h3>
+    <div class="settings-card">
+      <div class="srow"><div class="st">Standard-Fahrzeug</div>
+        <div class="seg" id="profseg">
+          <button data-p="foot" title="Fuß" aria-label="Zu Fuß"><span class="mono-icon" data-icon="walk" aria-hidden="true"></span></button>
+          <button data-p="bike" title="Fahrrad" aria-label="Fahrrad"><span class="mono-icon" data-icon="bike" aria-hidden="true"></span></button>
+          <button data-p="car" title="Auto" aria-label="Auto"><span class="mono-icon" data-icon="car" aria-hidden="true"></span></button>
+        </div>
       </div>
+      <div class="srow"><div class="st">Endlos-Schleife</div><label class="sw"><input type="checkbox" data-k="route_loop" aria-label="Endlos-Schleife standardmäßig"><span></span></label></div>
     </div>
-    <div class="srow"><div class="st">Labels &amp; POIs</div><label class="sw"><input type="checkbox" data-k="map_labels"><span></span></label></div>
-    <div class="srow"><div class="st">Keyed Kacheln (API-Key)</div><label class="sw"><input type="checkbox" data-k="map_key_tiles"><span></span></label></div>
-    <div class="srow"><button class="sbtn wide" id="mapreload">🔄 Karte neu laden</button></div>
-  </div>
+  </section>
 
-  <div class="scard">
-    <h3>🔐 Geo-API &middot; geschützt</h3>
-    <div class="srow">
-      <div class="st"><div>Status</div><div class="sd" id="apistat">…</div></div>
-      <button class="sbtn" id="apitest">Testen</button>
-    </div>
-    <div class="srow col">
-      <div class="st" style="flex:none">So bekommst du einen API-Key (kostenlos)</div>
-      <ol class="guide">
-        <li>Key kostenlos auf <b>geocode.maps.co</b> holen</li>
-        <li>Hier einfügen → <b>OK</b> – fertig</li>
-      </ol>
-      <button class="sbtn wide" id="getkey">🔑 Kostenlos API-Key holen</button>
-    </div>
-    <div class="srow col">
-      <div class="st" style="flex:none">Eigener Schlüssel
-        <div class="sd">Verschlüsselt & nativ geschützt – wird nie wieder angezeigt.</div>
+  <section class="settings-section" aria-labelledby="set-map-title">
+    <h3 class="settings-label" id="set-map-title">KARTE</h3>
+    <div class="settings-card">
+      <div class="srow"><div class="st">Stil</div>
+        <div class="seg" id="styleseg">
+          <button data-ms="sat"><span class="mono-icon" data-icon="satellite" aria-hidden="true"></span> Sat</button>
+          <button data-ms="dark"><span class="mono-icon" data-icon="moon" aria-hidden="true"></span> Dunkel</button>
+          <button data-ms="light"><span class="mono-icon" data-icon="sun" aria-hidden="true"></span> Hell</button>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;width:100%">
-        <input id="ckin" type="password" placeholder="api_key eingeben" autocomplete="off" spellcheck="false">
-        <button class="sbtn" id="cksave">OK</button>
-        <button class="sbtn" id="ckdel">✕</button>
-      </div>
+      <div class="srow"><div class="st">Labels &amp; Orte</div><label class="sw"><input type="checkbox" data-k="map_labels" aria-label="Kartenlabels und POIs"><span></span></label></div>
+      <div class="srow"><div class="st">API-Kartenkacheln</div><label class="sw"><input type="checkbox" data-k="map_key_tiles" aria-label="Keyed Kartenkacheln"><span></span></label></div>
+      <div class="settings-card-action"><button class="settings-secondary" id="mapreload" type="button"><span class="mono-icon" data-icon="reload" aria-hidden="true"></span> Karte neu laden</button></div>
     </div>
-  </div>
+  </section>
 
-  <div class="scard">
-    <h3>✅ Berechtigungen</h3>
-    <div class="srow">
-      <div class="st"><div>Standort</div><div class="sd" id="ploc">Für echten-Standort-Anzeige</div></div>
-      <span class="pstat" id="ploci">…</span>
+  <section class="settings-section" aria-labelledby="set-api-title">
+    <h3 class="settings-label" id="set-api-title">GEO-API</h3>
+    <div class="settings-card">
+      <div class="srow"><div class="st">Schlüssel<div class="sd" id="apistat">Wird geprüft …</div></div><button class="settings-smallbtn" id="apitest" type="button">Testen</button></div>
+      <details class="settings-inline-detail" id="ownKeySection">
+        <summary>Eigenen Schlüssel verwenden<span class="advanced-chevron" aria-hidden="true"></span></summary>
+        <div class="settings-key-area">
+          <div class="settings-key-input"><input id="ckin" type="password" placeholder="api_key" autocomplete="off" spellcheck="false" aria-label="Eigener Geo-API-Schlüssel"><button class="settings-smallbtn" id="cksave" type="button">Speichern</button><button class="settings-smallbtn" id="ckdel" type="button" aria-label="Eigenen Schlüssel entfernen">✕</button></div>
+          <button class="settings-textlink" id="getkey" type="button">Kostenlosen Key holen ↗</button>
+        </div>
+      </details>
     </div>
-    <div class="srow">
-      <div class="st"><div>Benachrichtigungen</div><div class="sd" id="pnot">Spoofing-Dauerbenachrichtigung</div></div>
-      <span class="pstat" id="pnoti">…</span>
-    </div>
-    <div class="srow">
-      <button class="sbtn wide" id="reperm">Berechtigungen erneut abfragen</button>
-    </div>
-  </div>
+  </section>
 
-  <div class="scard">
-    <h3>🧭 Anleitung</h3>
-    <ol class="guide">
-      <li>Entwickleroptionen aktivieren: <code>Einstellungen → Telefoninfo → 7× auf „Buildnummer“ tippen</code></li>
-      <li><code>Entwickleroptionen → Standort-Override-App auswählen</code> → <b>Fusch</b></li>
-      <li>Zurück in die App: Ort wählen → <b>Spoof</b> – fertig!</li>
-    </ol>
-    <div class="srow">
-      <button class="sbtn wide" id="devset">Entwickleroptionen öffnen</button>
-    </div>
-  </div>
-
-  <div class="creditbox">
-    <div class="cico">
-      <svg viewBox="0 0 24 24">
-        <path fill="#EAF2FA" d="M7.1,3.4 h3.1 v17.2 h-3.1 Z M10.2,3.4 h6.2 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-6.2 Z M10.2,10.3 h4.3 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-4.3 Z"/>
-        <circle cx="17.4" cy="11.9" r="2" fill="#38BDF8"/>
-        <circle cx="17.4" cy="11.9" r="3.7" fill="none" stroke="#38BDF8" stroke-opacity=".45" stroke-width="1.1"/>
-      </svg>
-    </div>
-    <div class="cn">Fusch</div>
-    <div class="cv" id="verline">Version 2.5 · Android 8.0+</div>
-    <div class="made">Made by <b>Fufi/!L</b></div>
-    <div class="made2">Aleks heißt Fusch</div>
-    <div class="cpr">© 2026 Fufi/!L · Karten © OpenStreetMap-Mitwirkende</div>
-  </div>
+  <button class="settings-help" id="settingsGuide" type="button">
+    <span class="help-icon"><span class="mono-icon" data-icon="info" aria-hidden="true"></span></span>
+    <span class="help-copy"><strong>Einrichtungshilfe</strong><small>Mock-Standort auswählen</small></span>
+    <span class="help-chevron" aria-hidden="true"></span>
+  </button>
+  <div class="settings-footer" id="verline">Fusch 2.9 · Fufi/!L</div>
 </div>
 
 <!-- ================= FAVORITES TAB ================= -->
-<div id="favtab">
-  <div class="tabhead">
-    <button class="backb" id="backfav"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+<div id="favtab" class="library-tab" aria-label="Favoriten">
+  <div class="tabhead library-head">
     <h2>Favoriten</h2>
-    <span class="chip" id="favcount">0</span>
+    <button id="backfav" class="library-done" type="button">Fertig</button>
   </div>
-
-  <div id="fsearch">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
-    <input id="fq" placeholder="Favoriten durchsuchen …" autocomplete="off" spellcheck="false">
-    <button id="fqx" class="hidden" style="color:#7d8aa3;font-size:18px">&times;</button>
+  <div id="fsearch" class="library-search">
+    <span class="mono-icon" data-icon="search" aria-hidden="true"></span>
+    <input id="fq" type="search" placeholder="Favoriten durchsuchen" aria-label="Favoriten durchsuchen" autocomplete="off" spellcheck="false">
+    <button id="fqx" class="hidden" type="button" aria-label="Suche löschen">&times;</button>
   </div>
-
-  <div class="seg wide" id="favsort" style="margin-bottom:12px">
-    <button data-fs="new">🕘 Neueste</button>
-    <button data-fs="az">A–Z</button>
-    <button data-fs="near">📍 Nähe</button>
-  </div>
-
-  <div id="favlist"></div>
-
-  <div id="favempty" class="hidden">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linejoin="round"><path d="M12 21s7-8.1 7-13a7 7 0 1 0-14 0c0 4.9 7 13 7 13Z"/><circle cx="12" cy="8" r="2.6"/></svg>
-    <div class="ft">Noch keine Favoriten</div>
-    <div class="fs">Tippe auf der Karte einen Ort an und speichere ihn<br>mit dem ★ neben dem Namen.</div>
-  </div>
-
-  <div class="factrow">
-    <button class="sbtn wide" id="favsave">★ Aktuelle Auswahl speichern</button>
-    <button class="sbtn danger" id="favclear">Alle löschen</button>
-  </div>
+  <section class="library-section" id="fav-sort-section" aria-labelledby="fav-sort-label">
+    <div class="library-heading"><h3 id="fav-sort-label">SORTIEREN</h3></div>
+    <div class="seg wide library-sort" id="favsort">
+      <button data-fs="new" type="button">Neueste</button>
+      <button data-fs="az" type="button">A–Z</button>
+      <button data-fs="near" type="button">Nähe</button>
+    </div>
+  </section>
+  <section class="library-section" aria-labelledby="fav-list-label">
+    <div class="library-heading"><h3 id="fav-list-label">GESPEICHERTE ORTE</h3><span id="favcount" class="library-count">0</span></div>
+    <div id="favlist" class="library-card" role="list"></div>
+    <div id="favnomatch" class="library-empty hidden">Keine passenden Favoriten</div>
+    <div id="favempty" class="library-empty hidden">
+      <span class="library-empty-icon"><span class="mono-icon" data-icon="star" aria-hidden="true"></span></span>
+      <strong>Noch keine Favoriten</strong>
+      <span>Ort auf der Karte wählen und mit dem Stern speichern.</span>
+    </div>
+  </section>
+  <section class="library-section" id="favActions" aria-labelledby="fav-actions-label">
+    <div class="library-heading"><h3 id="fav-actions-label">AKTIONEN</h3></div>
+    <div class="library-card">
+      <button class="library-action" id="favsave" type="button"><span class="mono-icon" data-icon="star" aria-hidden="true"></span> Aktuellen Ort speichern</button>
+      <button class="library-action destructive" id="favclear" type="button"><span class="mono-icon" data-icon="trash" aria-hidden="true"></span> Alle Favoriten löschen</button>
+    </div>
+  </section>
 </div>
 
 <!-- ================= HISTORY TAB ================= -->
-<div id="histtab">
-  <div class="tabhead">
-    <button class="backb" id="backhist"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+<div id="histtab" class="library-tab" aria-label="Verlauf">
+  <div class="tabhead library-head">
     <h2>Verlauf</h2>
-    <span class="chip" id="histcount">0</span>
+    <button id="backhist" class="library-done" type="button">Fertig</button>
   </div>
-  <div id="histlist"></div>
-  <div id="histempty" class="hidden">
-    <div style="font-size:40px;margin-bottom:12px">🕘</div>
-    <div class="ft">Noch kein Verlauf</div>
-    <div class="fs">Jeder gestartete Spoof und jede Route<br>erscheint automatisch hier.</div>
-  </div>
-  <div class="factrow">
-    <button class="sbtn danger" id="histclear" style="flex:1">Verlauf löschen</button>
-  </div>
+  <section class="library-section" aria-labelledby="hist-label">
+    <div class="library-heading"><h3 id="hist-label">LETZTE STANDORTE</h3><span id="histcount" class="library-count">0</span></div>
+    <div id="histlist" class="library-list"></div>
+    <div id="histempty" class="library-empty hidden">
+      <span class="library-empty-icon"><span class="mono-icon" data-icon="clock" aria-hidden="true"></span></span>
+      <strong>Noch kein Verlauf</strong>
+      <span>Gestartete Spoofs und Routen erscheinen hier.</span>
+    </div>
+  </section>
+  <section class="library-section" id="histActions" aria-labelledby="hist-actions-label">
+    <div class="library-heading"><h3 id="hist-actions-label">AKTIONEN</h3></div>
+    <div class="library-card"><button class="library-action destructive" id="histclear" type="button">
+      <span class="mono-icon" data-icon="trash" aria-hidden="true"></span> Verlauf löschen
+    </button></div>
+  </section>
 </div>
 
 <!-- ================= RENAME MODAL ================= -->
@@ -926,11 +1035,15 @@ setTimeout(function(){
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
 const Def=[33.947340,-118.410538]; // LAX – Startansicht
-let map=null,marker=null,target=null,spoofing=false,deviceMarker=null,retryPending=false,revSeq=0,tl=null,tlo=null,rlT=null;
+let map=null,marker=null,target=null,spoofing=false,deviceMarker=null,revSeq=0,tl=null,tlo=null,rlT=null;
 let NAT={};try{NAT=JSON.parse((window.Native&&Native.storeGet)?(Native.storeGet()||'{}'):'{}')||{};}catch(e){NAT={};}
 if(!NAT||typeof NAT!=='object'||Array.isArray(NAT))NAT={};
-let favs=[];try{favs=(NAT.favs&&NAT.favs.length!==undefined)?NAT.favs:JSON.parse(localStorage.getItem('sg_favs')||'[]');}catch(e){favs=NAT.favs||[]}
-favs.forEach((f,i)=>{if(!f.ts)f.ts=Date.now()-i;});
+let favs=[];try{favs=Array.isArray(NAT.favs)?NAT.favs:JSON.parse(localStorage.getItem('sg_favs')||'[]');}catch(e){favs=[]}
+if(!Array.isArray(favs))favs=[];
+favs=favs.filter(f=>f&&f.lat!=null&&f.lng!=null&&Number.isFinite(+f.lat)&&
+    Number.isFinite(+f.lng)&&Math.abs(+f.lat)<=90&&Math.abs(+f.lng)<=180)
+  .slice(0,100).map((f,i)=>({name:String(f.name||'Standort'),lat:+f.lat,lng:+f.lng,
+    ts:Number.isFinite(+f.ts)&&+f.ts>0?+f.ts:Date.now()-i}));
 function vib(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
 
 /* ================= settings ================= */
@@ -940,39 +1053,44 @@ const DEF_S={mock_network:true,jitter:true,interval_ms:1000,accuracy_m:5,
 let S=Object.assign({},DEF_S);
 try{Object.assign(S,JSON.parse(localStorage.getItem('sg_settings')||'{}'));}catch(e){}
 if(NAT.S)Object.assign(S,NAT.S);
+// v2.8 stored an overlay toggle in both local and native settings; 2.9 drops it.
+delete S.dynamic_island;
 let persistT=null;
-function persistAll(){
+function persistAll(immediate=false){
   clearTimeout(persistT);
-  persistT=setTimeout(()=>{
+  const flush=()=>{
     try{localStorage.setItem('sg_favs',JSON.stringify(favs));}catch(e){}
     try{localStorage.setItem('sg_hist',JSON.stringify(hist));}catch(e){}
     if(window.Native&&Native.storeSet){
-      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist,v:12,bgask:1}));}catch(e){}
+      let onbDone=NAT.onb===1;
+      try{onbDone=onbDone||localStorage.getItem('sg_onboard')==='1';}catch(e){}
+      try{Native.storeSet(JSON.stringify({S:S,favs:favs,hist:hist,v:14,bgask:1,onb:onbDone?1:0}));}catch(e){}
     }
-  },250);
+  };
+  if(immediate)flush();else persistT=setTimeout(flush,250);
 }
-let saveT=null;
 function saveS(){
   try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
-  clearTimeout(saveT);
-  saveT=setTimeout(()=>{if(window.Native&&Native.setSettings)Native.setSettings(JSON.stringify(S));},200);
+  // A user can press Home immediately after a switch; persist to the native
+  // foreground service before WebView timers are paused in the background.
+  try{if(window.Native&&Native.setSettings)Native.setSettings(JSON.stringify(S));}catch(e){}
   applyMap();updSeg();updSortSeg();if(window.updProf)updProf();
   persistAll();
 }
-function fmtMs(v){return (v/1000).toFixed(1).replace('.',',')+' s';}
 function bindSettings(){
   $$('input[type=checkbox][data-k]').forEach(el=>{
     el.checked=!!S[el.dataset.k];
-    el.addEventListener('change',()=>{S[el.dataset.k]=el.checked;saveS();});
+    el.addEventListener('change',()=>{
+      if(guardActive()){el.checked=!!S[el.dataset.k];return;}
+      S[el.dataset.k]=el.checked;saveS();
+    });
   });
-  const rI=$('#rInt'),rA=$('#rAcc');
-  rI.value=S.interval_ms;rA.value=S.accuracy_m;
-  $('#vInt').textContent=fmtMs(S.interval_ms);
-  $('#vAcc').textContent=S.accuracy_m+' m';
-  rI.addEventListener('input',()=>{S.interval_ms=+rI.value;$('#vInt').textContent=fmtMs(rI.value);saveS();});
-  rA.addEventListener('input',()=>{S.accuracy_m=+rA.value;$('#vAcc').textContent=rA.value+' m';saveS();});
-  $$('#styleseg button').forEach(b=>b.addEventListener('click',()=>{S.map_style=b.dataset.ms;saveS();}));
-  $$('#profseg button').forEach(b=>b.addEventListener('click',()=>{S.route_profile=b.dataset.p;saveS();}));
+  $$('#styleseg button').forEach(b=>b.addEventListener('click',()=>{
+    if(guardActive())return;S.map_style=b.dataset.ms;saveS();
+  }));
+  $$('#profseg button').forEach(b=>b.addEventListener('click',()=>{
+    if(guardActive())return;S.route_profile=b.dataset.p;saveS();
+  }));
 }
 function updSeg(){$$('#styleseg button').forEach(b=>b.classList.toggle('on',b.dataset.ms===S.map_style));}
 function updProf(){$$('#profseg button').forEach(b=>b.classList.toggle('on',b.dataset.p===S.route_profile));}
@@ -1035,7 +1153,7 @@ function updPill(){
   $('#mp_txt').textContent=curMode==='api'?'API-Karte aktiv':'Öffentliche Karte';
 }
 
-/* ================= map init (robust gegen CDN-Ausfall) ================= */
+/* ================= map init (lokale Leaflet-Datei, ohne CDN) ================= */
 function initMapSafe(){
   if(!window.L||map)return !!map;
   map=L.map('map',{zoomControl:false,attributionControl:false,zoomAnimation:true}).setView(Def,12);
@@ -1047,87 +1165,101 @@ function initMapSafe(){
   });
   return true;
 }
-if(!initMapSafe()){
-  (function(){
-    let i=0;
-    const srcs=['https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js',
-                'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js'];
-    const tryNext=function(){
-      if(i>=srcs.length){
-        setTimeout(function(){toast('Karte konnte nicht geladen werden – bitte Internetverbindung prüfen');},1200);
-        return;
-      }
-      const sc=document.createElement('script');
-      sc.src=srcs[i++];
-      sc.onload=function(){if(!initMapSafe())tryNext();};
-      sc.onerror=tryNext;
-      document.head.appendChild(sc);
-    };
-    tryNext();
-  })();
-}
+if(!initMapSafe())
+  setTimeout(()=>toast('Kartenbibliothek fehlt – bitte App neu installieren'),1200);
 
 /* ================= tabs ================= */
-function openSettings(){$('#settab').classList.add('open');updPerms();updApi();}
+function openSettings(){
+  if(guardActive())return;
+  $('#settab').classList.add('open');
+  updPerms();updApi();
+}
 function closeSettings(){$('#settab').classList.remove('open');}
-function openFavs(){$('#favtab').classList.add('open');$('#fq').value='';$('#fqx').classList.add('hidden');renderFavTab();}
+function openFavs(){
+  if(guardActive())return;
+  $('#favtab').classList.add('open');$('#fq').value='';
+  $('#fqx').classList.add('hidden');renderFavTab();
+}
 function closeFavs(){$('#favtab').classList.remove('open');}
 $('#gear').onclick=openSettings;
 $('#backset').onclick=closeSettings;
+$('#refreshChecks').onclick=()=>{if(guardActive())return;updPerms();updApi();toast('Status geprüft');};
+$('#settingsGuide').onclick=()=>{if(!guardActive())showHint(null);};
 $('#favbtn').onclick=openFavs;
 $('#backfav').onclick=closeFavs;
-$('#devset').onclick=()=>{window.Native&&Native.openDevSettings();};
-$('#getkey').onclick=()=>{window.Native&&Native.openUrl('https://geocode.maps.co/account/');};
-$('#mapreload').onclick=()=>{tileFallback=false;applyMap();toast('Karte neu geladen 🔄');};
+$('#devset').onclick=()=>{if(!guardActive()&&window.Native)Native.openDevSettings();};
+$('#getkey').onclick=()=>{if(!guardActive()&&window.Native)Native.openUrl('https://geocode.maps.co/account/');};
+$('#mapreload').onclick=()=>{if(guardActive())return;tileFallback=false;applyMap();toast('Karte neu geladen');};
 window.appBack=function(){
   if(!$('#spovl').classList.contains('hidden')){
     if(!$('#spo_btns').classList.contains('hidden'))closeSpoof();
     return true;
   }
+  if(spoofing||routeRun)return false; // Android Back leaves Fusch; no other in-app actions.
   if(routeMode){cancelRoutePlanning();return true;}
+  if(!$('#movl').classList.contains('hidden')){closeModal();return true;}
   if($('#settab').classList.contains('open')){closeSettings();return true;}
   if($('#favtab').classList.contains('open')){closeFavs();return true;}
   if($('#histtab').classList.contains('open')){$('#histtab').classList.remove('open');return true;}
   if(!$('#renovl').classList.contains('hidden')){$('#renovl').classList.add('hidden');return true;}
   if(!$('#uovl').classList.contains('hidden')){$('#uovl').classList.add('hidden');return true;}
-  if(!$('#movl').classList.contains('hidden')){closeModal();return true;}
   if(!$('#res').classList.contains('hidden')){hideRes();return true;}
   return false;
 };
 
-/* permissions UI */
+/* Status reads do not request permissions. Only a deliberate tap opens Android. */
 function updPerms(){
   const N=window.Native;if(!N)return;
-  const l=N.hasLocPerm(),n=N.hasNotifPerm();
-  $('#ploci').textContent=l?'aktiv ✓':'fehlt';$('#ploci').className='pstat '+(l?'ok':'bad');
-  $('#pnoti').textContent=n?'aktiv ✓':'fehlt';$('#pnoti').className='pstat '+(n?'ok':'bad');
+  const read=name=>{try{return !!N[name]();}catch(e){return false;}};
+  const mock=read('mockAllowed'),loc=read('hasLocPerm');
+  const notif=read('hasNotifPerm'),batt=read('battOpt');
+  function setRow(dot,desc,badge,ok,yes,no,yesBadge,noBadge,required){
+    $('#'+dot).className='status-dot '+(ok?'is-ok':required?'needs':'');
+    $('#'+desc).textContent=ok?yes:no;
+    const state=$('#'+badge);state.textContent=ok?yesBadge:noBadge;
+    state.className='pstat hidden '+(ok?'ok':'bad');
+  }
+  setRow('pmockdot','pmock','pmocki',mock,
+    'Fusch ist ausgewählt','Entwickleroptionen öffnen','aktiv','fehlt',true);
+  setRow('plocdot','ploc','ploci',loc,
+    'Erlaubt','Tippen zum Erlauben','aktiv','fehlt',true);
+  setRow('pnotdot','pnot','pnoti',notif,
+    'Erlaubt','Optional · tippen','aktiv','fehlt',false);
+  setRow('pbattdot','pbatt','pbatti',batt,
+    'Ausnahme aktiv','Optional · tippen','Ausnahme aktiv','optimiert',false);
 }
-$('#reperm').onclick=()=>{window.Native&&Native.requestPerms();toast('Berechtigungen werden abgefragt …');};
-window.__perms=()=>{
-  updPerms();
-  if(!retryPending||!target)return;retryPending=false;
+$('#reqLoc').onclick=()=>{
+  if(guardActive())return;
   const N=window.Native;if(!N)return;
-  const r=N.startSpoof(target.lat,target.lng,target.name||'');
-  if(r==='OK'){setSpoofUI(true);toast('Erfolgreich gespoofed ✓');}
-  else if(r&&r.indexOf('NOT_SELECTED')>=0)showHint(null);
-  else if(r&&r!=='NEED_PERMS')showHint(r);
+  try{if(N.hasLocPerm()){N.openAppSettings();return;}}catch(e){}
+  N.requestLocationPermission();
 };
+$('#reqNotif').onclick=()=>{
+  if(guardActive())return;
+  const N=window.Native;if(!N)return;
+  try{if(N.hasNotifPerm()){N.openAppSettings();return;}}catch(e){}
+  N.requestNotificationPermission();
+};
+$('#appPermSettings').onclick=()=>{if(!guardActive()&&window.Native)Native.openAppSettings();};
+$('#battSettings').onclick=()=>{if(!guardActive()&&window.Native)Native.requestBattOpt();};
+window.__perms=()=>{updPerms();onbRefresh();};
 
 /* API UI */
 function updApi(){
   const N=window.Native;if(!N)return;
   const st=N.geoStatus();
   $('#apistat').textContent=st==='CUSTOM'?'Eigener Schlüssel aktiv – Karte & Suche keyed'
-    :st==='BUILTIN'?'Eingebetteter Schlüssel aktiv – verschlüsselt'
+    :st==='BUILTIN'?'Eingebetteter Schlüssel aktiv'
     :'Öffentlicher Fallback (Nominatim)';
 }
 $('#apitest').onclick=()=>{
+  if(guardActive())return;
   toast('Teste Geo-API …');
   setTimeout(()=>{
     try{
       const r=window.Native?Native.geoTest():'ERR';
-      toast(r==='OK:CUSTOM'?'Geo-API OK ✓ (eigener Schlüssel)'
-        :r==='OK:BUILTIN'?'Geo-API OK ✓ (eingebetteter Schlüssel)'
+      toast(r==='OK:CUSTOM'?'Geo-API OK (eigener Schlüssel)'
+        :r==='OK:BUILTIN'?'Geo-API OK (eingebetteter Schlüssel)'
         :r==='FALLBACK'?'Schlüssel abgelehnt – Fallback aktiv'
         :'Fehler – keine Verbindung');
       updApi();
@@ -1135,19 +1267,21 @@ $('#apitest').onclick=()=>{
   },60);
 };
 $('#cksave').onclick=()=>{
+  if(guardActive())return;
   const v=$('#ckin').value.trim();
   if(!v){toast('Erst einen Schlüssel eingeben');return;}
   window.Native&&Native.setCustomKey(v);
   $('#ckin').value='';
   tileFallback=false;
   updApi();
-  setTimeout(()=>{applyMap();toast('Key gespeichert ✓ – Karte lädt neu mit API');},60);
+  setTimeout(()=>{applyMap();toast('Key gespeichert – Karte lädt neu mit API');},60);
 };
 $('#ckdel').onclick=()=>{
+  if(guardActive())return;
   window.Native&&Native.clearCustomKey();
   tileFallback=false;
   updApi();
-  setTimeout(()=>{applyMap();toast('Key entfernt – Karte zurückgesetzt ✓');},60);
+  setTimeout(()=>{applyMap();toast('Key entfernt – Karte zurückgesetzt');},60);
 };
 
 /* ================= map interactions ================= */
@@ -1239,7 +1373,7 @@ function hideRes(){$('#res').classList.add('hidden');}
 document.addEventListener('click',e=>{if(!$('#swrap').contains(e.target))hideRes();});
 
 /* ================= spoof flow (Popup, min. ~2,3 s) ================= */
-let spoofBusy=false,spoofStepT=null,lastSpoofErr=null,flowMode='spoof';
+let spoofBusy=false,spoofStepT=null,spoofFinishT=null,lastSpoofErr=null,flowMode='spoof';
 const SPO_STEPS_SPOOF=['Initialisiere GPS-Modul …','Überschreibe System-Standort …',
   'Bestätige Mock-Override …','Richte Apps & Dienste ein …'];
 const SPO_STEPS_ROUTE=['Berechne Route …','Starte Bewegungs-Simulation …',
@@ -1252,7 +1386,7 @@ $('#spoofbtn').onclick=()=>{
     spoofBusy=true;
     b.classList.add('working');
     $('#spooflabel').textContent=routeRun?'Stoppe Route …':'Stoppe …';
-    setTimeout(()=>{if(N)N.stopSpoof();setSpoofUI(false);spoofBusy=false;},420);
+    setTimeout(()=>{if(N)N.stopSpoof();if(routeRun)finishRouteLive();else setSpoofUI(false);spoofBusy=false;},420);
     return;
   }
   if(!target){toast('Tippe zuerst auf die Karte');return;}
@@ -1276,19 +1410,25 @@ function startSpoofFlow(mode){
   spoofStepT=setInterval(()=>{si=(si+1)%steps.length;$('#spo_step').textContent=steps[si];},620);
   $('#spovl').classList.remove('hidden');
   vib(14);
+  // Start the native foreground service on the actual tap, before a quick
+  // Home/app switch can throttle WebView timers. Keep the animation afterwards.
   const N=window.Native;
-  setTimeout(()=>{
-    let r='ERR:NOBRIDGE';
-    try{
-      if(mode==='route'){
-        r=N.startRoute(JSON.stringify(routePts.map(p=>[p.lat,p.lng])),routeSpeed,routeLoop,'Route');
-      }else{
-        r=N.startSpoof(target.lat,target.lng,target.name||'');
-      }
-    }catch(e){r='ERR:'+(e&&e.message?e.message:'UNKNOWN');}
-    window._spoofResult=r;
-  },180);
-  setTimeout(finishSpoofFlow,2300);
+  let r='ERR:NOBRIDGE';
+  try{
+    if(mode==='route'){
+      r=N.startRoute(JSON.stringify(routePts.map(p=>[p.lat,p.lng])),routeSpeed,routeLoop,'Route');
+    }else{
+      r=N.startSpoof(target.lat,target.lng,target.name||'');
+    }
+  }catch(e){r='ERR:'+(e&&e.message?e.message:'UNKNOWN');}
+  window._spoofResult=r;
+  if(r==='OK'){
+    if(mode==='route'&&routePts.length){
+      addHist({name:'Route ('+routePts.length+' Pkt.)',lat:routePts[0].lat,lng:routePts[0].lng});
+    }else if(mode!=='route')addHist(target);
+  }
+  clearTimeout(spoofFinishT);
+  spoofFinishT=setTimeout(finishSpoofFlow,2300);
 }
 function finishSpoofFlow(){
   clearInterval(spoofStepT);
@@ -1298,42 +1438,41 @@ function finishSpoofFlow(){
   $('#spo_barwrap').classList.add('hidden');
   $('#spo_radar').classList.add('hidden');
   $('#spo_res').classList.remove('hidden');
-  $('#spo_big').textContent=ok?'✓':'✕';
+  $('#spo_big').innerHTML=FuschIcons.html(ok?'check':'cross');
   $('#spo_big').className='big '+(ok?'ok':'bad');
   const isRoute=flowMode==='route';
   $('#spo_title').textContent=ok?(isRoute?'Route gestartet':'Erfolgreich gespoofed'):'Fehlgeschlagen';
   let info;
   if(ok&&isRoute){
-    info=routePts.length+' Punkte · '+fmtDist(routeTotalM)+(routeLoop?' · 🔁 Endlosschleife':'');
+    info=routePts.length+' Punkte · '+fmtDist(routeTotalM)+(routeLoop?' · Endlosschleife':'');
     routeRun=true;routeStartT=Date.now();
     routeMode=false;
     $('#routebar').classList.remove('hidden');
     $('#routebar').classList.add('live');
     $('#rgo').classList.add('hidden');
     const lr=$('#rliverow');if(lr)lr.classList.add('show');
-    const rt0=$('#rl_time');if(rt0)rt0.textContent='00:00';
-    clearInterval(rlT);
-    rlT=setInterval(()=>{if(!routeRun){clearInterval(rlT);return;}
-      const sec=Math.max(0,Math.floor((Date.now()-routeStartT)/1000));
-      const e2=$('#rl_time');if(e2)e2.textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');},500);
+    startRouteClock();
     startRouteTicker();
-    addHist({name:'Route ('+routePts.length+' Pkt.)',lat:routePts[0].lat,lng:routePts[0].lng});
   }else if(ok){
     info=(target&&target.name?target.name:(target?target.lat.toFixed(5)+', '+target.lng.toFixed(5):''))+' ist jetzt dein geräteweiter Standort.';
   }else{
-    info='Fehler: '+String(r||'UNBEKANNT').replace('ERR:','');
+    info=r==='NEED_PERMS'?'Genauer Standort fehlt. Tippe auf Anleitung, um ihn zu erlauben.'
+      :'Fehler: '+String(r||'UNBEKANNT').replace('ERR:','');
   }
   $('#spo_step').textContent=info;
   vib(ok?[18,40,26]:[60,40,60]);
   if(ok){
-    if(!isRoute)addHist(target);
     setTimeout(()=>{
+      const N=window.Native;
+      try{if(N&&N.isSpoofing&&!N.isSpoofing()){
+        closeSpoof();setSpoofUI(false);return;
+      }}catch(e){}
       closeSpoof();
-      if(isRoute){setSpoofUI(true);toast('Route läuft 🛣️');}
+      if(isRoute){setSpoofUI(true);toast('Route läuft');}
       else{
         if(target)burstAt(target.lat,target.lng,'#30d158');
         setSpoofUI(true);
-        toast('Erfolgreich gespoofed ✓');
+        toast('Erfolgreich gespoofed');
       }
     },950);
   }else{
@@ -1348,7 +1487,100 @@ function closeSpoof(){
 $('#spo_close').onclick=closeSpoof;
 $('#spo_help').onclick=()=>{
   closeSpoof();
-  showHint(lastSpoofErr&&lastSpoofErr.indexOf('NOT_SELECTED')>=0?null:lastSpoofErr);
+  if(lastSpoofErr==='NEED_PERMS')showLocationPermissionHint();
+  else showHint(lastSpoofErr&&lastSpoofErr.indexOf('NOT_SELECTED')>=0?null:lastSpoofErr);
+};
+function guardActive(){
+  if(!spoofing&&!routeRun&&!spoofBusy)return false;
+  toast('Erst stoppen, dann weiter');
+  return true;
+}
+let activeTicker=null,activeStarted=0,activeStopping=false;
+function refreshActiveScreen(){
+  if(!spoofing)return;
+  const N=window.Native;
+  let st=null;
+  try{
+    if(N&&N.isSpoofing&&!N.isSpoofing()){
+      if(routeRun)finishRouteLive();else setSpoofUI(false);
+      return;
+    }
+    if(N&&N.activeStatus)st=JSON.parse(N.activeStatus()||'null');
+  }catch(e){}
+  const route=st?!!st.route:routeRun;
+  const start=st&&+st.startedAt>0?+st.startedAt:(route?routeStartT:activeStarted);
+  const sec=Math.max(0,Math.floor((Date.now()-(start||Date.now()))/1000));
+  const two=n=>String(n).padStart(2,'0');
+  $('#activeTime').textContent=sec>=3600
+    ?Math.floor(sec/3600)+':'+two(Math.floor(sec%3600/60))+':'+two(sec%60)
+    :two(Math.floor(sec/60))+':'+two(sec%60);
+  $('#activeTitle').textContent=route?'Route aktiv':'Standort aktiv';
+  $('#activeStop').textContent=route?'Route stoppen':'Spoofing stoppen';
+  $('#activeRoute').classList.toggle('hidden',!route);
+  if(!route){
+    $('#activeDescription').textContent='Dein Standort bleibt gesetzt, bis du stoppst.';
+    $('#activePlace').textContent=(st&&st.name)||(target&&target.name)||'Standort gesetzt';
+    $('#activeDetail').textContent=target?target.lat.toFixed(5)+', '+target.lng.toFixed(5)
+      :'Standort für andere Apps aktiv';
+    return;
+  }
+  const total=Math.max(0,st&&+st.totalMeters||routeTotalM||0);
+  const done=Math.min(total,Math.max(0,st&&+st.doneMeters||0));
+  const left=Math.max(0,total-done);
+  const progress=total>0?Math.min(100,Math.round(done/total*100)):0;
+  const loop=st?!!st.loop:routeLoop;
+  const arrived=total>0&&left<1&&!loop;
+  $('#activeDescription').textContent=arrived?'Ziel erreicht – Spoof läuft weiter.'
+    :loop?'Deine Route läuft in einer Schleife.':'Deine Route ist unterwegs.';
+  $('#activePlace').textContent=arrived?'Ziel erreicht':loop?'Route in Schleife':'Route unterwegs';
+  const speed=st&&+st.speedMs>0?Math.round(st.speedMs*3.6):routeSpeed;
+  $('#activeDetail').textContent=total>0?fmtDist(total)+' insgesamt · '+speed+' km/h':'Route wird gestartet …';
+  $('#activePercent').textContent=progress+' %';
+  $('#activeProgressFill').style.width=progress+'%';
+  $('#activeRoute .active-progress').setAttribute('aria-valuenow',String(progress));
+  $('#activeRemaining').textContent=arrived?'Angekommen':fmtDist(left)+' übrig';
+  const eta=left>0?Math.max(1,Math.ceil(left/Math.max(.3,st&&+st.speedMs||speed/3.6)/60)):0;
+  $('#activeEta').textContent=arrived?'Stoppen möglich':eta+' min';
+}
+function showActiveScreen(){
+  if(!activeStarted)activeStarted=Date.now();
+  $('#settab').classList.remove('open');$('#favtab').classList.remove('open');
+  $('#histtab').classList.remove('open');$('#renovl').classList.add('hidden');
+  $('#onb').classList.remove('show');$('#uovl').classList.add('hidden');
+  closeModal();hideRes();
+  // Prevent keyboard and accessibility focus from reaching controls behind
+  // the full-screen status, even if a previous tab still had focus.
+  for(const el of document.body.children){
+    if(el.id!=='activePanel'&&el.tagName!=='SCRIPT')el.setAttribute('inert','');
+  }
+  $('#activePanel').classList.remove('hidden');
+  refreshActiveScreen();
+  if(!spoofing)return; // Native may have stopped between the state event and this refresh.
+  $('#activeStop').focus({preventScroll:true});
+  if(!activeTicker)activeTicker=setInterval(refreshActiveScreen,1000);
+}
+function hideActiveScreen(){
+  clearInterval(activeTicker);activeTicker=null;activeStarted=0;
+  activeStopping=false;
+  $('#activeStop').disabled=false;
+  $('#activePanel').classList.add('hidden');
+  for(const el of document.body.children)el.removeAttribute('inert');
+}
+$('#activeStop').onclick=()=>{
+  if(activeStopping)return;
+  const N=window.Native;
+  activeStopping=true;
+  $('#activeStop').disabled=true;$('#activeStop').textContent='Stoppe …';
+  try{
+    if(!N||!N.stopSpoof)throw new Error('keine Verbindung');
+    N.stopSpoof();
+    if(N.isSpoofing&&N.isSpoofing())throw new Error('läuft noch');
+    if(routeRun)finishRouteLive();else setSpoofUI(false);
+  }catch(e){
+    activeStopping=false;$('#activeStop').disabled=false;
+    toast('Stoppen fehlgeschlagen – erneut versuchen');
+    refreshActiveScreen();
+  }
 };
 function setSpoofUI(on){
   const wasSpoof=spoofing;
@@ -1356,7 +1588,11 @@ function setSpoofUI(on){
   const b=$('#spoofbtn');
   b.classList.remove('working','okflash');
   if(!on){
-    routeRun=false;stopRouteTicker();hideLive();if(target)$('#cardwrap').classList.remove('hidden');
+    routeRun=false;stopRouteTicker();
+    clearInterval(rlT);
+    const rb=$('#routebar');if(rb)rb.classList.remove('live');
+    const lr=$('#rliverow');if(lr)lr.classList.remove('show');
+    if(target)$('#cardwrap').classList.remove('hidden');
     if(deviceMarker&&map){map.removeLayer(deviceMarker);deviceMarker=null;}
     if(wasSpoof){
       // Nach dem Stop: aktiv den ECHTEN Standort holen und anzeigen (Mocks werden nativ ignoriert)
@@ -1372,8 +1608,8 @@ function setSpoofUI(on){
   $('#statustxt').textContent=on?(routeRun?'Route aktiv – Standort bewegt sich':'Spoofing aktiv – GPS & Netzwerk gemockt'):
     (target?'Bereit – tippe auf „Spoof“':'Bereit');
   if(marker)marker.setIcon(puckIcon(on));
-  if(on&&!routeRun)showLive('spoof');
   updEmpty();
+  if(on)showActiveScreen();else hideActiveScreen();
 }
 function burstAt(lat,lng,color){
   if(!map)return;
@@ -1382,15 +1618,36 @@ function burstAt(lat,lng,color){
   setTimeout(()=>map.removeLayer(m),1500);
 }
 window.__onState=(run,err,lat,lng)=>{
-  if(!spoofBusy)setSpoofUI(!!run);
-  if(run&&lat&&!target)setTarget(lat,lng,{noFly:true});
+  if(!run&&spoofBusy&&window._spoofResult==='OK'){
+    let reallyRunning=false;
+    try{reallyRunning=!!(window.Native&&Native.isSpoofing&&Native.isSpoofing());}catch(e){}
+    if(!reallyRunning){
+      clearTimeout(spoofFinishT);
+      window._spoofResult='ERR:STOPPED';
+      spoofBusy=false;
+      closeSpoof(); // stopped from the capsule or notification while backgrounded
+    }
+  }
+  if(!spoofBusy){
+    if(!run&&routeRun)finishRouteLive(); // stop from capsule/notification
+    else{
+      if(run&&!routeRun)restoreRouteUI(); // WebView was recreated while a route kept running
+      setSpoofUI(!!run);
+    }
+  }
+  if(run&&Number.isFinite(lat)&&Number.isFinite(lng)&&!target){
+    setTarget(lat,lng,{noFly:true});
+    $('#cardwrap').classList.add('hidden');
+  }
   if(run&&target){target.lat=lat;target.lng=lng;if(marker)marker.setLatLng([lat,lng]);render();}
   if(err&&err.indexOf('NOT_SELECTED')>=0&&!spoofBusy)showHint(null);
   else if(err&&err.indexOf('UNKNOWN')===0&&!spoofBusy){$('#dot').className='err';$('#statustxt').textContent='Fehler: '+(err.split(':')[1]||'unbekannt');}
 };
 
 /* ---------- device location ---------- */
-$('#loc').onclick=()=>{const N=window.Native;if(N){toast('Standort wird ermittelt …');N.deviceLocation();}else toast('Nicht verfügbar');};
+$('#loc').onclick=()=>{if(guardActive())return;const N=window.Native;if(!N){toast('Nicht verfügbar');return;}
+  if(!N.hasLocPerm()){showLocationPermissionHint();return;}
+  toast('Standort wird ermittelt …');N.deviceLocation();};
 window.__onLoc=d=>{
   if(!d){toast('Standort nicht verfügbar – Berechtigung erteilen & GPS an');return;}
   if(!map)return;
@@ -1398,9 +1655,9 @@ window.__onLoc=d=>{
   const acc=d.acc?(' (±'+d.acc+' m)'):'';
   deviceMarker=L.marker([d.lat,d.lng],{icon:L.divIcon({className:'',
     html:'<div class="dev '+(d.mock?'mock':'real')+'"></div>',iconSize:[14,14],iconAnchor:[7,7]})}).addTo(map)
-    .bindTooltip(d.mock?('Gerät · gespoofed ✓'+acc):('Gerät · echter Standort'+acc));
+    .bindTooltip(d.mock?('Gerät · gespoofed'+acc):('Gerät · echter Standort'+acc));
   map.flyTo([d.lat,d.lng],14);
-  toast(d.mock?('Gerätestandort ist gespoofed ✓'+acc):('📍 Das ist deine echte Position'+acc));
+  toast(d.mock?('Gerätestandort ist gespoofed'+acc):('Das ist deine echte Position'+acc));
 };
 
 /* ================= route (echte Straßen via OSRM) ================= */
@@ -1418,6 +1675,7 @@ function fmtDist(m){return m<1000?Math.round(m)+' m':(m/1000).toFixed(1).replace
 function autoSpeed(){return rProfile==='foot'?5:rProfile==='bike'?15:40;}
 
 $('#routebtn').onclick=()=>{
+  if(spoofBusy)return;
   if(routeRun){toast('Route läuft – erst stoppen');return;}
   if(spoofing){toast('Spoofing aktiv – erst stoppen');return;}
   if(routeMode){cancelRoutePlanning();return;}
@@ -1489,8 +1747,8 @@ function updRouteSteps(){
   if(!rA&&sn)sn.textContent='auf Karte tippen';
   if(!rB&&en2)en2.textContent=rA?'auf Karte tippen':'erst Start setzen';
 }
-$('#rs_start').onclick=()=>{if(!routeMode)return;rStep='a';updRouteSteps();toast('Startpunkt neu antippen');};
-$('#rs_end').onclick=()=>{if(!routeMode||!rA)return;rStep='b';updRouteSteps();toast('Zielpunkt neu antippen');};
+$('#rs_start').onclick=()=>{if(guardActive()||!routeMode)return;rStep='a';updRouteSteps();toast('Startpunkt neu antippen');};
+$('#rs_end').onclick=()=>{if(guardActive()||!routeMode||!rA)return;rStep='b';updRouteSteps();toast('Zielpunkt neu antippen');};
 $$('#rmode button').forEach(b=>b.addEventListener('click',()=>{
   rProfile=b.dataset.m;
   $$('#rmode button').forEach(x=>x.classList.toggle('on',x===b));
@@ -1536,7 +1794,7 @@ function calcRoute(){
     updRouteBar();
     $('#rlooprow').classList.remove('hidden');
     $('#rgo').classList.remove('hidden');
-    toast('Route bereit ✓');
+    toast('Route bereit');
   },60);
 }
 function drawRouteLine(){
@@ -1546,14 +1804,15 @@ function drawRouteLine(){
     {color:'#4cc2ff',weight:5,opacity:.95,lineCap:'round'}).addTo(map);
   map.fitBounds(rPoly.getBounds(),{padding:[46,46]});
 }
-$('#rcalc').onclick=()=>calcRoute();
+$('#rcalc').onclick=()=>{if(!guardActive())calcRoute();};
 $('#rgo').onclick=()=>{
+  if(guardActive())return;
   const rl=$('#rloop');
   routeLoop=!!(rl&&rl.checked);
   if(routePts.length<2){toast('Erst Route berechnen');return;}
   startSpoofFlow('route');
 };
-$('#rcancel').onclick=()=>cancelRoutePlanning();
+$('#rcancel').onclick=()=>{if(guardActive())return;cancelRoutePlanning();};
 function finishRouteLive(){
   setSpoofUI(false);
   const rb=$('#routebar');if(rb)rb.classList.remove('live');
@@ -1582,39 +1841,45 @@ function updRouteBar(){
   const el=$('#rsum_txt');
   if(!el)return;
   if(routePts.length>1){
-    const icon=rProfile==='foot'?'🚶':rProfile==='bike'?'🚲':'🚗';
+    const vehicle=rProfile==='foot'?'Zu Fuß':rProfile==='bike'?'Rad':'Auto';
     const eta=Math.max(1,Math.round(routeTotalM/(routeSpeed/3.6)/60));
-    el.textContent=icon+' '+fmtDist(routeTotalM)+' · '+routeSpeed+' km/h · ETA '+eta+'m';
+    el.textContent=vehicle+' '+fmtDist(routeTotalM)+' · '+routeSpeed+' km/h · ETA '+eta+'m';
   }
 }
-$('#live_stop').onclick=()=>{
-  const N=window.Native;if(N)N.stopSpoof();
-  setSpoofUI(false);
-  if(routeMode)cancelRoutePlanning();
-  toast('Gestoppt');
-};
-let liveT=null,liveStart=0;
-function showLive(kind){
-  $('#cardwrap').classList.add('hidden');
-  $('#routebar').classList.add('hidden');
-  $('#livebar').classList.remove('hidden');
-  $('#lp_txt').textContent=kind==='route'?'Route live':'Spoofing';
-  try{
-    const N=window.Native;
-    liveStart=(N&&N.getStartedAt)?+N.getStartedAt():0;
-  }catch(e){liveStart=0;}
-  if(!liveStart||isNaN(liveStart))liveStart=Date.now();
-  clearInterval(liveT);
-  const two=n=>String(n).padStart(2,'0');
+function startRouteClock(){
+  clearInterval(rlT);
   const up=()=>{
-    const sec=Math.max(0,Math.floor((Date.now()-liveStart)/1000));
-    $('#lp_time').textContent=two(Math.floor(sec/60))+':'+two(sec%60);
+    if(!routeRun){clearInterval(rlT);return;}
+    const sec=Math.max(0,Math.floor((Date.now()-routeStartT)/1000));
+    $('#rl_time').textContent=String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0');
   };
-  up();liveT=setInterval(up,1000);
+  up();rlT=setInterval(up,500);
 }
-function hideLive(){
-  clearInterval(liveT);liveT=null;
-  $('#livebar').classList.add('hidden');
+function restoreRouteUI(){
+  const N=window.Native;
+  if(!N||!N.activeRoute)return false;
+  let d;
+  try{d=JSON.parse(N.activeRoute()||'null');}catch(e){return false;}
+  if(!d||!Array.isArray(d.points)||d.points.length<2)return false;
+  const pts=d.points.filter(p=>Array.isArray(p)&&p.length>=2&&
+    Number.isFinite(+p[0])&&Number.isFinite(+p[1])).map(p=>({lat:+p[0],lng:+p[1]}));
+  if(pts.length<2)return false;
+  routePts=pts;routeMode=false;routeRun=true;
+  routeTotalM=+d.total||0;
+  if(!routeTotalM)for(let i=1;i<pts.length;i++)routeTotalM+=distM(pts[i-1],pts[i]);
+  routeSpeed=Math.max(1,+d.speed||40);routeLoop=!!d.loop;
+  routeStartT=+d.startedAt||Date.now();
+  rA=pts[0];rB=pts[pts.length-1];
+  $('#rs_start_n').textContent=rA.lat.toFixed(5)+', '+rA.lng.toFixed(5);
+  $('#rs_end_n').textContent=rB.lat.toFixed(5)+', '+rB.lng.toFixed(5);
+  $('#rloop').checked=routeLoop;
+  $('#cardwrap').classList.add('hidden');
+  $('#routebar').classList.remove('hidden');$('#routebar').classList.add('live');
+  $('#rcalc').style.display='none';$('#rgo').classList.add('hidden');
+  $('#rlooprow').classList.add('hidden');$('#rsum').style.display='block';
+  $('#rliverow').classList.add('show');updRouteBar();
+  drawRouteLine();startRouteClock();startRouteTicker();
+  return true;
 }
 function startRouteTicker(){
   stopRouteTicker();
@@ -1635,103 +1900,153 @@ function startRouteTicker(){
 function stopRouteTicker(){clearInterval(routeTicker);}
 
 /* ---------- Verlauf ---------- */
-let hist=[];try{hist=(NAT.hist&&NAT.hist.length!==undefined)?NAT.hist:JSON.parse(localStorage.getItem('sg_hist')||'[]');}catch(e){hist=NAT.hist||[]}
+let hist=[];try{hist=Array.isArray(NAT.hist)?NAT.hist:JSON.parse(localStorage.getItem('sg_hist')||'[]');}catch(e){hist=[]}
+if(!Array.isArray(hist))hist=[];
+hist=hist.filter(h=>h&&h.lat!=null&&h.lng!=null&&Number.isFinite(+h.lat)&&
+    Number.isFinite(+h.lng)&&Math.abs(+h.lat)<=90&&Math.abs(+h.lng)<=180)
+  .slice(0,40).map((h,i)=>({name:String(h.name||'Standort'),lat:+h.lat,lng:+h.lng,
+    ts:Number.isFinite(+h.ts)&&+h.ts>0?+h.ts:Date.now()-i}));
 function addHist(t){
-  if(!t)return;
-  hist.unshift({name:t.name||'Standort',lat:t.lat,lng:t.lng,ts:Date.now()});
+  if(!t||!Number.isFinite(+t.lat)||!Number.isFinite(+t.lng))return;
+  hist.unshift({name:t.name||'Standort',lat:+t.lat,lng:+t.lng,ts:Date.now()});
   hist=hist.slice(0,40);
-  try{localStorage.setItem('sg_hist',JSON.stringify(hist));}catch(e){}
-  persistAll();
+  persistAll(true);
 }
-$('#histbtn').onclick=()=>{renderHist();$('#histtab').classList.add('open');};
+function formatHistoryDay(ts){
+  const d=new Date(ts),now=new Date();
+  if(d.toDateString()===now.toDateString())return 'HEUTE';
+  const yesterday=new Date(now.getFullYear(),now.getMonth(),now.getDate()-1);
+  if(d.toDateString()===yesterday.toDateString())return 'GESTERN';
+  return d.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'}).toUpperCase();
+}
+function createPlaceRow(place,icon,sub,select){
+  const row=document.createElement('div');row.className='library-row';row.setAttribute('role','listitem');
+  row.innerHTML='<span class="entry-icon">'+FuschIcons.html(icon)+'</span>'+
+    '<button class="entry-main" type="button"><span class="entry-name"></span>'+
+    '<span class="entry-coords"></span><span class="entry-sub"></span></button>'+
+    '<span class="entry-actions"></span>';
+  row.querySelector('.entry-name').textContent=place.name||'Standort';
+  row.querySelector('.entry-coords').textContent=place.lat.toFixed(5)+', '+place.lng.toFixed(5);
+  row.querySelector('.entry-sub').textContent=sub;
+  const open=row.querySelector('.entry-main');
+  open.setAttribute('aria-label','Ort '+(place.name||'Standort')+' auf der Karte anzeigen');
+  open.onclick=()=>{if(guardActive())return;select();};
+  return row;
+}
+function entryAction(row,icon,title,action){
+  const button=document.createElement('button');button.type='button';
+  button.className='entry-action';button.title=title;
+  button.setAttribute('aria-label',title);button.innerHTML=FuschIcons.html(icon);
+  button.onclick=()=>{if(guardActive())return;action();};
+  row.querySelector('.entry-actions').appendChild(button);
+}
+$('#histbtn').onclick=()=>{if(guardActive())return;renderHist();$('#histtab').classList.add('open');};
 $('#backhist').onclick=()=>$('#histtab').classList.remove('open');
 function renderHist(){
-  const l=$('#histlist');l.innerHTML='';
+  const list=$('#histlist');list.replaceChildren();
   $('#histcount').textContent=hist.length;
   $('#histempty').classList.toggle('hidden',hist.length>0);
-  $('#histclear').style.display=hist.length?'block':'none';
-  hist.forEach(h=>{
-    const d=document.createElement('div');d.className='hrow';
-    d.innerHTML='<div class="hico">🕘</div><div class="hm"><div class="hn"></div><div class="hs"></div><div class="hd"></div></div>';
-    d.querySelector('.hn').textContent=h.name;
-    d.querySelector('.hs').textContent=h.lat.toFixed(5)+', '+h.lng.toFixed(5);
-    d.querySelector('.hd').textContent=new Date(h.ts).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short'});
-    d.onclick=()=>{if(spoofing||routeRun){toast('Läuft – erst Stop tippen');return;}
-      $('#histtab').classList.remove('open');
-      setTarget(h.lat,h.lng,{noFly:true});
-      if(map)map.flyTo([h.lat,h.lng],14);};
-    l.appendChild(d);
+  $('#histActions').classList.toggle('hidden',hist.length===0);
+  $('#histlist').classList.toggle('hidden',hist.length===0);
+  const groups=new Map();
+  hist.map((h,i)=>({h,i})).sort((a,b)=>b.h.ts-a.h.ts).forEach(item=>{
+    const day=formatHistoryDay(item.h.ts);
+    if(!groups.has(day))groups.set(day,[]);
+    groups.get(day).push(item);
   });
+  for(const [day,items] of groups){
+    const group=document.createElement('section');group.className='library-group';
+    const heading=document.createElement('div');heading.className='library-heading';
+    const label=document.createElement('h4');label.textContent=day;heading.appendChild(label);
+    const card=document.createElement('div');card.className='library-card';card.setAttribute('role','list');
+    items.forEach(({h,i})=>{
+      const row=createPlaceRow(h,'clock',new Date(h.ts).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}),()=>{
+        $('#histtab').classList.remove('open');
+        setTarget(h.lat,h.lng,{noFly:true});if(map)map.flyTo([h.lat,h.lng],14);
+      });
+      entryAction(row,'trash','Eintrag '+h.name+' löschen',()=>{
+        hist.splice(i,1);
+        persistAll(true);renderHist();toast('Eintrag gelöscht');
+      });
+      card.appendChild(row);
+    });
+    group.appendChild(heading);group.appendChild(card);list.appendChild(group);
+  }
 }
 $('#histclear').onclick=()=>{
-  if(!hist.length)return;
-  hist=[];try{localStorage.setItem('sg_hist','[]');}catch(e){}
-  persistAll();
-  renderHist();toast('Verlauf gelöscht');
+  if(guardActive()||!hist.length)return;
+  openModal('<h3>Verlauf löschen?</h3><p>'+hist.length+' Einträge werden entfernt. Das kann nicht rückgängig gemacht werden.</p>'+
+    '<div class="mrow"><button class="mbtn g" onclick="closeModal()">Abbrechen</button>'+
+    '<button class="mbtn p" onclick="doClearHist()">Löschen</button></div>');
+};
+window.doClearHist=()=>{
+  if(guardActive())return;
+  hist=[];persistAll(true);renderHist();closeModal();toast('Verlauf gelöscht');
 };
 
 /* ================= favorites ================= */
-function saveFavs(){try{localStorage.setItem('sg_favs',JSON.stringify(favs));}catch(e){}persistAll();}
-function avHue(i){return (i*47+18)%360;}
+function saveFavs(){persistAll(true);}
 function renderFavTab(){
-  const list=$('#favlist');list.innerHTML='';
-  const sv=$('#fq').value.trim().toLowerCase();
+  const list=$('#favlist');list.replaceChildren();
+  const query=$('#fq').value.trim().toLocaleLowerCase('de-DE');
   let items=favs.map((f,i)=>({f,i}));
-  if(sv)items=items.filter(x=>(x.f.name||'').toLowerCase().indexOf(sv)>=0
-    ||String(x.f.lat.toFixed(5)).indexOf(sv)>=0||String(x.f.lng.toFixed(5)).indexOf(sv)>=0);
+  if(query)items=items.filter(({f})=>(f.name||'').toLocaleLowerCase('de-DE').includes(query)
+    ||f.lat.toFixed(5).includes(query)||f.lng.toFixed(5).includes(query));
   const ctr=map?map.getCenter():{lat:0,lng:0};
-  if(S.fav_sort==='az')items.sort((a,b)=>(a.f.name||'').localeCompare(b.f.name||'',undefined,{sensitivity:'base'}));
+  if(S.fav_sort==='az')items.sort((a,b)=>(a.f.name||'').localeCompare(b.f.name||'','de',{sensitivity:'base'}));
   else if(S.fav_sort==='near')items.sort((a,b)=>distM(a.f,ctr)-distM(b.f,ctr));
   else items.sort((a,b)=>b.f.ts-a.f.ts);
+  updSortSeg();
   $('#favcount').textContent=favs.length;
   $('#favempty').classList.toggle('hidden',favs.length>0);
-  document.querySelector('.factrow').style.display=favs.length?'flex':'none';
+  $('#favnomatch').classList.toggle('hidden',favs.length===0||items.length>0);
+  list.classList.toggle('hidden',items.length===0);
+  $('#fsearch').classList.toggle('hidden',favs.length<4);
+  $('#fav-sort-section').classList.toggle('hidden',favs.length<2);
+  $('#favsave').classList.toggle('hidden',!target);
+  $('#favclear').classList.toggle('hidden',favs.length===0);
+  $('#favActions').classList.toggle('hidden',!target&&!favs.length);
   items.forEach(({f,i})=>{
-    const d=document.createElement('div');d.className='fvcard';
-    const h=avHue(i);
-    d.innerHTML='<div class="fvav"></div>'+
-      '<div class="fvmain"><div class="fvn"></div><div class="fvs"></div><div class="fvd"></div></div>'+
-      '<div class="fvact">'+
-      '<button title="Umbenennen"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button>'+
-      '<button title="Löschen"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>';
-    const av=d.querySelector('.fvav');
-    av.style.background='hsl('+h+',45%,20%)';
-    av.style.color='hsl('+h+',75%,68%)';
-    av.textContent=(f.name||'?').trim().charAt(0).toUpperCase()||'★';
-    d.querySelector('.fvn').textContent=f.name||'Standort';
-    d.querySelector('.fvs').textContent=f.lat.toFixed(5)+', '+f.lng.toFixed(5);
-    d.querySelector('.fvd').textContent='≈ '+fmtDist(distM(f,ctr))+' von Kartenmitte · '+new Date(f.ts).toLocaleDateString('de-DE');
-    d.querySelector('.fvmain').onclick=()=>{
-      closeFavs();
-      setTarget(f.lat,f.lng,{noFly:true});
+    const sub='≈ '+fmtDist(distM(f,ctr))+' von Kartenmitte · '+new Date(f.ts).toLocaleDateString('de-DE');
+    const row=createPlaceRow(f,'star',sub,()=>{
+      closeFavs();setTarget(f.lat,f.lng,{noFly:true});
       if(map)map.flyTo([f.lat,f.lng],14);
-    };
-    d.querySelector('.fvact button').onclick=()=>{openRename(i);};
-    d.querySelector('.fvact button:last-child').onclick=()=>{
-      favs.splice(i,1);saveFavs();renderFavTab();render();
-      toast('Favorit gelöscht');
-    };
-    list.appendChild(d);
+    });
+    entryAction(row,'edit','Favorit '+f.name+' umbenennen',()=>openRename(i));
+    entryAction(row,'trash','Favorit '+f.name+' löschen',()=>{
+      favs.splice(i,1);saveFavs();renderFavTab();render();toast('Favorit gelöscht');
+    });
+    list.appendChild(row);
   });
 }
 $('#fq').addEventListener('input',()=>{$('#fqx').classList.toggle('hidden',!$('#fq').value);renderFavTab();});
 $('#fqx').onclick=()=>{$('#fq').value='';$('#fqx').classList.add('hidden');renderFavTab();};
-$$('#favsort button').forEach(b=>b.addEventListener('click',()=>{S.fav_sort=b.dataset.fs;saveS();renderFavTab();}));
-$('#favsave').onclick=()=>{
-  if(!target){toast('Wähle zuerst einen Ort auf der Karte');return;}
-  if(favs.some(f=>Math.abs(f.lat-target.lat)<1e-6&&Math.abs(f.lng-target.lng)<1e-6)){toast('Schon gespeichert');return;}
+$$('#favsort button').forEach(b=>b.addEventListener('click',()=>{
+  if(guardActive())return;
+  S.fav_sort=b.dataset.fs;saveS();renderFavTab();
+}));
+function saveCurrentFavorite(){
+  if(!target){toast('Wähle zuerst einen Ort auf der Karte');return false;}
+  if(favs.some(f=>Math.abs(f.lat-target.lat)<1e-6&&Math.abs(f.lng-target.lng)<1e-6)){
+    toast('Schon gespeichert');return false;
+  }
   favs.unshift({name:target.name||'Standort',lat:target.lat,lng:target.lng,ts:Date.now()});
   favs=favs.slice(0,100);saveFavs();renderFavTab();render();
-  toast('Zu Favoriten hinzugefügt ★');vib(12);
-};
+  toast('Zu Favoriten hinzugefügt');vib(12);return true;
+}
+$('#favsave').onclick=()=>{if(!guardActive())saveCurrentFavorite();};
 $('#favclear').onclick=()=>{
-  if(!favs.length){toast('Keine Favoriten vorhanden');return;}
+  if(guardActive()||!favs.length)return;
   openModal('<h3>Alle Favoriten löschen?</h3><p>'+favs.length+' Favoriten werden entfernt. Das kann nicht rückgängig gemacht werden.</p>'+
     '<div class="mrow"><button class="mbtn g" onclick="closeModal()">Abbrechen</button>'+
-    '<button class="mbtn p" style="background:linear-gradient(180deg,#ff6159,#e0362c)" onclick="doClearAllFavs()">Alle löschen</button></div>');
+    '<button class="mbtn p" onclick="doClearAllFavs()">Alle löschen</button></div>');
 };
-window.doClearAllFavs=()=>{favs=[];saveFavs();renderFavTab();render();closeModal();toast('Alle Favoriten gelöscht');};
+window.doClearAllFavs=()=>{
+  if(guardActive())return;
+  favs=[];saveFavs();renderFavTab();render();closeModal();toast('Alle Favoriten gelöscht');
+};
 function openRename(i){
+  if(guardActive())return;
   const f=favs[i];if(!f)return;
   window._renIdx=i;
   $('#renin').value=f.name||'';
@@ -1741,14 +2056,14 @@ function openRename(i){
 $('#renc').onclick=()=>$('#renovl').classList.add('hidden');
 $('#renovl').onclick=e=>{if(e.target.id==='renovl')$('#renovl').classList.add('hidden');};
 $('#rens').onclick=()=>{
+  if(guardActive())return;
   const i=window._renIdx;if(i==null||!favs[i])return;
   const v=$('#renin').value.trim();
   if(v)favs[i].name=v;
-  saveFavs();$('#renovl').classList.add('hidden');renderFavTab();render();
-  toast('Umbenannt ✓');
+  saveFavs();$('#renovl').classList.add('hidden');renderFavTab();render();toast('Umbenannt');
 };
 $('#renin').addEventListener('keydown',e=>{if(e.key==='Enter')$('#rens').click();});
-$('#star').onclick=()=>{ $('#favsave').click(); openFavs(); };
+$('#star').onclick=()=>{if(guardActive())return;saveCurrentFavorite();openFavs();};
 
 /* ---------- X ---------- */
 $('#x').onclick=()=>{
@@ -1759,6 +2074,12 @@ $('#x').onclick=()=>{
 };
 
 /* ---------- error hint / modal ---------- */
+function showLocationPermissionHint(){
+  openModal('<h3>Genauen Standort erlauben</h3>'+
+    '<p>Fusch fragt diese Berechtigung nur auf deinen Wunsch an. Wenn Android sie nicht erneut anbietet, öffne die App-Einstellungen und wähle „Genau“.</p>'+
+    '<div class="mrow"><button class="mbtn g" onclick="window.Native&&Native.openAppSettings();closeModal()">App-Einstellungen</button>'+
+    '<button class="mbtn p" onclick="window.Native&&Native.requestLocationPermission();closeModal()">Jetzt erlauben</button></div>');
+}
 function showHint(err){
   const bad=err&&err.indexOf('NOT_SELECTED')<0;
   openModal(
@@ -1801,25 +2122,15 @@ $('#u_go').onclick=()=>{
   else toast('Download-Link noch nicht konfiguriert');
 };
 function checkForUpdate(){
+  if(spoofing||routeRun||spoofBusy)return;
   const N=window.Native;if(!N||!N.checkUpdate)return;
   let j=null;
   try{j=JSON.parse(N.checkUpdate());}catch(e){}
   if(!j||!j.version)return;
-  const cur=N.appVersion?N.appVersion():'2.5';
+  const cur=N.appVersion?N.appVersion():'2.9';
   const curCode=N.appCode?+N.appCode():0;
   if(newerV(j.version,cur)||(j.code&&curCode&&j.code>curCode))showUpdatePopup(cur,j.version,j.notes,j.url);
 }
-(function(){
-  let lp=null;const el=$('#verline');
-  el.addEventListener('touchstart',()=>{
-    lp=setTimeout(()=>{lp=null;
-      const cur=window.Native&&Native.appVersion?Native.appVersion():'2.5';
-      showUpdatePopup(cur,'9.9','✨ Demo-Vorschau des Update-Pop-ups\n• Hier stehen die Änderungen\n• Mehr Speed, mehr Style','');
-    },550);
-  });
-  ['touchend','touchmove','touchcancel'].forEach(ev=>el.addEventListener(ev,()=>{if(lp){clearTimeout(lp);lp=null;}}));
-})();
-
 /* ---------- toast ---------- */
 let toastT=null;
 function toast(msg){
@@ -1834,18 +2145,18 @@ window.askBg=function(ans){
   try{localStorage.setItem('sg_bgask','1');}catch(e){}
   S.keep_alive=!!ans;
   const el=document.querySelector('input[data-k=keep_alive]');if(el)el.checked=!!ans;
-  try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
-  try{persistAll();}catch(e){}
+  saveS();
   closeModal();
   toast(ans?'Hintergrund aktiv – Spoof läuft weiter, auch wenn du die App schließt':'Hintergrund deaktiviert');
 };
 function maybeAskBg(){
+  if(spoofing||routeRun||spoofBusy)return;
   const o=document.getElementById('onb');if(o&&o.classList.contains('show'))return;
   let asked=0;try{asked=+(localStorage.getItem('sg_bgask')||0);}catch(e){}
   if(typeof NAT.bgask==='number')asked=asked||NAT.bgask;
   if(asked)return;
   openModal(
-    '<h3>🔔 Im Hintergrund aktiv bleiben?</h3>'+
+    '<h3>'+FuschIcons.html('bell')+' Im Hintergrund aktiv bleiben?</h3>'+
     '<p>Dann läuft dein Spoof <b>weiter</b>, auch wenn du die App schließt oder wegwischst – Android zeigt eine Dauerbenachrichtigung.</p>'+
     '<div class="mrow"><button class="mbtn g" onclick="askBg(0)">Nicht aktivieren</button>'+
     '<button class="mbtn p" onclick="askBg(1)">Aktivieren</button></div>');
@@ -1854,21 +2165,25 @@ function maybeAskBg(){
 setTimeout(maybeAskBg,1800);
 
 /* ================= onboarding (v2.5) ================= */
-let onbStep=1;
+let onbStep=1,onbLocationTried=false,onbSkippedNot=false,onbSkippedBatt=false;
 function onbRefresh(){
   const N=window.Native||{};
-  const st=(el,ok,okT,noT)=>{const e=typeof el==='string'?document.getElementById(el):el;if(!e)return;
-    e.textContent=ok?okT:noT;e.classList.toggle('ok',!!ok);e.classList.toggle('amber',!ok);};
+  const st=(el,ok,okT,noT,skipped=false)=>{const e=typeof el==='string'?document.getElementById(el):el;if(!e)return;
+    e.textContent=ok?okT:noT;e.classList.toggle('ok',!!ok);e.classList.toggle('amber',!ok&&!skipped);};
   let loc=false,not=false;try{loc=!!N.hasLocPerm();not=!!N.hasNotifPerm();}catch(e){}
-  st('onb_loc_stat',loc,'Erlaubt','Noch nicht angefragt');
-  st('onb_not_stat',not,'Erlaubt','Noch nicht angefragt');
+  st('onb_loc_stat',loc,'Erlaubt',onbLocationTried?'Genauer Standort erforderlich':'Noch nicht angefragt');
+  st('onb_not_stat',not,'Erlaubt',onbSkippedNot?'Übersprungen':'Noch nicht angefragt',onbSkippedNot);
   const bl=document.getElementById('onb_allow_loc');if(bl)bl.style.display=loc?'none':'flex';
+  const as=document.getElementById('onb_app_settings');if(as)as.style.display=loc?'none':'block';
   const bn=document.getElementById('onb_allow_not');if(bn)bn.style.display=not?'none':'flex';
   let mock=false;try{mock=!!N.mockAllowed();}catch(e){}
   const mo=document.getElementById('onb_mock_ok');if(mo)mo.classList.toggle('show',!!mock);
-  const cta=document.getElementById('onb_cta');if(cta)cta.disabled=(onbStep===2&&!loc)||(onbStep===3&&!mock);
+  const cta=document.getElementById('onb_cta');if(cta){
+    cta.disabled=(onbStep===2&&!loc)||(onbStep===3&&!mock);
+    if(onbStep===3){const ico=cta.querySelector('span');if(ico)ico.innerHTML=mock?FuschIcons.html('check'):'→';}
+  }
   let batt=false;try{batt=!!N.battOpt();}catch(e){}
-  st('onb_batt_stat',batt,'Ausnahme erlaubt','Android kann Fusch stoppen');
+  st('onb_batt_stat',batt,'Ausnahme erlaubt',onbSkippedBatt?'Übersprungen':'Android kann Fusch stoppen',onbSkippedBatt);
   const bb=document.getElementById('onb_allow_batt');if(bb)bb.style.display=batt?'none':'flex';
 }
 function onbShow(i){
@@ -1879,15 +2194,22 @@ function onbShow(i){
   const no=document.getElementById('onb_no');if(no)no.textContent='SCHRITT '+i+' VON 5';
   const back=document.getElementById('onb_back');if(back)back.classList.toggle('hidden',i===1);
   const ct=document.getElementById('onb_cta_t');
-  const ctIco=document.querySelector('#onb_cta span');
+  const ico=document.querySelector('#onb_cta span');
   if(ct){
     ct.textContent=i===1?"Los geht's":i===5?'Karte öffnen':'Weiter';
-    const ico=ct.previousElementSibling;if(ico)ico.textContent=i===5?'🗺️':i===3&&(()=>{try{return !!(window.Native&&Native.mockAllowed());}catch(e){return false;}})()?'✓':'→';
+    if(ico){
+      let mockReady=false;
+      try{mockReady=i===3&&!!(window.Native&&Native.mockAllowed());}catch(e){}
+      if(i===5)ico.innerHTML=FuschIcons.html('map');
+      else if(mockReady)ico.innerHTML=FuschIcons.html('check');
+      else ico.textContent='→';
+    }
   }
   onbRefresh();
 }
 function onbGoto(i){onbShow(i);}
 function onbDone(){
+  NAT.onb=1;
   try{localStorage.setItem('sg_onboard','1');}catch(e){}
   try{localStorage.setItem('sg_bgask','1');}catch(e){}
   if(typeof persistAll==='function'){try{persistAll();}catch(e){}}
@@ -1900,14 +2222,19 @@ function onbDone(){
   if(typeof NAT!=='undefined'&&NAT&&NAT.onb===1)seen=true;
   if(seen)return;
   const el=document.getElementById('onb');if(!el)return;
-  setTimeout(()=>{el.classList.add('show');onbShow(1);},1500);
+  setTimeout(()=>{if(!spoofing&&!routeRun&&!spoofBusy){el.classList.add('show');onbShow(1);}},1500);
   const N=window.Native||{};
-  const bl=document.getElementById('onb_allow_loc');if(bl)bl.onclick=()=>{try{N.requestPerms();}catch(e){}};
-  const bn=document.getElementById('onb_allow_not');if(bn)bn.onclick=()=>{try{N.requestPerms();}catch(e){}};
-  const ns=document.getElementById('onb_not_skip');if(ns)ns.onclick=()=>{const n2=document.getElementById('onb_not_stat');if(n2){n2.textContent='Übersprungen';n2.classList.remove('ok','amber');}};
+  const bl=document.getElementById('onb_allow_loc');if(bl)bl.onclick=()=>{
+    onbLocationTried=true;
+    try{N.requestLocationPermission();}catch(e){}
+    onbRefresh();
+  };
+  const bn=document.getElementById('onb_allow_not');if(bn)bn.onclick=()=>{try{N.requestNotificationPermission();}catch(e){}};
+  const as=document.getElementById('onb_app_settings');if(as)as.onclick=()=>{try{N.openAppSettings();}catch(e){}};
+  const ns=document.getElementById('onb_not_skip');if(ns)ns.onclick=()=>{onbSkippedNot=true;onbRefresh();};
   const ob=document.getElementById('onb_allow_batt');if(ob)ob.onclick=()=>{try{N.requestBattOpt();}catch(e){}};
-  const bs=document.getElementById('onb_batt_skip');if(bs)bs.onclick=()=>{const b2=document.getElementById('onb_batt_stat');if(b2){b2.textContent='Übersprungen';b2.classList.remove('ok','amber');}};
-  const dv=document.getElementById('onb_dev');if(dv)dv.onclick=()=>{try{N.devOptions();}catch(e){}};
+  const bs=document.getElementById('onb_batt_skip');if(bs)bs.onclick=()=>{onbSkippedBatt=true;onbRefresh();};
+  const dv=document.getElementById('onb_dev');if(dv)dv.onclick=()=>{try{N.openDevSettings();}catch(e){}};
   const od=document.getElementById('onb_cta');
   if(od)od.onclick=()=>{
     if(onbStep===3){try{if(!N.mockAllowed||!N.mockAllowed())return;}catch(e){}}
@@ -1921,13 +2248,19 @@ function onbDone(){
 })();
 
 window.__ready=true;
-/* v1.7-Migration: wichtige Schalter einmalig AN – alte gespeicherte Werte dürfen neue Defaults nicht ausknipsen */
-const SVER=12;
+/* Earlier migrations keep old preferences while v14 removes the discarded overlay option. */
+const SVER=14;
 let _sv=0;try{_sv=+(localStorage.getItem('sg_sver')||0)||0;}catch(e){}
 if(typeof NAT.v==='number')_sv=Math.max(_sv,NAT.v);
-if(_sv<SVER){
+if(_sv<12){
   ['mock_network','jitter','notif_coords','notif_timer','map_labels','map_key_tiles','keep_alive'].forEach(k=>{S[k]=true;});
   S.map_style='sat';
+}
+if(_sv<13){
+  S.interval_ms=1000;S.accuracy_m=5;
+  S.notif_coords=true;S.notif_timer=true;
+}
+if(_sv<SVER){
   try{localStorage.setItem('sg_settings',JSON.stringify(S));}catch(e){}
   try{persistAll();}catch(e){}
 }
