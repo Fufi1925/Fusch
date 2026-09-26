@@ -2,282 +2,331 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#ffffff">
-<meta name="description" content="Fusch – Ändere deinen Android-Standort überall. Kostenlos, ohne Root, mit echten Straßen-Routen und automatischen Updates.">
-<title>Fusch – Dein Standort. Überall.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080e16">
+<meta name="description" content="Fusch 2.9: Standort auf Android ohne Root setzen, echte Straßen-Routen planen und den aktiven Spoof jederzeit stoppen. Aktuelle APK, echte App-Ansichten und interaktive Online-Karte.">
+<meta property="og:title" content="Fusch – Dein Standort. Deine Regeln.">
+<meta property="og:description" content="Die neueste Fusch-Version für Android: Karte, Routen, Favoriten und ein klarer Aktivbildschirm. Version 2.9 herunterladen.">
+<meta property="og:image" content="https://fusch.up.railway.app/img/fusch-2.9-karte.webp">
+<title>Fusch 2.9 – Dein Standort. Deine Regeln.</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23101926'/%3E%3Cpath d='M22 15h26v8H31v10h15v8H31v14h-9z' fill='%2388e2dc'/%3E%3C/svg%3E">
+<link rel="preload" as="image" href="img/fusch-2.9-karte.webp">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <script src="icons.js" defer></script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230a84ff'/%3E%3Cpath fill='%23fff' d='M7.1,3.4 h3.1 v17.2 h-3.1 Z M10.2,3.4 h6.2 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-6.2 Z M10.2,10.3 h4.3 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-4.3 Z'/%3E%3Ccircle cx='17.4' cy='11.9' r='2' fill='%23fff'/%3E%3C/svg%3E">
+<script src="vendor/leaflet/leaflet.js" defer></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#ffffff;--soft:#f5f7fa;--card:#ffffff;--line:#e7ebf1;--txt:#0f172a;--mut:#5b6880;
-  --dim:#94a3b8;--blue:#0a84ff;--blue2:#4cc2ff;--grn:#1e9e4a;--grad:linear-gradient(90deg,#0a84ff,#30d158)}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--txt);font-family:Roboto,-apple-system,"Segoe UI",system-ui,sans-serif;
-  line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1080px;margin:0 auto;padding:0 22px}
-button,a.btn{border:0;cursor:pointer;font:inherit}
-/* No colored platform emoji: all decorative icons share one neutral gray. */
-.mono-icon{display:inline-flex;align-items:center;justify-content:center;width:1.15em;height:1.15em;vertical-align:-.17em;line-height:1;color:#9a9a9a!important}
-.mono-icon-glyph{display:block;width:100%;height:100%;stroke:#9a9a9a!important;fill:none!important}
-.feat .ic .mono-icon{width:26px;height:26px}
+:root{color-scheme:dark;--bg:#080e16;--surface:#101923;--surface2:#131e2a;--surface3:#182431;--line:#253340;--line2:#314450;--text:#f1f7f9;--muted:#a4b5bf;--dim:#8195a1;--mint:#8ce3d5;--sky:#8fc9ef;--icon:#9a9a9a;--glow:rgba(122,224,216,.14)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;scroll-padding-top:94px}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:absolute;left:0;top:0;width:min(900px,100vw);height:920px;background:radial-gradient(circle,rgba(23,90,100,.22),transparent 64%);pointer-events:none;z-index:-1}
+a{color:inherit;text-decoration:none}button,input{font:inherit}button{cursor:pointer}img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--mint);outline-offset:4px}
+::selection{background:#306d73;color:#fff}
+.wrap{width:min(100% - 48px,1180px);margin-inline:auto}
+.skip{position:absolute;left:15px;top:-60px;background:var(--mint);color:#09151b;padding:9px 13px;z-index:1000;border-radius:8px}.skip:focus{top:10px}
+.mono-icon{display:inline-flex;align-items:center;justify-content:center;width:1.15em;height:1.15em;flex:none;vertical-align:-.15em;color:#9a9a9a!important}
+.mono-icon-glyph{width:100%;height:100%;stroke:#9a9a9a!important;fill:none!important}
+.eyebrow{font-size:11px;line-height:1.5;font-weight:750;letter-spacing:.2em;text-transform:uppercase;color:var(--mint)}
+.eyebrow.muted{color:var(--dim)}
+.section{padding:112px 0}.section-title{font-size:clamp(36px,4.5vw,60px);line-height:1.08;letter-spacing:-.057em;margin:12px 0 14px;font-weight:750}
+.lead{font-size:17px;color:var(--muted);max-width:620px;line-height:1.7;margin:0}
 
-/* ---------- nav ---------- */
-nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
-  background:rgba(255,255,255,.85);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;align-items:center;gap:12px;height:66px}
-.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;color:var(--txt)}
-.lg{width:34px;height:34px;border-radius:10px;background:var(--grad);
-  display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(10,132,255,.3)}
-.lg svg{width:19px;height:19px}
-nav .sp{flex:1}
-nav a.nl{color:var(--mut);font-size:14px;font-weight:600;padding:8px 10px;border-radius:8px}
-nav a.nl:hover{color:var(--txt);background:var(--soft)}
-nav a.nb{background:var(--blue);color:#fff;font-weight:700;font-size:13.5px;
-  padding:9px 18px;border-radius:11px;box-shadow:0 4px 14px rgba(10,132,255,.3)}
-nav a.nb:hover{background:#0071e3}
+/* Navigation */
+.site-nav{height:76px;position:sticky;top:0;z-index:90;border-bottom:1px solid rgba(145,186,200,.13);background:rgba(8,14,22,.87);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.nav-content{height:100%;display:flex;align-items:center;gap:22px}
+.brand{display:inline-flex;align-items:center;gap:11px;font-size:22px;font-weight:800;letter-spacing:-.06em;white-space:nowrap}
+.brand-mark{height:36px;width:36px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(145deg,#84ded7,#84bce8);color:#101923;font-weight:900;font-size:23px;letter-spacing:-.12em;padding-right:3px;box-shadow:0 7px 25px rgba(83,214,211,.16)}
+.brand .period{color:var(--mint)}.nav-links{display:flex;gap:30px;margin-left:auto}
+.nav-links a{font-size:13px;font-weight:650;color:var(--muted);transition:color .2s}.nav-links a:hover{color:var(--text)}
+.nav-cta{border:1px solid var(--line2);border-radius:10px;padding:9px 16px;font-size:13px;font-weight:750;white-space:nowrap;background:#192631;transition:border-color .2s,background .2s}
+.nav-cta:hover{border-color:var(--mint);background:#1c3238}
+.nav-cta span{color:var(--mint)}
 
-/* ---------- hero ---------- */
-.hero{padding:80px 0 64px;display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--blue);
-  background:rgba(10,132,255,.09);border:1px solid rgba(10,132,255,.25);border-radius:100px;padding:6px 14px}
-.pill .pd{width:7px;height:7px;border-radius:50%;background:var(--blue);animation:bl 1.6s infinite}
-@keyframes bl{50%{opacity:.35}}
-h1{font-size:54px;line-height:1.07;font-weight:800;margin:18px 0 14px;letter-spacing:-.02em;color:var(--txt)}
-h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{color:var(--mut);font-size:16.5px;max-width:480px}
-.herobtns{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
-.btn1{display:inline-flex;align-items:center;gap:10px;background:var(--blue);
-  color:#fff;font-weight:800;font-size:16px;padding:15px 28px;border-radius:14px;
-  box-shadow:0 10px 26px rgba(10,132,255,.35);transition:transform .15s,box-shadow .15s}
-.btn1:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(10,132,255,.42)}
-.btn1 svg{width:19px;height:19px;stroke:#fff}
-.btn2{display:inline-flex;align-items:center;gap:10px;background:#fff;color:var(--txt);
-  font-weight:700;font-size:15px;padding:15px 24px;border-radius:14px;border:1.5px solid var(--line)}
-.btn2:hover{border-color:#cdd6e1;background:var(--soft)}
-.meta{display:flex;gap:16px;margin-top:20px;color:var(--dim);font-size:12.5px;flex-wrap:wrap}
-.meta b{color:var(--mut)}
+/* Hero */
+.hero{min-height:720px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(350px,.9fr);gap:48px;align-items:center;padding-top:75px;padding-bottom:104px;position:relative}
+.hero-copy{position:relative;z-index:2}.hero-pill{display:inline-flex;align-items:center;gap:10px;background:#14242b;border:1px solid #2a4549;border-radius:30px;color:var(--mint);padding:7px 15px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800}
+.live-point{height:7px;width:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 4px rgba(140,227,213,.1);display:inline-block;flex:none}
+h1{font-size:clamp(54px,7.2vw,98px);line-height:1.01;letter-spacing:-.075em;margin:23px 0 24px;max-width:750px;font-weight:780}
+h1 .shine{background:linear-gradient(95deg,#b0f0dc 5%,#83c9f2 90%);color:transparent;-webkit-background-clip:text;background-clip:text}
+.hero-copy>p{font-size:17px;line-height:1.75;color:var(--muted);max-width:570px;margin:0}
+.hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:34px}
+.btn{min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:12px;border-radius:11px;font-weight:750;padding:13px 23px;font-size:14px;transition:transform .2s,box-shadow .2s,background .2s,border-color .2s;text-align:center;border:1px solid transparent}
+.btn:hover{transform:translateY(-2px)}.btn-primary{background:linear-gradient(110deg,#a1ebdc,#a3d8f3);color:#0b1c24;box-shadow:0 15px 40px rgba(100,205,211,.16)}.btn-primary:hover{box-shadow:0 18px 48px rgba(100,205,211,.26)}
+.btn-secondary{border-color:var(--line2);color:var(--text);background:#15212c}.btn-secondary:hover{background:#1c2d39;border-color:#57747f}
+.btn .arrow{font-size:18px;line-height:1;font-weight:500;color:#9a9a9a}.hero-facts{display:flex;gap:14px 24px;flex-wrap:wrap;margin-top:27px;color:var(--dim);font-size:12px;font-weight:600}
+.hero-facts>span{display:inline-flex;align-items:center;gap:7px}.hero-facts .mono-icon{font-size:17px}
+.hero-visual{position:relative;display:flex;justify-content:center;align-items:center;min-height:620px;overflow:hidden}
+.hero-visual::before{content:"";position:absolute;left:50%;top:50%;width:560px;height:560px;max-width:130%;border-radius:50%;background:radial-gradient(circle,rgba(64,171,189,.18),rgba(31,66,93,.06) 48%,transparent 68%);filter:blur(3px);transform:translate(-50%,-50%)}
+.hero-visual::after{content:"";position:absolute;left:50%;top:50%;width:500px;height:500px;max-width:120%;border:1px solid rgba(116,194,198,.1);border-radius:50%;transform:translate(-50%,-50%) rotate(-16deg) scaleX(1.2)}
+.device{position:relative;width:275px;aspect-ratio:824/1830;padding:5px;border:1px solid #627888;border-radius:29px;background:#131b25;box-shadow:0 38px 90px rgba(0,0,0,.6),0 0 0 6px rgba(142,193,203,.05);overflow:hidden;z-index:1}
+.device img{width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:24px}
+.device-badge{position:absolute;right:0;bottom:38px;z-index:2;padding:15px 18px;border:1px solid #46666b;border-radius:13px;background:rgba(17,33,40,.93);box-shadow:0 15px 42px rgba(0,0,0,.34);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.device-badge small{display:block;font-size:10px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;font-weight:800}.device-badge strong{display:block;margin-top:1px;font-size:19px;letter-spacing:-.04em}
 
-/* ---------- phone mockups ---------- */
-.phonewrap{display:flex;justify-content:center;position:relative}
-.phonewrap:before{content:'';position:absolute;inset:-40px;background:radial-gradient(circle at 60% 40%,
-  rgba(10,132,255,.08),transparent 60%);z-index:-1}
-.phone{width:258px;height:540px;border-radius:42px;background:#05070c;border:7px solid #1e2839;
-  box-shadow:0 30px 80px rgba(15,23,42,.25);position:relative;overflow:hidden;flex:none}
-.phone .notch{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:86px;height:22px;
-  background:#05070c;border-radius:100px;z-index:30}
-.scr{position:absolute;inset:0;border-radius:34px;overflow:hidden;background:#0b0f17}
-.rshot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:33px;display:block}
+/* Release band */
+.release-band{min-height:102px;border:1px solid var(--line);background:linear-gradient(110deg,#111e27,#101822);border-radius:18px;display:grid;grid-template-columns:minmax(270px,2fr) 1fr 1fr auto;align-items:center;gap:22px;padding:21px 27px;box-shadow:0 18px 55px rgba(0,0,0,.18)}
+.release-major{display:flex;align-items:center;gap:16px}.release-major .mono-icon{font-size:25px;align-self:center}
+.release-major strong{display:block;font-size:15px}.release-major small{display:block;color:var(--dim);font-size:11px;line-height:1.4;margin-top:2px}
+.release-meta span{display:block;color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.16em;font-weight:750}.release-meta strong{font-size:14px;font-weight:650}
+.text-link{font-size:12px;color:var(--mint);font-weight:750;white-space:nowrap}.text-link span[aria-hidden]{color:#9a9a9a}.text-link:hover{text-decoration:underline;text-underline-offset:4px}
 
-/* ---------- sections ---------- */
-section{padding:78px 0}
-.soft{background:var(--soft)}
-.sh{font-size:32px;font-weight:800;text-align:center;letter-spacing:-.01em}
-.ssub{color:var(--mut);text-align:center;margin-top:8px;font-size:15px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
-.feat{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 24px;
-  transition:transform .18s,box-shadow .18s;box-shadow:0 1px 2px rgba(15,23,42,.04)}
-.feat:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(15,23,42,.1)}
-.feat .ic{width:48px;height:48px;border-radius:14px;background:rgba(10,132,255,.1);
-  display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:15px}
-.feat h3{font-size:16.5px;font-weight:800}
-.feat p{color:var(--mut);font-size:13.5px;margin-top:6px}
-.shots{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;margin-top:48px}
-.shot{text-align:center}
-.shot .cap{margin-top:16px;font-size:13.5px;font-weight:700;color:var(--mut)}
-.steps{counter-reset:s;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
-.step{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px;
-  box-shadow:0 1px 2px rgba(15,23,42,.04)}
-.step:before{counter-increment:s;content:counter(s);display:flex;width:38px;height:38px;border-radius:12px;
-  background:var(--grad);color:#fff;font-weight:800;font-size:17px;
-  align-items:center;justify-content:center;margin-bottom:15px;box-shadow:0 6px 16px rgba(10,132,255,.3)}
-.step h3{font-size:15.5px;font-weight:800}
-.step p{color:var(--mut);font-size:13px;margin-top:6px}
-.step code{background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:1px 6px;
-  font-size:12px;color:var(--txt)}
+/* Features */
+.features{padding-bottom:105px}.features-head{display:flex;justify-content:space-between;align-items:end;gap:35px;margin-bottom:34px}.features-head .lead{max-width:370px;font-size:14px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.feature{border:1px solid var(--line);background:linear-gradient(155deg,#121e29,#0e1720);border-radius:17px;padding:26px 26px 28px;min-height:224px;transition:border-color .2s,transform .2s}
+.feature:hover{border-color:#40636b;transform:translateY(-3px)}.feature-top{display:flex;justify-content:space-between;align-items:center}.feature-top .mono-icon{font-size:26px}.feature-top .idx{font:700 11px/1.3 ui-monospace,Consolas,monospace;color:#728894}
+.feature h3{font-size:19px;letter-spacing:-.035em;line-height:1.25;margin:23px 0 8px}.feature p{font-size:13px;line-height:1.65;color:var(--muted);margin:0;max-width:32ch}
 
-/* download */
-.dlcard{margin-top:0;background:linear-gradient(135deg,#0f172a,#1e2941);border-radius:28px;
-  padding:56px 30px;text-align:center;box-shadow:0 24px 60px rgba(15,23,42,.3);color:#fff}
-.dlcard .big{font-size:27px;font-weight:800}
-.dlcard .dv{color:#aab8d0;margin-top:8px;font-size:14px}
-.dlcard .dv b{color:#7cc4ff}
-.updnote{margin-top:14px;font-size:12.5px;color:#7e8dab}
-.dlcard .btn1{margin-top:26px;font-size:17px;padding:17px 36px;background:#fff;color:#0f172a;
-  box-shadow:0 10px 30px rgba(255,255,255,.15)}
-.dlcard .btn1 svg{stroke:#0f172a}
-.dlcard .btn1:hover{box-shadow:0 14px 36px rgba(255,255,255,.22)}
+/* Screenshots */
+.gallery-section{padding:105px 0 110px;background:linear-gradient(180deg,#0d1720,#0a121b);border-block:1px solid rgba(125,176,187,.1)}
+.gallery-intro{display:flex;gap:28px;justify-content:space-between;align-items:end;margin-bottom:30px}.gallery-intro .lead{font-size:14px;max-width:365px}
+.shots{display:flex;gap:18px;overflow-x:auto;overflow-y:hidden;padding:6px max(24px,calc((100vw - 1180px)/2)) 30px;scroll-padding-left:max(24px,calc((100vw - 1180px)/2));scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#43606b transparent}
+.shot{flex:0 0 219px;scroll-snap-align:start;border:1px solid var(--line);border-radius:16px;background:#131e28;padding:10px;text-align:left;color:var(--text);min-width:0;transition:transform .2s,border-color .2s}
+.shot:hover{transform:translateY(-4px);border-color:#51747b}.shot img{width:100%;height:auto;aspect-ratio:824/1830;object-fit:cover;object-position:top;border-radius:9px;border:1px solid #37434c}
+.shot-info{display:flex;align-items:center;gap:9px;padding:13px 4px 3px;font-size:12px;font-weight:750}.shot-info .mono-icon{font-size:17px}.shot-info .expand{margin-left:auto;color:var(--dim);font-size:11px;font-weight:550}
+.gallery-note{font-size:12px;color:var(--dim);margin:0}.gallery-note a{color:var(--mint)}
+.preview-dialog{width:min(95vw,480px);max-height:95dvh;border:1px solid #46616d;border-radius:20px;background:#0f1923;color:var(--text);padding:14px 14px 18px;box-shadow:0 30px 100px rgba(0,0,0,.8)}
+.preview-dialog::backdrop{background:rgba(4,9,14,.88);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.preview-dialog .dialog-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 4px}.preview-dialog .dialog-top strong{font-size:15px}
+.preview-dialog button{border:1px solid var(--line2);border-radius:9px;background:#172630;color:var(--text);padding:5px 12px;font-size:13px}
+.preview-dialog img{max-height:calc(95dvh - 90px);width:auto;max-width:100%;margin:auto;border-radius:11px;object-fit:contain}
 
-footer{border-top:1px solid var(--line);padding:36px 0 46px;margin-top:24px;background:#fff}
-footer .wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--dim);font-size:12.5px}
-footer .sp{flex:1}
-footer .made{color:var(--mut)}
-footer .made b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-footer .f2{color:var(--dim)}
+/* Live map */
+.live-head{display:grid;grid-template-columns:1fr 1fr;gap:45px;align-items:end;margin-bottom:32px}.live-head .lead{max-width:495px;justify-self:end}
+.live-shell{height:520px;border-radius:22px;position:relative;overflow:hidden;background:radial-gradient(circle at 52% 48%,#1a3138,#10202b 70%);border:1px solid #37525d;box-shadow:0 28px 76px rgba(0,0,0,.25)}
+#live-map{position:absolute;inset:0;z-index:1}.leaflet-container{background:#122430;font-family:inherit}.leaflet-control-attribution{background:rgba(10,20,26,.86)!important;color:#ced8da!important;font-size:10px!important}.leaflet-control-attribution a{color:#b7e8e1!important}
+.live-placeholder{position:absolute;inset:0;z-index:0;display:grid;place-content:center;text-align:center;color:#aec1c6;gap:4px}.live-placeholder b{font-size:17px}.live-placeholder small{font-size:12px}
+.map-top,.map-bottom{position:absolute;z-index:3;left:20px;right:20px;display:flex;gap:12px;align-items:center;pointer-events:none}.map-top{top:19px;flex-wrap:wrap}.map-bottom{bottom:27px;justify-content:space-between;align-items:end}
+.map-top>* , .map-bottom>*{pointer-events:auto}.map-label{display:inline-flex;align-items:center;gap:9px;background:rgba(13,26,34,.94);border:1px solid #506c71;border-radius:100px;padding:9px 15px;font-size:11px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;box-shadow:0 10px 26px rgba(0,0,0,.2)}
+.map-locate{display:inline-flex;align-items:center;gap:8px;margin-left:auto;background:rgba(13,26,34,.94);border:1px solid #506c71;border-radius:10px;color:#f1f7f9;padding:9px 14px;font-size:12px;font-weight:750;min-height:38px}
+.map-locate:hover{border-color:var(--mint)}.map-locate .mono-icon{font-size:16px}
+.map-place{background:rgba(13,26,34,.96);border:1px solid #46636c;box-shadow:0 13px 35px rgba(0,0,0,.35);border-radius:14px;padding:15px 18px;min-width:230px}.map-place span{display:block;color:var(--dim);font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:750}
+.map-place strong{display:block;font-size:16px;margin-top:3px}.map-place code{display:block;color:#b8d0d4;font-size:12px;margin-top:3px}
+.map-buttons{display:flex;gap:7px;margin-right:0;margin-left:auto}.map-buttons button{height:37px;min-width:37px;border:1px solid #506c71;border-radius:9px;background:rgba(13,26,34,.94);color:var(--text);font-weight:750;font-size:20px}.map-buttons button:hover{border-color:var(--mint)}
+.city-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px;align-items:center}.city-row span{font-size:12px;color:var(--dim);margin-right:5px}.city-row button{border:1px solid var(--line2);background:#111e28;border-radius:100px;color:var(--muted);font-size:12px;font-weight:700;padding:7px 13px}.city-row button:hover,.city-row button.active{background:#1a3338;color:var(--mint);border-color:#4b7475}
+.map-status{min-height:22px;margin:14px 0 0;font-size:12px;color:var(--dim)}.map-disclaimer{margin:8px 0 0;color:var(--dim);font-size:11px}
 
-@media(max-width:900px){
-  .hero{grid-template-columns:1fr;padding-top:52px;text-align:center}
-  .sub{margin:0 auto}
-  .herobtns,.meta{justify-content:center}
-  .grid3,.steps{grid-template-columns:1fr}
-  h1{font-size:40px}
-  nav a.nl{display:none}
-}
+/* Setup and FAQ */
+.setup{padding-top:20px}.setup-head{max-width:680px;margin-bottom:31px}.setup-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.setup-card{border:1px solid var(--line);border-radius:17px;background:#101b25;padding:26px;min-height:205px}.setup-number{display:inline-grid;place-items:center;width:37px;height:37px;border-radius:10px;border:1px solid #44757a;background:#173039;color:var(--mint);font-size:14px;font-weight:850}.setup-card h3{font-size:18px;letter-spacing:-.03em;margin:22px 0 8px}.setup-card p{font-size:13px;line-height:1.65;color:var(--muted);margin:0}.setup-card code{color:#b9e9e3}
+.faq{margin-top:55px;display:grid;grid-template-columns:1fr 1.5fr;gap:55px}.faq h3{font-size:27px;letter-spacing:-.05em;line-height:1.2;margin:10px 0}.faq p{font-size:13px;color:var(--muted)}
+.faq details{border-bottom:1px solid var(--line);padding:15px 0}.faq details:first-child{border-top:1px solid var(--line)}
+.faq summary{cursor:pointer;font-size:14px;font-weight:750;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px}.faq summary::-webkit-details-marker{display:none}.faq summary::after{content:"+";color:var(--mint);font-size:21px;font-weight:400}.faq details[open] summary::after{content:"−"}
+.faq details p{margin:9px 20px 2px 0;line-height:1.7}
+
+/* Download */
+.download-section{padding:50px 0 115px}.download-panel{position:relative;overflow:hidden;border-radius:24px;border:1px solid #406167;background:radial-gradient(circle at 85% -20%,rgba(93,196,191,.19),transparent 48%),linear-gradient(130deg,#172e35,#12202c 60%,#131d28);padding:58px 62px}
+.download-panel h2{font-size:clamp(38px,4.8vw,62px);line-height:1.08;letter-spacing:-.055em;max-width:640px;margin:10px 0 14px}.download-panel>.download-copy{max-width:580px;color:#becdd2;line-height:1.65;font-size:15px;margin:0 0 25px}
+.download-meta{color:#b7cdd1;font-size:12px;margin:14px 0 0}.migration{display:flex;gap:14px;align-items:flex-start;max-width:730px;margin-top:34px;padding:17px 19px;border:1px solid #66705b;background:rgba(81,78,41,.17);border-radius:13px}
+.migration .mono-icon{font-size:22px;margin-top:2px}.migration strong{display:block;font-size:13px}.migration p{font-size:12px;line-height:1.7;color:#c9d1c7;margin:3px 0 0}
+.checksum{font-size:11px;color:#9fb2bc;margin-top:22px;overflow-wrap:anywhere}.checksum code{color:#c6e3e3;font-size:11px}
+
+footer{border-top:1px solid var(--line);padding:30px 0 45px;background:#0a111a}.footer-content{display:flex;gap:20px;align-items:center;flex-wrap:wrap}.footer-content .brand{font-size:17px}.footer-content .brand-mark{width:29px;height:29px;font-size:19px;border-radius:8px}.footer-content p{font-size:12px;color:var(--dim);margin:0 0 0 9px}.footer-content .links{margin-left:auto;display:flex;gap:20px}.footer-content .links a{font-size:12px;color:var(--muted)}.footer-content .links a:hover{color:var(--mint)}
+
+@media(max-width:1000px){.hero{grid-template-columns:1fr 360px;gap:15px}h1{font-size:clamp(58px,6.2vw,78px)}.device-badge{right:-5px}.release-band{grid-template-columns:2fr 1fr 1fr}.release-band .text-link{grid-column:1/-1;justify-self:start}.feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.wrap{width:min(100% - 36px,1180px)}.section{padding:80px 0}.site-nav{height:66px}.nav-links{display:none}.nav-cta{margin-left:auto}.hero{min-height:0;grid-template-columns:1fr;text-align:center;gap:30px;padding-top:62px;padding-bottom:58px}.hero-copy>p{margin-inline:auto}.hero-actions,.hero-facts{justify-content:center}h1{font-size:clamp(55px,11vw,82px)}.hero-visual{min-height:470px}.hero-visual::before{width:470px;height:470px}.hero-visual::after{width:410px;height:410px}.device{width:225px}.device-badge{right:4%;bottom:22px}.release-band{grid-template-columns:1fr 1fr;gap:18px;padding:21px}.release-major{grid-column:1/-1}.release-band .text-link{grid-column:1/-1}.features-head,.gallery-intro{display:block}.features-head .lead,.gallery-intro .lead{max-width:630px}.feature-grid{grid-template-columns:1fr 1fr}.feature{min-height:0}.live-head{grid-template-columns:1fr;gap:6px}.live-head .lead{justify-self:start}.live-shell{height:490px}.setup-grid{grid-template-columns:1fr}.setup-card{min-height:0}.faq{grid-template-columns:1fr;gap:12px}.download-section{padding-top:25px}.download-panel{padding:38px 29px}.footer-content p{margin-left:0}}
+@media(max-width:530px){.wrap{width:min(100% - 32px,1180px)}.brand{font-size:20px}.nav-cta{padding:8px 11px;font-size:12px}.hero{padding-top:49px}.hero-pill{font-size:10px}.hero-copy>p{font-size:15px}.hero-actions .btn{width:100%}.hero-visual{min-height:390px;overflow:hidden}.hero-visual::before{width:100%;height:auto;aspect-ratio:1}.hero-visual::after{width:300px;height:300px}.device{width:191px}.device-badge{right:1%;bottom:9px;padding:10px 12px}.device-badge strong{font-size:15px}.feature-grid{grid-template-columns:1fr}.feature{padding:23px}.shot{flex-basis:192px}.shots{gap:13px}.live-shell{height:440px}.map-top{left:12px;right:12px;top:12px}.map-label{font-size:10px;padding:8px 11px}.map-locate{font-size:11px;padding:8px 10px}.map-bottom{left:12px;right:12px;bottom:26px;gap:4px}.map-place{min-width:0;padding:11px 13px}.map-place strong{font-size:13px}.map-place code{font-size:10px}.download-panel{padding:35px 22px}.footer-content .links{margin-left:0;width:100%;gap:17px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
+<a class="skip" href="#content">Zum Inhalt springen</a>
+<nav class="site-nav" aria-label="Hauptnavigation"><div class="wrap nav-content">
+  <a class="brand" href="#top" aria-label="Fusch, zur Startseite"><span class="brand-mark" aria-hidden="true">F</span><span>fusch<span class="period">.</span></span></a>
+  <div class="nav-links"><a href="#funktionen">Funktionen</a><a href="#einblicke">App ansehen</a><a href="#live">Live-Karte</a><a href="#einrichtung">Einrichtung</a></div>
+  <a class="nav-cta" data-download href="/downloads/Fusch-2.9.apk">Download <span data-version>2.9</span></a>
+</div></nav>
 
-<nav>
-  <div class="wrap">
-    <div class="logo">
-      <div class="lg"><svg viewBox="0 0 24 24">
-        <path fill="#fff" d="M7.1,3.4 h3.1 v17.2 h-3.1 Z M10.2,3.4 h6.2 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-6.2 Z M10.2,10.3 h4.3 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-4.3 Z"/>
-        <circle cx="17.4" cy="11.9" r="2" fill="#fff"/>
-      </svg></div>
-      Fusch
+<main id="content">
+<header class="hero wrap" id="top">
+  <div class="hero-copy">
+    <span class="hero-pill"><span class="live-point" aria-hidden="true"></span> Neues Release · Android</span>
+    <h1>Dein Standort.<br><span class="shine">Deine Regeln.</span></h1>
+    <p>Ein Ort, eine Route, ein neuer Blick auf die Karte. Fusch setzt einen simulierten Android-Standort systemweit, plant Wege über echte Straßen und lässt dich jederzeit wieder stoppen. Ohne Root.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" data-download href="/downloads/Fusch-2.9.apk">Fusch <span data-version>2.9</span> herunterladen <span class="arrow" aria-hidden="true">↗</span></a>
+      <a class="btn btn-secondary" href="#einblicke">App entdecken <span class="arrow" aria-hidden="true">↓</span></a>
     </div>
-    <div class="sp"></div>
-    <a class="nl" href="#features">Features</a>
-    <a class="nl" href="#screens">App</a>
-    <a class="nl" href="#setup">Einrichtung</a>
-    <a class="nb" href="#download">Download</a>
+    <div class="hero-facts"><span><span class="mono-icon" data-icon="check" aria-hidden="true"></span> Android 8.0+</span><span><span class="mono-icon" data-icon="lock" aria-hidden="true"></span> Keine Anmeldung</span><span><span class="mono-icon" data-icon="map" aria-hidden="true"></span> Karten &amp; Routen</span></div>
   </div>
-</nav>
-
-<header class="hero wrap">
-  <div>
-    <span class="pill"><span class="pd"></span> v<span class="vtag">1.5</span> · Android 8.0+ · kein Root</span>
-    <h1>Dein Standort.<br><span class="grad">Überall.</span></h1>
-    <p class="sub">Fusch ändert den GPS-Standort deines Android-Handys systemweit – mit Karte, Suche,
-      Favoriten, <b>echten Straßen-Routen</b>, Verlauf und automatischen Updates. Ohne Root, jederzeit stoppbar.</p>
-    <div class="herobtns">
-      <a class="btn1" id="dlbtn" href="downloads/Fusch-latest.apk">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
-        Fusch <span class="vtag">1.5</span> laden
-      </a>
-      <a class="btn2" href="#features">Features ansehen</a>
-    </div>
-    <div class="meta">
-      <span><b>Kostenlos</b> · Open Source</span>
-      <span><b>OSRM-Routing</b> · echte Straßen</span>
-      <span id="dldate"><b>Aktuell</b> · Auto-Update-System</span>
-    </div>
-  </div>
-  <div class="phonewrap">
-    <div class="phone"><div class="notch"></div>
-      <div class="scr"><img class="rshot" src="img/shot-map.png" alt="Fusch App – Karte mit gewähltem Standort"></div>
-    </div>
+  <div class="hero-visual">
+    <div class="device"><img src="img/fusch-2.9-karte.webp" alt="Aktuelle Fusch-2.9-Oberfläche mit Karte und ausgewähltem Ort in Duisburg; Beispieldaten" width="824" height="1830" fetchpriority="high"></div>
+    <div class="device-badge"><small>Aktueller Build</small><strong>Fusch <span data-version>2.9</span></strong></div>
   </div>
 </header>
 
-<section id="screens">
-  <div class="wrap">
-    <h2 class="sh">Direkt aus der App</h2>
-    <p class="ssub">So sieht Fusch auf deinem Handy aus – Spoof-Vorgang, Favoriten, Einstellungen.</p>
-    <div class="shots">
+<div class="wrap release-band" aria-live="polite">
+  <div class="release-major"><span class="mono-icon" data-icon="reload" aria-hidden="true"></span><div><strong>Aktuelle Version <span data-version>2.9</span></strong><small id="release-status">Version aus geprüfter APK · GitHub wird abgefragt</small></div></div>
+  <div class="release-meta"><span>APK-Größe</span><strong id="release-size">129,4 KB</strong></div>
+  <div class="release-meta"><span>Release</span><strong id="release-date">26.09.2026</strong></div>
+  <a class="text-link" id="release-link" href="https://github.com/Fufi1925/Fusch/releases" target="_blank" rel="noopener noreferrer">Release auf GitHub <span aria-hidden="true">↗</span></a>
+</div>
 
-      <div class="shot">
-        <div class="phone"><div class="notch"></div>
-          <div class="scr"><img class="rshot" src="img/shot-spoof.png" alt="Fusch – Spoof-Vorgang erfolgreich"></div>
-        </div>
-        <div class="cap"><span class="mono-icon" data-icon="signal" aria-hidden="true"></span> Spoof-Vorgang mit Animation</div>
-      </div>
-
-      <div class="shot">
-        <div class="phone"><div class="notch"></div>
-          <div class="scr"><img class="rshot" src="img/shot-favs.png" alt="Fusch – Favoriten-Tab"></div>
-        </div>
-        <div class="cap"><span class="mono-icon" data-icon="star" aria-hidden="true"></span> Favoriten mit Suche &amp; Sortierung</div>
-      </div>
-
-      <div class="shot">
-        <div class="phone"><div class="notch"></div>
-          <div class="scr"><img class="rshot" src="img/shot-settings.png" alt="Fusch – Einstellungen"></div>
-        </div>
-        <div class="cap"><span class="mono-icon" data-icon="settings" aria-hidden="true"></span> Alle Einstellungen im Überblick</div>
-      </div>
-
-      <div class="shot">
-        <div class="phone"><div class="notch"></div>
-          <div class="scr"><img class="rshot" src="img/shot-splash.png" alt="Fusch – Startanimation"></div>
-        </div>
-        <div class="cap"><span class="mono-icon" data-icon="rocket" aria-hidden="true"></span> Startanimation</div>
-      </div>
-
-    </div>
+<section class="section features wrap" id="funktionen">
+  <div class="features-head"><div><div class="eyebrow">01 / Was Fusch kann</div><h2 class="section-title">Alles an seinem Platz.<br>Außer deinem Standort.</h2></div><p class="lead">Eine klare Oberfläche für den Moment, in dem du einen anderen Ort brauchst – mit direkter Kontrolle über den laufenden Vorgang.</p></div>
+  <div class="feature-grid">
+    <article class="feature"><div class="feature-top"><span class="mono-icon" data-icon="pin" aria-hidden="true"></span><span class="idx">01</span></div><h3>Ort auf der Karte wählen</h3><p>Suche einen Ort, tippe auf die Karte oder ziehe den Marker. Dein gewählter Standort ist sofort im Blick.</p></article>
+    <article class="feature"><div class="feature-top"><span class="mono-icon" data-icon="route" aria-hidden="true"></span><span class="idx">02</span></div><h3>Auf Straßen unterwegs</h3><p>Start und Ziel festlegen, Gehen, Fahrrad oder Auto auswählen und die Route über echte Straßen berechnen.</p></article>
+    <article class="feature"><div class="feature-top"><span class="mono-icon" data-icon="signal" aria-hidden="true"></span><span class="idx">03</span></div><h3>Alles unter Kontrolle</h3><p>Während ein Standort oder eine Route aktiv ist, zeigt die App nur den Status und den Stop-Button.</p></article>
+    <article class="feature"><div class="feature-top"><span class="mono-icon" data-icon="star" aria-hidden="true"></span><span class="idx">04</span></div><h3>Orte wiederfinden</h3><p>Favoriten durchsuchen, sortieren und umbenennen. Dein Verlauf hält gestartete Standorte und Routen fest.</p></article>
+    <article class="feature"><div class="feature-top"><span class="mono-icon" data-icon="bell" aria-hidden="true"></span><span class="idx">05</span></div><h3>Im Hintergrund aktiv</h3><p>Mit sichtbarer Android-Dauerbenachrichtigung und Stop-Aktion – auch wenn du Fusch verlässt.</p></article>
+    <article class="feature"><div class="feature-top"><span class="mono-icon" data-icon="settings" aria-hidden="true"></span><span class="idx">06</span></div><h3>Einfach eingerichtet</h3><p>Die App begleitet dich durch Standort-Berechtigung, Entwickleroptionen und Mock-Standort-Auswahl.</p></article>
   </div>
 </section>
 
-<section id="features" class="soft">
-  <div class="wrap">
-    <h2 class="sh">Alles drin</h2>
-    <p class="ssub">Ein komplettes Standort-Tool – ohne Abo, ohne Werbung, ohne Root.</p>
-    <div class="grid3">
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="pin" aria-hidden="true"></span></div><h3>Teleport überall hin</h3><p>Tippe auf die Karte, ziehe den Marker oder wähle einen Ort – der Standort gilt systemweit für alle Apps.</p></div>
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="route" aria-hidden="true"></span></div><h3>Routen auf echten Straßen</h3><p>Start + Ziel wählen, Gerät wählen (Gehen / Fahrrad / Auto) – OSRM berechnet wie Google Maps den Weg über echte Straßen. „Losfahren" und der Standort bewegt sich realistisch.</p></div>
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="star" aria-hidden="true"></span></div><h3>Favoriten</h3><p>Orte speichern, umbenennen, durchsuchen und nach Name oder Entfernung sortieren.</p></div>
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="clock" aria-hidden="true"></span></div><h3>Verlauf</h3><p>Jeder Spoof und jede Route landet automatisch im Verlauf – mit einem Tipp wiederherstellen.</p></div>
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="reload" aria-hidden="true"></span></div><h3>Autostart &amp; Hintergrund</h3><p>Spoofing überlebt den Geräte-Neustart und läuft weiter, wenn die App geschlossen wird.</p></div>
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="key" aria-hidden="true"></span></div><h3>Geo-API-Schlüssel</h3><p>Die App nutzt den eingebauten oder deinen eigenen API-Key. Ein eigener Schlüssel wird lokal gespeichert und nach dem Speichern nicht erneut angezeigt.</p></div>
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="rocket" aria-hidden="true"></span></div><h3>Auto-Updates</h3><p>Die App prüft beim Start diese Website und zeigt bei einer neuen Version direkt den Download an.</p></div>
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="search" aria-hidden="true"></span></div><h3>Globale Suche</h3><p>Orte und Adressen weltweit finden – mit eigenem Geo-API-Key noch schneller.</p></div>
-      <div class="feat"><div class="ic"><span class="mono-icon" data-icon="bell" aria-hidden="true"></span></div><h3>Status-Benachrichtigung</h3><p>Dauerbenachrichtigung mit Ortsname, Koordinaten und Laufzeit-Timer – inkl. Stoppen-Button.</p></div>
-    </div>
+<section class="gallery-section" id="einblicke">
+  <div class="wrap gallery-intro"><div><div class="eyebrow">02 / Einblicke</div><h2 class="section-title">So sieht 2.9 wirklich aus.</h2></div><p class="lead">Neue Aufnahmen der tatsächlich in der APK enthaltenen Oberfläche. Mit Beispieldaten – kein Bildgenerator, kein behaupteter Live-Spoof.</p></div>
+  <div class="shots" aria-label="App-Ansichten, horizontal scrollbar">
+    <button class="shot" type="button" data-shot="karte" data-title="Karte &amp; Standort"><img src="img/fusch-2.9-karte.webp" alt="Fusch-Karte mit gewähltem Standort in Duisburg" width="824" height="1830" loading="lazy"><span class="shot-info"><span class="mono-icon" data-icon="map" aria-hidden="true"></span> Karte &amp; Standort <span class="expand">Ansehen</span></span></button>
+    <button class="shot" type="button" data-shot="aktiv" data-title="Aktiver Standort"><img src="img/fusch-2.9-aktiv.webp" alt="Fusch-Aktivbildschirm mit Status und Stop-Button" width="824" height="1830" loading="lazy"><span class="shot-info"><span class="mono-icon" data-icon="signal" aria-hidden="true"></span> Aktiver Standort <span class="expand">Ansehen</span></span></button>
+    <button class="shot" type="button" data-shot="route" data-title="Aktive Route"><img src="img/fusch-2.9-route.webp" alt="Fusch-Aktivbildschirm mit Routenfortschritt und Stop-Button" width="824" height="1830" loading="lazy"><span class="shot-info"><span class="mono-icon" data-icon="route" aria-hidden="true"></span> Aktive Route <span class="expand">Ansehen</span></span></button>
+    <button class="shot" type="button" data-shot="favoriten" data-title="Favoriten"><img src="img/fusch-2.9-favoriten.webp" alt="Aktuelle Favoritenliste mit Suche und Sortierung" width="824" height="1830" loading="lazy"><span class="shot-info"><span class="mono-icon" data-icon="star" aria-hidden="true"></span> Favoriten <span class="expand">Ansehen</span></span></button>
+    <button class="shot" type="button" data-shot="verlauf" data-title="Verlauf"><img src="img/fusch-2.9-verlauf.webp" alt="Aktuelle Verlaufsliste der Fusch-App" width="824" height="1830" loading="lazy"><span class="shot-info"><span class="mono-icon" data-icon="clock" aria-hidden="true"></span> Verlauf <span class="expand">Ansehen</span></span></button>
+    <button class="shot" type="button" data-shot="einstellungen" data-title="Einstellungen"><img src="img/fusch-2.9-einstellungen.webp" alt="Aktuelle Fusch-Einstellungen mit Status der Berechtigungen" width="824" height="1830" loading="lazy"><span class="shot-info"><span class="mono-icon" data-icon="settings" aria-hidden="true"></span> Einstellungen <span class="expand">Ansehen</span></span></button>
+  </div>
+  <p class="wrap gallery-note">Die Ansichten wurden aus der UI der signierten 2.9-APK in einer mobilen Browser-Testumgebung mit Beispieldaten aufgenommen. Die Online-Karte darunter lädt echte Kartendaten.</p>
+</section>
+
+<section class="section wrap" id="live">
+  <div class="live-head"><div><div class="eyebrow">03 / Die Welt entdecken</div><h2 class="section-title">Eine echte Karte.<br>Kein Standbild.</h2></div><p class="lead">Bewege die Karte, wähle einen Punkt oder zeige mit deiner Erlaubnis deinen aktuellen Standort. Kartenausschnitte werden online von CARTO mit OpenStreetMap-Daten geladen.</p></div>
+  <div class="live-shell" aria-label="Interaktive Online-Karte">
+    <div class="live-placeholder" id="live-placeholder"><b>Online-Karte wird geladen</b><small>Für die Karte ist eine Internetverbindung nötig.</small></div>
+    <div id="live-map" role="application" aria-label="Karte: verschieben, zoomen oder klicken, um Koordinaten zu sehen"></div>
+    <div class="map-top"><span class="map-label"><span class="live-point" aria-hidden="true"></span> Online-Karte</span><button class="map-locate" id="locate" type="button"><span class="mono-icon" data-icon="pin" aria-hidden="true"></span> Mein Standort</button></div>
+    <div class="map-bottom"><div class="map-place"><span>Gewählter Punkt</span><strong id="map-name">Duisburg</strong><code id="map-coords">51.43441, 6.76233</code></div><div class="map-buttons"><button id="zoom-out" type="button" aria-label="Karte verkleinern">−</button><button id="zoom-in" type="button" aria-label="Karte vergrößern">+</button></div></div>
+  </div>
+  <div class="city-row"><span>Schnell nach:</span><button type="button" data-city="duisburg" class="active">Duisburg</button><button type="button" data-city="berlin">Berlin</button><button type="button" data-city="amsterdam">Amsterdam</button></div>
+  <p class="map-status" id="map-status" role="status" aria-live="polite">Die Karte lädt nur, wenn du diesen Bereich ansiehst.</p>
+  <p class="map-disclaimer">Die Website ändert keinen Gerätestandort. „Mein Standort“ nutzt nur nach deiner Zustimmung die Browser-Ortung; die Kartenkacheln lädt dein Browser vom Kartenanbieter.</p>
+</section>
+
+<section class="section setup wrap" id="einrichtung">
+  <div class="setup-head"><div class="eyebrow">04 / Loslegen</div><h2 class="section-title">Drei Schritte. Dann los.</h2><p class="lead">Kein Root, kein Konto. Android braucht nur einmal die Auswahl von Fusch als App für simulierte Standorte.</p></div>
+  <div class="setup-grid">
+    <article class="setup-card"><span class="setup-number">01</span><h3>APK installieren</h3><p>Die aktuelle Fusch-APK laden und öffnen. Android kann dich bitten, die Installation aus dieser Quelle zu erlauben.</p></article>
+    <article class="setup-card"><span class="setup-number">02</span><h3>Standort-App wählen</h3><p>In den Entwickleroptionen unter <code>App für simulierte Standorte auswählen</code> Fusch festlegen. Die App führt dich dorthin.</p></article>
+    <article class="setup-card"><span class="setup-number">03</span><h3>Ort wählen &amp; stoppen</h3><p>Ort antippen oder Route planen, dann starten. Währenddessen sind in Fusch nur Status und Stop bedienbar.</p></article>
+  </div>
+  <div class="faq"><div><div class="eyebrow muted">Gut zu wissen</div><h3>Die ehrlichen Antworten.</h3><p>Keine versteckten Voraussetzungen. Und keine Versprechen, die Android nicht halten kann.</p></div><div>
+    <details><summary>Kann ich von Fusch 2.5 direkt auf 2.9 aktualisieren?</summary><p>Nein. Diese 2.9 ist anders signiert. Wer die bisherige 2.5 installiert hat, muss sie vor der Installation von 2.9 deinstallieren. Dabei gehen lokal gespeicherte Fusch-Daten verloren. Die separat signierten 2.6 bis 2.8 verwenden dagegen denselben neuen Schlüssel wie 2.9.</p></details>
+    <details><summary>Ist ein simulierter Standort unsichtbar für andere Apps?</summary><p>Nein. Android kennzeichnet Mock-Standorte; andere Apps können die Simulation erkennen. Fusch umgeht solche Prüfungen nicht.</p></details>
+    <details><summary>Woher kommen die Karten und Routen?</summary><p>Die App lädt Kartenmaterial online und berechnet Straßen-Routen über OSRM. Die interaktive Karte auf dieser Website nutzt CARTO-Kacheln mit OpenStreetMap-Daten. Dafür ist eine Internetverbindung erforderlich.</p></details>
   </div>
 </section>
 
-<section id="setup">
-  <div class="wrap">
-    <h2 class="sh">In 3 Schritten startklar</h2>
-    <p class="ssub">Einmal einrichten, dann nur noch: Ort wählen → Spoof.</p>
-    <div class="steps">
-      <div class="step"><h3>APK installieren</h3><p>Fusch herunterladen und öffnen. „Installation aus unbekannten Quellen" erlauben – bei Sideloading normal.</p></div>
-      <div class="step"><h3>Mock-Standort aktivieren</h3><p><code>Entwickleroptionen → Standort-Override-App auswählen → Fusch</code>. Die App zeigt dir den Weg direkt in der Anleitung.</p></div>
-      <div class="step"><h3>Spoofen</h3><p>Ort auf der Karte wählen (oder Route planen) und auf <b>Spoof</b> tippen – fertig. Stoppen jederzeit per Knopfdruck.</p></div>
-    </div>
-  </div>
-</section>
+<section class="download-section wrap" id="download"><div class="download-panel">
+  <div class="eyebrow">Fusch für Android</div>
+  <h2>Bereit für irgendwo?</h2>
+  <p class="download-copy">Hier bekommst du die aktuelle, separat signierte Fusch-Version. Ein Download, klare Versionsdaten und der direkte Weg zum GitHub-Release.</p>
+  <a class="btn btn-primary" data-download href="/downloads/Fusch-2.9.apk">Fusch <span data-version>2.9</span> herunterladen <span class="arrow" aria-hidden="true">↗</span></a>
+  <p class="download-meta">Android 8.0+ · signierte APK · kein Root · kostenlos</p>
+  <div class="migration" role="note"><span class="mono-icon" data-icon="warning" aria-hidden="true"></span><div><strong>Wichtig bei einem Wechsel von Version 2.5</strong><p>Die neue 2.9 hat eine andere Signatur und kann nicht über 2.5 installiert werden. Alte App zuerst deinstallieren; dabei werden ihre lokal gespeicherten Daten gelöscht. Sie ist <b>kein automatisches Update</b> für 2.5.</p></div></div>
+  <div class="checksum" id="checksum">SHA-256 der aktuellen APK: <code id="apk-hash">8b19784f699c13fd1fe8052aedae52e554618638d1c7ee7cd0d34ffb34c599bc</code></div>
+</div></section>
+</main>
 
-<section id="download" class="soft">
-  <div class="wrap">
-    <div class="dlcard">
-      <div class="big">Fusch <span class="vtag">1.5</span></div>
-      <div class="dv">Immer die <b>neueste Version</b> – dieser Link zeigt automatisch auf den aktuellen Build.</div>
-      <div class="dv" style="margin-top:4px">Android 8.0+ · signiert · kein Root · kostenlos</div>
-      <a class="btn1" id="dlbtn2" href="downloads/Fusch-latest.apk">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 19h16"/></svg>
-        Jetzt herunterladen
-      </a>
-      <div class="updnote">Die App prüft beim Start automatisch auf Updates und verlinkt direkt hierher.</div>
-    </div>
-  </div>
-</section>
+<footer><div class="wrap footer-content"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">F</span><span>fusch<span class="period">.</span></span></a><p>© 2026 Fufi/!L · Aleks heißt Fusch</p><div class="links"><a href="https://github.com/Fufi1925/Fusch" target="_blank" rel="noopener noreferrer">Quellcode</a><a href="https://github.com/Fufi1925/Fusch/releases" target="_blank" rel="noopener noreferrer">GitHub Releases</a><a href="#einrichtung">Hilfe</a></div></div></footer>
 
-<footer>
-  <div class="wrap">
-    <div class="logo" style="font-size:14px">
-      <div class="lg" style="width:26px;height:26px;border-radius:8px"><svg viewBox="0 0 24 24" style="width:14px;height:14px">
-        <path fill="#fff" d="M7.1,3.4 h3.1 v17.2 h-3.1 Z M10.2,3.4 h6.2 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-6.2 Z M10.2,10.3 h4.3 a1.5,1.5 0 0 1 1.5,1.5 v0.8 a1.5,1.5 0 0 1 -1.5,1.5 h-4.3 Z"/>
-        <circle cx="17.4" cy="11.9" r="2" fill="#fff"/>
-      </svg></div>
-      Fusch
-    </div>
-    <span>© 2026 · Karten © OpenStreetMap-Mitwirkende · Routing by OSRM</span>
-    <div class="sp"></div>
-    <span class="made">Made by <b>Fufi/!L</b></span>
-    <span class="f2">Aleks heißt Fusch</span>
-  </div>
-</footer>
+<dialog id="shot-dialog" class="preview-dialog" aria-label="App-Ansicht vergrößert"><div class="dialog-top"><strong id="dialog-title"></strong><button id="dialog-close" type="button">Schließen</button></div><img id="dialog-image" alt="" width="824" height="1830"></dialog>
 
 <script>
-/* Version + Download-Link automatisch aus update.json (immer die neueste Version) */
-fetch('update.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{
-  if(!j||!j.version)return;
-  document.querySelectorAll('.vtag').forEach(e=>e.textContent=j.version);
-  if(j.url){document.getElementById('dlbtn').href=j.url;document.getElementById('dlbtn2').href=j.url;}
-  if(j.date){document.getElementById('dldate').innerHTML='<b>Aktualisiert:</b> '+new Date(j.date).toLocaleDateString('de-DE');}
-}).catch(()=>{});
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const $$ = s => document.querySelectorAll(s);
+  const dialog = $('#shot-dialog');
+  $$('.shot').forEach(button => button.addEventListener('click', () => {
+    const image = button.querySelector('img');
+    $('#dialog-title').textContent = button.dataset.title;
+    $('#dialog-image').src = image.src;
+    $('#dialog-image').alt = image.alt;
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+  }));
+  $('#dialog-close').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });
+
+  const dateLabel = iso => {
+    const d = new Date(iso.length === 10 ? iso + 'T12:00:00Z' : iso);
+    return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString('de-DE', {timeZone:'Europe/Berlin'});
+  };
+  const sizeLabel = bytes => bytes >= 1048576
+    ? (bytes / 1048576).toLocaleString('de-DE', {maximumFractionDigits:1}) + ' MB'
+    : (bytes / 1024).toLocaleString('de-DE', {maximumFractionDigits:1}) + ' KB';
+  fetch('/api/release', {cache:'no-store'}).then(r => {if (!r.ok) throw Error('Version nicht erreichbar'); return r.json();}).then(data => {
+    if (!data || !/^\d+\.\d+(?:\.\d+)?$/.test(data.version) || !data.download) return;
+    $$('[data-version]').forEach(el => {el.textContent = data.version;});
+    $$('[data-download]').forEach(el => {el.href = data.download;});
+    $('#release-size').textContent = sizeLabel(data.apkBytes);
+    $('#release-date').textContent = dateLabel(data.date) || 'Siehe GitHub';
+    $('#release-status').textContent = data.source === 'github'
+      ? 'Auf GitHub geprüft: ' + new Date(data.checkedAt).toLocaleString('de-DE')
+      : data.source === 'cache'
+        ? 'GitHub zuletzt geprüft: ' + new Date(data.checkedAt).toLocaleString('de-DE')
+        : 'Hinterlegter Stand aus geprüfter APK · GitHub gerade nicht verfügbar';
+    if (data.source !== 'local') $('#release-link').href = data.releaseUrl;
+    if (data.sha256) $('#apk-hash').textContent = data.sha256;
+    else $('#checksum').hidden = true;
+  }).catch(() => {$('#release-status').textContent = 'Hinterlegter Stand aus geprüfter APK · Live-Abfrage nicht verfügbar';});
+
+  const cities = {
+    duisburg:{name:'Duisburg',lat:51.43441,lng:6.76233},
+    berlin:{name:'Berlin',lat:52.51628,lng:13.37770},
+    amsterdam:{name:'Amsterdam',lat:52.37022,lng:4.89517}
+  };
+  let map = null, marker = null, tiles = null;
+  const coords = (lat,lng) => lat.toFixed(5) + ', ' + lng.toFixed(5);
+  const status = message => {$('#map-status').textContent = message;};
+  function select(name,lat,lng,zoom) {
+    if (!map) {status('Die Karte konnte nicht geladen werden. Bitte die Seite online öffnen.');return;}
+    $('#map-name').textContent = name;
+    $('#map-coords').textContent = coords(lat,lng);
+    if (marker) marker.setLatLng([lat,lng]);
+    else marker = L.circleMarker([lat,lng], {radius:8,color:'#f1f7f9',weight:3,fillColor:'#4fc3df',fillOpacity:1}).addTo(map);
+    map.flyTo([lat,lng], zoom || Math.max(map.getZoom(),12), {duration:.75});
+  }
+  function initMap() {
+    if (map) return;
+    if (!window.L) {status('Die Kartenbibliothek ist nicht erreichbar. Internetverbindung prüfen.');return;}
+    map = L.map('live-map',{zoomControl:false,scrollWheelZoom:false}).setView([cities.duisburg.lat,cities.duisburg.lng],12);
+    tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+      subdomains:'abcd', maxZoom:19,
+      attribution:'Karte &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap-Mitwirkende</a> &middot; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>'
+    }).addTo(map);
+    let received = false;
+    tiles.on('tileload', () => {
+      if (!received) {received=true;status('Online-Kartenkacheln geladen um ' + new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) + ' Uhr. Karte antippen, um Koordinaten zu sehen.');}
+    });
+    tiles.on('tileerror', () => {if (!received) status('Kartenanbieter gerade nicht erreichbar. Bitte später erneut versuchen.');});
+    map.on('click',e => {select('Gewählter Punkt',e.latlng.lat,e.latlng.lng,map.getZoom());$$('[data-city]').forEach(b=>b.classList.remove('active'));});
+    select('Duisburg',cities.duisburg.lat,cities.duisburg.lng,12);
+    $('#live-placeholder').hidden = true;
+    setTimeout(() => map.invalidateSize(),100);
+  }
+  const section = $('#live');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) {initMap();observer.disconnect();}
+    },{rootMargin:'250px'});
+    observer.observe(section);
+  } else initMap();
+  $$('[data-city]').forEach(button=>button.addEventListener('click',()=>{
+    const place = cities[button.dataset.city];
+    if (!place) return;
+    initMap(); select(place.name,place.lat,place.lng,12);
+    $$('[data-city]').forEach(b=>b.classList.toggle('active',b===button));
+  }));
+  $('#zoom-in').addEventListener('click',()=>{initMap();if(map)map.zoomIn();});
+  $('#zoom-out').addEventListener('click',()=>{initMap();if(map)map.zoomOut();});
+  $('#locate').addEventListener('click',()=>{
+    if (!navigator.geolocation) {status('Dieser Browser unterstützt keine Standortfreigabe.');return;}
+    status('Warte auf deine Freigabe im Browser …');
+    navigator.geolocation.getCurrentPosition(p=>{
+      initMap();select('Dein Standort',p.coords.latitude,p.coords.longitude,14);
+      $$('[data-city]').forEach(b=>b.classList.remove('active'));
+      status('Standort nur in dieser Browseransicht angezeigt.');
+    },()=>status('Standort nicht freigegeben oder nicht verfügbar.'),{enableHighAccuracy:false,timeout:10000,maximumAge:60000});
+  });
+})();
 </script>
 </body>
 </html>

@@ -14,14 +14,19 @@ Fusch/
 │   ├── keys/             ← neuer privater Signaturschlüssel (ignoriert; sicher aufbewahren)
 │   └── build.sh          ← alter Website-Release nur mit Originalschlüssel; neue APK separat
 └── website/              ← Railway-Website (https://fusch.up.railway.app)
-    ├── server.js         ← statischer Server (keine Abhängigkeiten)
+    ├── server.js         ← statische Dateien + GitHub-Release-Status (keine Abhängigkeiten)
+    ├── tools/            ← reproduzierbare Aufnahmen der App-UI mit Beispieldaten
     ├── package.json
     ├── railway.json
     └── public/
-        ├── index.html    ← Landingpage
-        ├── update.json   ← Versions-Manifest (App prüft diese Datei!)
+        ├── index.html    ← Landingpage für die neueste separat signierte APK
+        ├── release.json  ← geprüfter Fallback-Stand 2.9 / Code 22
+        ├── update.json   ← Bestands-Manifest 2.5 / Code 18 (nicht für 2.9 ändern!)
+        ├── img/          ← neue Aufnahmen der aktuellen App-Oberfläche
+        ├── vendor/       ← Leaflet für die interaktive Online-Karte
         └── downloads/
-            └── Fusch-latest.apk   ← zuletzt veröffentlichte APK (nicht automatisch aus Quellcode)
+            ├── Fusch-2.9.apk    ← einziger beworbener Download
+            └── Fusch-latest.apk ← Bestands-APK 2.5 für bisherige Update-URLs
 ```
 
 ## App bauen
@@ -40,10 +45,13 @@ Für alle späteren APKs mit dieser Signatur **dieselben Dateien** verwenden:
 FUSCH_STANDALONE_BUILD=1 bash app/build.sh
 ```
 
-Das Ergebnis `app/apk/Fusch-standalone.apk` wird **nicht** auf die Website kopiert.
-Eine Kopie der fertigen, separat signierten 2.9-APK liegt unter
-[`releases/Fusch-2.9-ohne-Kapsel.apk`](releases/Fusch-2.9-ohne-Kapsel.apk).
-Die aktuell veröffentlichte Website-APK und `update.json` bleiben auf 2.5 / 18.
+Ein neuer Build unter `app/apk/Fusch-standalone.apk` wird **nicht automatisch**
+auf die Website kopiert. Die geprüfte, separat signierte 2.9-APK liegt unter
+[`releases/Fusch-2.9-ohne-Kapsel.apk`](releases/Fusch-2.9-ohne-Kapsel.apk)
+und bytegleich als **einziger sichtbarer Website-Download** unter
+`website/public/downloads/Fusch-2.9.apk`. Der ältere Pfad
+`downloads/Fusch-latest.apk` und `update.json` bleiben ausschließlich für
+bestehende 2.5-Installationen unverändert erhalten.
 Diese neue APK hat dieselbe Paket-ID, aber **eine andere Signatur**: Sie kann
 **nicht** über die alte App installiert werden. Vor Installation muss die alte
 App deinstalliert werden; dabei gehen ihre lokal gespeicherten App-Daten verloren.
@@ -87,16 +95,17 @@ unzip -q bt.zip -d sdk && unzip -q plat.zip -d sdk
 → Details: [website/README-RAILWAY.md](website/README-RAILWAY.md)
 
 Kurzform:
-1. Diesen **gesamten Ordner** in ein **privates** GitHub-Repo pushen
+1. Dieses Projekt im GitHub-Repo [`Fufi1925/Fusch`](https://github.com/Fufi1925/Fusch) verwenden
 2. Auf [railway.app](https://railway.app) mit GitHub einloggen → **New Project → Deploy from GitHub repo**
 3. Im Service unter **Settings → Root Directory** = `website` setzen
 4. **Settings → Networking → Generate Domain** → Subdomain `fusch` wählen → `https://fusch.up.railway.app`
 
 ## Neues Release veröffentlichen
 
-Derzeit ist **nur die Website-APK 2.5 / Code 18** veröffentlicht. Der Quellcode
-baut **2.9 / Code 22 mit separater Signatur**, ausschließlich zur direkten
-Weitergabe. Diese Version entfernt die schwebende „Dynamic Island“-Kapsel,
+Die Website bewirbt **2.9 / Code 22 mit separater Signatur** als aktuellen
+Download. Das alte 2.5-Paket und sein Update-Manifest bleiben unter den
+bisherigen URLs erhalten, werden aber nicht mehr auf der Website angeboten.
+Diese Version entfernt die schwebende „Dynamic Island“-Kapsel,
 ihren Einstellungsschalter und die Overlay-Berechtigung vollständig. Bei
 aktivem Standortspoof oder aktiver Route zeigt Fusch nur den internen
 Statusbildschirm mit **Stoppen**; Einstellungen, Favoriten, Verlauf und
@@ -111,9 +120,16 @@ braucht eine Bestätigung. Verlaufseinträge werden erst nach erfolgreichem
 Start des Spoofs gespeichert; Listenänderungen werden sofort in der App
 persistiert. Der fest eingebettete Geo-API-Schlüssel ist unverändert.
 
-`update.json` und die Website-APK **nicht** durch diese neue APK ersetzen:
-Bestehende Installationen könnten sie wegen der Signatur nicht als Update
-installieren.
+Die Website zeigt die 2.9-APK als **Neuinstallation bzw. Upgrade von den
+separat signierten 2.6–2.8** und warnt vor der notwendigen Deinstallation von
+2.5 mit lokalem Datenverlust. `website/public/update.json` und
+`website/public/downloads/Fusch-latest.apk` **nicht** auf 2.9 umstellen:
+Andernfalls würde die alte App ein nicht installierbares Update anbieten.
+Die Landingpage fragt `/api/release` ab: Ein passendes GitHub-Release mit APK
+wird höchstens alle zehn Minuten neu abgefragt; bei Ausfall bleibt die lokal
+per SHA-256 geprüfte 2.9-APK als Download verfügbar. Für ein späteres Release
+müssen Website-Kopie und `release.json` bewusst mitgezogen werden, wenn der
+Offline-Fallback nicht auf 2.9 bleiben soll.
 
 Für einen weiteren **separaten** Build den `versionCode` in
 `app/AndroidManifest.xml` über 22 erhöhen und erneut mit

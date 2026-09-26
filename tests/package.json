@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "test": "node --test ui.test.cjs"
+    "test": "node --test ui.test.cjs website.test.cjs"
   },
   "devDependencies": {
     "jsdom": "26.1.0"

@@ -1,0 +1,12 @@
+{
+  "app": "Fusch",
+  "version": "2.9",
+  "code": 22,
+  "tag": "v2.9",
+  "date": "2026-09-26",
+  "download": "/downloads/Fusch-2.9.apk",
+  "apkBytes": 132503,
+  "sha256": "8b19784f699c13fd1fe8052aedae52e554618638d1c7ee7cd0d34ffb34c599bc",
+  "releaseUrl": "https://github.com/Fufi1925/Fusch/releases/tag/v2.9",
+  "summary": "Aktivbildschirm mit Stop, übersichtliche Favoriten und Verlauf, keine schwebende Kapsel. Separat signiert: kein Direkt-Update von Version 2.5."
+}

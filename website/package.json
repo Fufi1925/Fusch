@@ -1,8 +1,8 @@
 {
   "name": "fusch-website",
-  "version": "1.3.0",
+  "version": "2.9.0",
   "private": true,
-  "description": "Fusch – Download- und Update-Website (statisch, keine Abhängigkeiten)",
+  "description": "Fusch – aktuelle Download-Website mit Release-Status und Online-Karte (ohne Laufzeit-Abhängigkeiten)",
   "scripts": {
     "start": "node server.js"
   },
